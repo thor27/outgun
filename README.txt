@@ -68,7 +68,7 @@ Fonts by
    Jani Rivinoja (Huntta)
 
 Sound theme by
-   Visa-Valtteri Pimi‰ <visa.pimia@www.fi>
+   Visa-Valtteri Pimi√§ <visa.pimia@www.fi>
 
 Translations by
    Finnish - Jani Rivinoja (Huntta) and Niko Ritari (Nix)
@@ -83,6 +83,8 @@ Maps by
    Spinal, Caio Monteiro "Nosferatu", Joonas, PHiN, MM-coiote, rFrota,
    Detonador, K4(Maicon), Zigue, Syrus-DH, Miague-DH, SnoOpY
    You. Get your name here by reporting a new bug. :)
+   
+2017 new site: http://mlimasolucoes.com.br/
 
 This game uses these libraries:
  * Allegro - http://alleg.sourceforge.net/
