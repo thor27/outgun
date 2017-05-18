@@ -1,0 +1,55 @@
+Para mais informações acesse as fontes:
+ Documentação do jogo         diretório 'doc' (em Inglês)
+ Site Brasileiro do Outgun    http://outgun.sf.net/
+ Site do Outgun               http://koti.mbnet.fi/outgun/
+ 
+Controles
+ 
+ Movimentos         Setas ou keypad
+ Atirar             Control
+ Correr             Shift
+ Esquivar           Alt ou AltGr
+ 
+Outras Teclas
+ 
+ Falar              Apenas digite sua mensagem e aperte enter.
+ Falar para o Time  Inicie sua mensagem com um ponto ('.').
+ Mudar de time      End (se seu time estiver com mais jogadores)
+ Suicidar           Delete
+ Largar a bandeira  Page Down
+ Lista de mapas     F2
+ Estado do time     F3
+ Estado do jogador  F4
+ Info do servidor   F5
+ Votar para a
+ mudança de mapas   F8
+ Screenshot         F11
+ Mais mensagens     Insert
+ 
+Conceito do Jogo
+ 
+ Você é membro de um time, ou vermelho ou azul, escolhido para você aleatoreamente quando conecta. Seu objetivo é ajudar o seu time ganhar, capturando a bandeira inimiga. Para capturar a bandeira, um membro do seu time precisa roubar a bandeira inimiga e traze-la para a bandeira do time, desde que sua bandeira não tenha sido roubada!
+ 
+Saúe e energia
+ 
+ Se sua saúde chegar a zero, você morre. A energia é usada para correr atirar e também uma proteção para sua saúde quando você tiver o poder do escudo. Saúde e energia se regeneram para 200 com o tempo.
+ 
+Mini-mapa
+ 
+ Na diagonal superior direita da tela está o mini-mapa. Ele mostra os seus parceiros e todos os oponentes que eles podem ver. Se você tiver o poder da sombra, você verá todos os oponentes que não tiverem sombra também.
+ 
+Poderes
+ 
+Se você ver algum item pelo chão, pegue-o. Ele é um item de poder.
+ 
+ + arma          ganha um tiro adicional e mais energia
+ turbo           mais velocidade
+ sombra          invisibilidade, ver oponentes no mini-mapa
+ força           seu tiro causa um maior dano 
+ mega-saude      mais saude e energia
+ escudo          sua saúde é protegida enquanto o escudo durar
+ encaminhador    mata os adversários que ficarem na mesma sala quando
+   de mortes       você morre
+ 
+ Traduzido por ThOR27 - Thomaz dos Reis.
+ Para contatos leia o arquivo languages/ptBR.txt

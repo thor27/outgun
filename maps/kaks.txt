@@ -1,0 +1,53 @@
+; 2005-03-22
+
+P width 2
+P height 1
+P title Kaks
+P author Huntta
+S 32 24
+
+flag  0 1 0 28 12
+spawn 0 1 0  4 12
+spawn 0 1 0  4 16
+spawn 0 1 0  4  8
+spawn 0 1 0  4  4
+spawn 0 1 0  4 20
+spawn 0 1 0 20 20
+spawn 0 1 0 20  4
+spawn 0 1 0 12 12
+
+flag  1 0 0  4 12
+spawn 1 0 0 28 12
+spawn 1 0 0 28  8
+spawn 1 0 0 28 16
+spawn 1 0 0 28 20
+spawn 1 0 0 28  4
+spawn 1 0 0 12  4
+spawn 1 0 0 12 20
+spawn 1 0 0 20 12
+
+X yhteiset 0 0 1 0
+
+R 0 0
+  W  0  0  1 24
+C W  3  3  3  2 270   0
+C W  3 21  3  2 180 270
+C W 12 12  5  0
+T W 24  6 19  1 29  1
+C W 24 21  0.25 0 0   0  5
+C W 24 19  0.25 0 0   0  5
+C W 24 17  0.25 0 0   0  5
+
+R 1 0
+  W 32  0 31 24
+C W 29 21  3  2  90 180
+C W 29  3  3  2   0  90
+C W 20 12  5
+T W  8 18 13 23  3 23
+C W  8  3  0.25 0 0   0  5
+C W  8  5  0.25 0 0   0  5
+C W  8  7  0.25 0 0   0  5
+
+:yhteiset
+  W  0  0 32  1
+  W  0 24 32 23

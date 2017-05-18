@@ -1,0 +1,125 @@
+; 2005-05-20
+
+P width 6
+P height 6
+P title Haukka
+P author Huntta
+S 16 12
+
+flag  0 3 0 13  9
+spawn 0 3 0  8  6
+spawn 0 3 1  8  6
+spawn 0 4 0  8  6
+spawn 0 4 1  8  6
+spawn 0 5 0  8  6
+spawn 0 3 2  8  6
+spawn 0 4 2  8  6
+spawn 0 5 1  8  6
+spawn 0 5 2  8  6
+
+flag  1 2 0  3  9
+spawn 1 2 0  8  6
+spawn 1 2 1  8  6
+spawn 1 1 0  8  6
+spawn 1 1 1  8  6
+spawn 1 0 0  8  6
+spawn 1 2 2  8  6
+spawn 1 1 2  8  6
+spawn 1 0 1  8  6
+spawn 1 0 2  8  6
+
+X nurkat 0 0 5 5
+
+X ylä    0 0 5 0
+X ylä    2 3 3 3
+
+X ala    0 5 5 5
+X ala    2 2 3 2
+
+X vasen  0 0 0 3
+X vasen  3 0 3 3
+X vasen  1 5
+X vasen  5 5
+
+X oikea 5 0 5 3
+X oikea 2 0 2 3
+X oikea 4 5
+X oikea 0 5
+
+R 0 0
+C W 12 12 17 11 270   0
+
+R 0 5
+C W  4  0 17 11  90 180
+
+R 1 0
+C W 16 12  5
+
+R 1 1
+C W 16  0  5
+
+R 1 5
+C W 12  0 17 11 180 270
+
+R 2 0
+C W  4 12 17 11   0  90
+C W  0  8  1
+C W  4 12  1
+C W  4  8  5  3 180 270
+
+R 2 1
+C W  0  0  5
+
+R 2 2
+C W  4  0 17 11  90 180
+
+R 2 3
+C W  4 12 17 11   0  90
+
+R 5 0
+C W 4 12 17 11 0 90
+
+R 5 5
+C W 12 0 17 11 180 270
+
+R 4 0
+C W 0 12 5
+
+R 4 1
+C W 0 0 5
+
+R 4 5
+C W 4 0 17 11 90 180
+
+R 3 0
+C W 12 12 17 11 270 0
+C W 16 8 1
+C W 12 12 1
+C W 12 8 5 3 90 180
+
+R 3 1
+C W 16 0 5
+
+R 3 2
+C W 12 0 17 11 180 270
+
+R 3 3
+C W 12 12 17 11 270 0
+
+:nurkat
+C W  0  0  1
+C W 16  0  1
+C W  0 12  1
+C W 16 12  1
+
+:ylä
+  W  0  0 16  1
+
+:ala
+  W  0 12 16 11
+
+:vasen
+  W  0  0  1 12
+
+:oikea
+  W 16  0 15 12

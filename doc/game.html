@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>How to play Outgun</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / How to play</DIV>
+
+<H1>How to play</H1>
+
+<P>
+This is a small guide for playing Outgun, including more details than the in-game help.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#concept">Game concept</A>
+ <LI><A HREF="#moving">Moving and shooting</A>
+ <LI><A HREF="#minimap">Minimap</A>
+ <LI><A HREF="#powerups">Powerups</A>
+ <LI><A HREF="#maplist">Map list</A>
+ <LI><A HREF="#chat">Chatting</A>
+ <LI><A HREF="#console">Console commands</A>
+ <LI><A HREF="#screenshot">Screenshot</A>
+ <LI><A HREF="#keys">Key summary</A>
+</UL>
+
+<H2 ID="concept">Game concept</H2>
+
+<P>
+ You are a member of a team, either red or blue, assigned to you
+ at random when you connect. Your goal is to help your team to
+ win, by capturing the enemy flag. To capture the flag, a member
+ of your team must steal the enemy flag and bring it to your
+ team&rsquo;s flag, provided your flag has not been stolen already.
+</P>
+<P>
+There can also be several red or blue flags or even green flags in some maps. The green flags can usually be captured by either team but on some servers you may also capture the enemy flag on them. The majority of the maps have only one blue and one red flag though.
+</P>
+<P>
+The best strategy when you are carrying a flag is usually to go near your team&rsquo;s base, so when your flag is returned, you can capture the enemy flag without too much delay. Avoid bringing the flag back to the enemy and giving them an easy capture.
+</P>
+<P>
+The game can be capture or time limited. You can see that in the <EM>server info</EM> screen by pressing F5.
+</P>
+
+<H2 ID="moving">Moving and shooting</H2>
+
+<P>
+You <EM>move</EM> by arrow keys or keypad. If you have a joystick, you can also use that for moving by first setting it up in the <A HREF="menus.html#controls">controls menu</A>. Shift is for <EM>running</EM> and alt for <EM>strafing</EM>, that means your gun won&rsquo;t turn. You <EM>shoot</EM> with control keys. Notice that if you get hit, you can&rsquo;t shoot for a second.
+</P>
+<P>
+At the bottom left of the screen are the <EM>health</EM> and <EM>energy</EM> bars.
+ If your health drops to zero, you die. Energy is used for
+ running, shooting and health protection when you have the
+ shield powerup. Health and energy regenerate to 200 with time.
+</P>
+<P>
+If you want to make a <EM>suicide</EM>, which is sometimes useful when you have a deathbringer <A HREF="#powerups">powerup</A>, press delete. To <EM>drop the flag</EM> to your teammate, you don&rsquo;t have to kill yourself. Simply just press page down.
+</P>
+
+<H2 ID="minimap">Minimap</H2>
+
+<P>
+ On the upper-right corner of the screen is the <EM>minimap</EM>. It
+ shows your teammates and the opponents seen by them. If you
+ have the shadow <A HREF="#powerups">powerup</A>, it shows all the opponents who don&rsquo;t
+ have the shadow themselves.
+</P>
+
+<H2 ID="powerups">Powerups</H2>
+
+<P> 
+ If you see an item lying on the ground, grab it. It is a special
+ <EM>powerup</EM> item.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Powerup<TH>Description
+ <TR><TD>weapon upgrade<TD>You get an additional rocket up to the server limit and more energy.
+ <TR><TD>turbo<TD>You get more speed (time limited).
+ <TR><TD>shadow<TD>You become invisible and see opponents on the minimap (time limited).
+ <TR><TD>weapon power<TD>Your shots make more damage (time limited).
+ <TR><TD>megahealth<TD>You get more health and energy (up to 300).
+ <TR><TD>shield<TD>Your health is protected while the shield lasts, that is as long as you have energy. One-hit shield can take only one hit though. You also get some energy with this powerup.
+ <TR><TD>deathbringer<TD>Damage players on the same room when you die.
+</TABLE>
+
+<H2 ID="maplist">Map list</H2>
+
+<P>
+The <EM>map list</EM> of the server can be seen by pressing F2. The current map is in yellow. You can also see the number of votes for each map. Your own vote is indicated by an asterisk &lsquo;*&rsquo;.
+</P>
+<P>
+On the same list, you can <EM>vote</EM> for the next map by typing the map number and pressing enter. If you want to vote to end the current game, press F8. More than half of the players is needed to end the game.
+</P>
+<P>
+The next map is chosen according to the votes. If several maps have an equal number of votes (non-zero), the next map is the one that was last played the longest time ago. If no maps have any votes, the next map in the list will be played.
+</P>
+
+<H2 ID="chat">Chatting</H2>
+
+<P>
+Chatting is quite straightforward: type your message and hit enter. Then your message will be sent to everyone. If you want to talk only to your team, begin the message with a dot. In 1.0.3 you will see a &lsquo;Say team&rsquo; text to indicate the team talk.
+</P>
+
+<H2 ID="console">Console commands</H2>
+
+<P>
+The chat input is used for console commands too. The commands begin with a slash.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>/help<TD>See the supported commands.
+ <TR><TH>/info<TD>See info about the server.
+ <TR><TH>/time<TD>See the server uptime, the map time and time left in the map.
+ <TR><TH>/sayadmin<TD>Send a message to the server admin.
+</TABLE>
+<P>
+Server <A HREF="admin.html">admins</A> can use several other <A HREF="admin.html#commands">commands</A> too.
+</P>
+
+<H2 ID="screenshot">Screenshot</H2>
+
+<P>
+You can take a screenshot of the game with F11. The image is saved in the PCX format in the <CODE>screens</CODE> directory with a name <CODE>outgxxx.pcx</CODE> where <CODE>xxx</CODE> is an increasing number. The size of the image is the same as your game screen and the colour depth is 24 bits. If you want to use the image in the web, convert it to PNG. You can usually also decrease the colour depth to 8 bits without much loss in the quality while saving space.
+</P>
+
+<H2 ID="keys">Key summary</H2>
+
+<TABLE BORDER>
+ <TR><TH COLSPAN=2>Controls
+ <TR><TD>Move<TD>arrow keys or keypad
+ <TR><TD>Shoot<TD>Control
+ <TR><TD>Run<TD>Shift
+ <TR><TD>Strafe<TD>Alt or Alt Gr
+ <TR><TH COLSPAN=2>Other keys
+ <TR><TD>Talk<TD>Just type your message and hit Enter.
+ <TR><TD>Team talk<TD>Begin your message with a dot (&lsquo;.&rsquo;).
+ <TR><TD>Change team<TD>End
+ <TR><TD>Suicide<TD>Delete
+ <TR><TD>Drop flag<TD>Page Down
+ <TR><TD>Show more messages<TD>Insert
+ <TR><TD>Show pings<TD>Tab
+ <TR><TD>Toggle names<TD>Control+F3
+ <TR><TD>In-game help<TD>F1
+ <TR><TD>Map list<TD>F2
+ <TR><TD>Team stats<TD>F3
+ <TR><TD>Player stats<TD>F4
+ <TR><TD>Server info<TD>F5
+ <TR><TD>Vote map change<TD>F8
+ <TR><TD>Screenshot<TD>F11
+ <TR><TD>Toggle fullscreen<TD>Alt+Enter
+ <TR><TD>Increase lag<TD>P+keypad plus
+ <TR><TD>Decrease lag<TD>P+keypad minus
+</TABLE>
+<P>
+The purpose of increasing lag is to even the game by introducing a handicap. Of course, you can&rsquo;t decrease it below your normal lag.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-12-22 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

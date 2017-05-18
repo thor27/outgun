@@ -1,0 +1,7 @@
+Outgun 1.0.3, copyright © 2002-2006 multiple authors.
+ 
+Outgun is free software under the GNU GPL, and you are welcome to redistribute it under certain conditions. Outgun comes with ABSOLUTELY NO WARRANTY. For details, see the accompanying file COPYING.
+ 
+To help us remove any remaining bugs, you can let Outgun automatically send us a notification when an unexpected failure occurs. You can choose between no reporting, minimal information, and a complete report. The minimal information includes no more than the file name and line number of the failing assertion, and the version of Outgun. The complete report also includes a copy of Outgun's stack. This information is only used to find the cause of the failure. We can't contact you for more information, so it is recommended to also send an e-mail with more details.
+ 
+Choose the preferred mode below with left and right arrow keys, and close the menu with Enter or Esc. After the first time of starting Outgun, you can find this screen in the Options menu.

@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Menus</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Menus
+</DIV>
+
+<H1>Menus</H1>
+
+<P>
+This document describes the menus of Outgun. The focus is in the options hierarchy because it has a lot of items, many of which aren&rsquo;t very self-describing.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#usage">Using the menus</A>
+ <LI><A HREF="#main">Main menu</A>
+ <LI><A HREF="#serverlist">Server list</A>
+ <LI><A HREF="#options">Options</A>
+  <UL>
+   <LI><A HREF="#namepwd">Name and passwords</A>
+   <LI><A HREF="#game">Game options</A>
+   <LI><A HREF="#controls">Controls</A>
+   <LI><A HREF="#screenmode">Screen mode</A>
+   <LI><A HREF="#graphics">Graphic options</A>
+   <LI><A HREF="#sound">Sound options</A>
+  </UL>
+ <LI><A HREF="#localserver">Local server</A>
+</UL>
+
+<H2 ID="usage">Using the menus</H2>
+
+<P>
+The basic way to navigate the menus is arrow keys <STRONG>up</STRONG> and <STRONG>down</STRONG> for selecting a menu item, <STRONG>space</STRONG> or <STRONG>enter</STRONG> (or return) to activate an item (e.g. enter a submenu), and <STRONG>esc</STRONG> to close the menu and return to the previous menu or to game. While in the game, press <STRONG>esc</STRONG> to open the menu. To manipulate the settings you need <STRONG>space</STRONG> for checkboxes, <STRONG>left</STRONG> and <STRONG>right</STRONG> arrows for selections, and standard editing keys (letters, numbers, symbols, <STRONG>backspace</STRONG>) for text entry. Some menu specific keys are described where the menu in question is described, but those controls aren&rsquo;t necessary for basic operation.
+</P>
+
+<P>
+Items of a darker color are not selectable. Either they are for informational purposes only, or temporarily disabled when they aren&rsquo;t meaningful in the situation. Most reasons for a control to be disabled are discussed in that control&rsquo;s description.
+</P>
+
+<H3 ID="usage_advanced">Advanced keys</H3>
+
+<P>
+To navigate the menus, you can alternatively use <STRONG>tab</STRONG> to select the next item, <STRONG>shift</STRONG>+<STRONG>tab</STRONG> for the previous one. <STRONG>Home</STRONG> selects the first item in the menu, and <STRONG>end</STRONG> the last. When there are numbers shown in bright to the left of a menu item, pressing the corresponding <STRONG>number key</STRONG> selects the item. In the process, a checkbox&rsquo;s value is changed, or an action executed (e.g. a menu entered). If the active component can &ldquo;use&rdquo; number keys, this selection method is disabled. In that case, the numbers are shown dimmed and you can acquire the same effect by pressing the <STRONG>number key</STRONG> with <STRONG>alt</STRONG> pressed down.
+</P>
+
+<P>
+Where numbers or percentages are entered, and pressing left or right changes the value more than is wanted, pressing <STRONG>control</STRONG> at the same time produces the smallest step possible. The same can be acquired by pressing <STRONG>-</STRONG> or <STRONG>+</STRONG> instead of left and right.
+</P>
+
+<P>
+A list of choices can be opened by pressing <STRONG>space</STRONG>, navigated by the usual means, and closed by <STRONG>space</STRONG>, <STRONG>enter</STRONG> or <STRONG>esc</STRONG> (which cancels changes). For example in the theme selections, doing this you can avoid loading each theme while you move. As a shortcut, whether the list is open or closed, the first letter of an option can be used to select it directly.
+</P>
+
+<H2 ID="main">Main menu</H2>
+
+<P>
+The main menu provides some basic actions, and access to the other menus.
+</P>
+
+<TABLE BORDER>
+ <TR><TH><A HREF="#serverlist">Server list</A><TD>Go to the server list menu. Choose a server to play on.
+ <TR><TH>Disconnect<TD>Exit the server you&rsquo;re currently connected to (playing on). The action is disabled when you&rsquo;re not connected to a server.
+ <TR><TH><A HREF="#options">Options</A><TD>Go to the options menu. Change your name and many options that control Outgun.
+ <TR><TH><A HREF="#localserver">Local server</A><TD>Go to the local server menu. Start your own server.
+ <TR><TH>Help<TD>Show the online help screen, which is a very short guide to the game concept and keys. Accessible almost any time by pressing <STRONG>F1</STRONG>.
+ <TR><TH>Exit Outgun<TD>Do just that. You can also just close the window or press <STRONG>control</STRONG>+<STRONG>F12</STRONG> at any time to exit.
+</TABLE>
+
+<H2 ID="serverlist">Server list</H2>
+
+<P>
+The server list shows either all servers (known of) that are currently online or your favorites. Basic usage is to just pick a server and press <STRONG>enter</STRONG> to connect to it.
+</P>
+
+<P>
+Outgun maintains a separate list of favorite servers and saves it when exiting while other servers are forgotten. Most of the items in this menu provide ways to manipulate the list of favorites.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Update server list<TD>Get the current list of active servers. Outgun will connect to the server list master server which tells it of all servers it knows about. Whether the server list is updated automatically whenever Outgun starts is controlled by a <A HREF="#game_getservers">setting</A> in the <A HREF="#game">game options</A> menu. The action is disabled when &ldquo;Show favorite servers&rdquo; is set, because it has no effect on the servers that are shown in that case.
+ <TR><TH>Refresh servers<TD>Ask servers about their status. Outgun will try to connect to every server and refresh their information (ping, number of players, etc.) accordingly. When the &ldquo;Show favorite servers&rdquo; is set, only the favorite servers are refreshed, because only they are shown in that case.
+ <TR><TH>Refresh status<TD>What Outgun is currently doing regarding refreshing. In the cases of &ldquo;<SAMP>Inactive</SAMP>&rdquo; and &ldquo;<SAMP>Failed</SAMP>&rdquo; it is doing nothing, otherwise it is busy and the refresh commands are disabled.
+ <TR><TH>Show favorite servers<TD>When this option is set, only the favorites list is shown. In that case, also servers of that list that are offline or otherwise not reached, are shown.
+ <TR><TH>Add server<TD>Open a dialog prompting for an IP address to add to the list. If you set &ldquo;Add to favorite list&rdquo; in that dialog, the server is added to favorites as well.
+ <TR><TH>Manually enter IP<TD>Quickly connect to a server or add it to the list. You can type an IP address of a server here and press <STRONG>enter</STRONG> to connect to that server, or press <STRONG>insert</STRONG> to add it to the list. Only if the &ldquo;Show favorite servers&rdquo; is set, is the server added to favorites.
+</TABLE>
+
+<P>
+The main body of the menu is the list of servers below the other menu items. When &ldquo;Show favorite servers&rdquo; is set, all favorite servers are shown, otherwise all servers that are online (and known of) are. A row on the table represents a single server. It consists of:
+</P>
+
+<UL>
+ <LI>IP address: the address of the server, including port if it&rsquo;s not 25000
+ <LI>Ping: the server response time in milliseconds (smaller is better to play in, over 200 is clearly too much)
+ <LI>D: shows &ldquo;<SAMP>D</SAMP>&rdquo; if the server is a <A HREF="commandline.html#ded">dedicated</A> one (likely to stay online longer)
+ <LI>Players: how many players there are in a server, followed by how many players the server accepts at one time
+ <LI>Vers.: which version of Outgun the server is (note that unless there are servers of wrong version in your favorites, Outgun only shows servers it is compatible with)
+ <LI>Name: the server name or description given to it by its administrator; &ldquo;Anonymous host&rdquo; unless the server&rsquo;s configuration <A HREF="gamemod.html#server_name">changes it</A>
+</UL>
+
+<P>
+You can connect to a server by selecting it and pressing <STRONG>enter</STRONG> (or return, or space). You can also manipulate the server list by pressing the <STRONG>insert</STRONG> or <STRONG>delete</STRONG> key. <STRONG>Delete</STRONG> removes the selected server from the selected list (favorites or the normal list). A surprising consequence of this is that you can only remove a favorite server by first enabling &ldquo;Show favorite servers&rdquo;, even though the server can be shown in the normal list; all responsive (online) favorite servers are also shown when &ldquo;Show favorite servers&rdquo; is unset. Pressing <STRONG>insert</STRONG> adds the selected server to the favorites list.
+</P>
+
+<H2 ID="options">Options</H2>
+
+<P>
+The options menu contains submenus for different types of options.
+</P>
+
+<TABLE BORDER>
+ <TR><TH><A HREF="#namepwd">Name and passwords</A><TD>Go to the name and passwords menu. Choose your identity and log in to the tournament.
+ <TR><TH><A HREF="#game">Game options</A><TD>Go to the game options menu.
+ <TR><TH><A HREF="#controls">Controls</A><TD>Go to the controls menu. Change how the player is controlled, and the keyboard layout.
+ <TR><TH><A HREF="#screenmode">Screen mode</A><TD>Go to the screen mode menu.
+ <TR><TH><A HREF="#graphics">Graphic options</A><TD>Go to the graphic options menu. Change the game&rsquo;s appearance.
+ <TR><TH><A HREF="#sound">Sound options</A><TD>Go to the sound options menu. Configure sound themes and volume.
+ <TR><TH>Change language<TD>Go to a dialog where you can choose the interface language. You need to restart Outgun for a change to be activated.
+ <TR><TH>Bug report policy<TD>Go to a dialog where you can enable or disable levels of automatic bug reporting.
+</TABLE>
+
+<H2 ID="namepwd">Name and passwords</H2>
+
+<P>
+The name and passwords menu allows you to choose a player name and to log in if you&rsquo;re registered in the tournament. The tournament system allows you to both verify your identity to others, and optionally participate in the <A HREF="http://www.mycgiserver.com/~fcecin/dayrank.html">player ranking list</A>.
+</P>
+
+<P>
+You can register to the tournament <A HREF="http://outgun.sourceforge.net/en/torneio/terms.htm">here</A>. Enter the password you used there, in Outgun.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Name<TD>Fill in your player name. If you change it while connected to a server, it will be updated when you close the menu. Names starting or ending with a space are not allowed, and 15 characters is the maximum length.
+ <TR><TH>Get random name<TD>Let Outgun choose you a random name, like it did when you first started it.
+ <TR><TH>Tournament password<TD>Enter here the password you chose when registering to the tournament, if you wish to log in. This verifies your identity to other people and is required if you wish to enable your ranking. Note that when you change your password here, Outgun will not update your registration status until you close the menu.
+ <TR><TH>Registration status<TD>Shows the registration status. When you have a password entered, the login process is completed and everything is OK, it shows &ldquo;<SAMP>Logged in</SAMP>&rdquo;, which is appended with server communication information whenever you are connected to a server.
+ <TR><TH>Take part in the tournament<TD>When not set, your ranking is not affected. When set, the ranking scores are updated as you play, with some preconditions. First, there must be at least four distinct players on the server, and second, the server must have the <A HREF="gamemod.html#tournament"><CODE>tournament</CODE></A> option enabled. Note that when you are successfully logged in, and this option is set, and the server has tournament enabled, you have the letter <SAMP>T</SAMP> in the player statistics screen (accessible by pressing <STRONG>F4</STRONG> while in the game). However, that still doesn&rsquo;t mean your scores are necessarily counted for the ranking, because it only happens with at least four distinct players. Also note that if you change this option while playing on a server, the change will only apply at the start of next round. Alternatively, you may disconnect and re-connect to apply it immediately.
+ <TR><TH>Remove server-specific player passwords<TD>Make Outgun forget all player passwords you have chosen to save for the current player. These passwords are only needed when the server you play on has local <A HREF="admin.html#auth">player authentication</A> enabled and you&rsquo;ve been set up a password on that server. If you wish to remove all saved server-specific player passwords for all players, you can delete the file <CODE>config/passwd</CODE>.
+</TABLE>
+
+<H2 ID="game">Game options</H2>
+
+<P>
+The game options menu has many different settings of secondary importance.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Show player names<TD>If set, each player encountered in the game screen is tagged with their name for a quick identification of who is who. This setting can be toggled without entering the menu by pressing <STRONG>control</STRONG>+<STRONG>F3</STRONG> at any time.
+ <TR><TH>Favorite colors<TD>Set your preference for a player color. Arrange the colors you like the most to the left (&lsquo;+&rsquo;) side. Use <STRONG>left</STRONG> and <STRONG>right</STRONG> to select a color to move, and <STRONG>+</STRONG> and <STRONG>-</STRONG> to move the selected color left (wanted more) or right (wanted less). The server will select you a color according to these preferences, taking into account what colors the other players have already taken.
+ <TR><TH>Lag prediction<TD>The lag prediction scheme is a simple way to decrease the amount of time between pressing a movement button and seeing its effect. It has the side effect of the other players jumping around a bit, because you still can&rsquo;t get information on their movement any quicker. On servers where the lag is naturally low (you have a small ping) you might want to disable lag prediction, and many players prefer lag (you get used to it) over the prediction&rsquo;s adverse effects in any case.
+ <TR><TH>Lag prediction amount<TD>Set the maximum amount of time the lag prediction scheme (see above) tries to predict the future. Experiment to find a value that works best with you; it depends on personal preference as well as your ping to the server.
+ <TR><TH>Save game messages<TD>If set to &lsquo;chat only&rsquo;, the messages typed by players are recorded to the file <CODE>log/message.log</CODE> for future reference. If set to &lsquo;all messages&rsquo;, all kinds of messages that appear in the message area are recorded. Saving can also be disabled altogether.
+ <TR><TH>Save game statistics<TD>At the end of each round, save a html file with team and player statistics to the <CODE>client_stats</CODE> directory.
+ <TR><TH>Show stats after the round<TD>At the end of each round, automatically show team (<STRONG>F3</STRONG>) or player (<STRONG>F4</STRONG>) statistics screen.
+ <TR><TH>Show server info when connected<TD>When connected to a server, automatically show the server info screen (<STRONG>F5</STRONG>). You don&rsquo;t want this if you mostly use servers you know that don&rsquo;t change their configuration often.
+ <TR><TH>Stay dead when in a menu at round start<TD>When a new round starts or you connect to a server, choose not to spawn in the game until you have no menus open, including the statistics screens. This is most useful if you use the automatic server info screen (previous setting), or want to vote for the next map while the round is starting. Note that this only works reliably with server versions 1.0.2 and above.
+ <TR><TH>Underline master-authenticated players<TD>On the player list in the game screen, highlight master-authenticated players (those logged in to the tournament) by underlining their name.
+ <TR><TH>Underline server-authenticated players<TD>On the player list in the game screen, highlight server-authenticated players (those that the current server has authenticated) by underlining their name. Naturally, their authenticity should be trusted only if the server is trusted.
+ <TR ID="game_getservers"><TH>Get server list at startup<TD>Get the list of public servers automatically when Outgun starts. Otherwise you will have to use &ldquo;Update server list&rdquo; in the <A HREF="#serverlist">server list menu</A> each time. Disabling this is polite to the master server if you usually only use saved favorite servers.
+</TABLE>
+
+<H2 ID="controls">Controls</H2>
+
+<P>
+In the controls menu you can configure how Outgun reads your keyboard and joystick.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Keyboard layout<TD>Choose the layout your keyboard has or that you want to use.
+ <TR><TH>Use keypad for moving<TD>If set, you can use the keypad number keys (including 1, 3, 7 and 9) to move in the game. Otherwise they are instead interpreted as typing numbers.
+ <TR><TH>Arrow keys in statistics<TD>Choose what arrow keys are used for, when a statistics (or map list) screen is open. Either use them to change the view of statistics, or move the player as if the screen wasn&rsquo;t open. Regardless of this setting, you can always use <STRONG>page up</STRONG> and <STRONG>page down</STRONG> to change the view of statistics.
+ <TR><TH>Enable joystick control<TD>Enable if you want to use a joystick to play.
+ <TR><TH>Moving stick<TD>If moving doesn&rsquo;t work correctly by default, adjust this number to find the setting that works.
+ <TR><TH>Shoot<TD>Choose the joystick button you want to use for shooting. Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Run<TD>Choose the joystick button you want to use for running. Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Strafe<TD>Choose the joystick button you want to use for strafe mode (that&rsquo;s when your aim is locked but you can still move in any direction). Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Active controls<TD>Shows which buttons are currently pressed. Use this to find out the button numbering and to test your choices.
+</TABLE>
+
+<H2 ID="screenmode">Screen mode</H2>
+
+<P>
+Changing the screen mode can have a great adverse effect on performance (FPS), so you should remember which settings worked well. The first time Outgun is run it chooses a fairly fast mode, but you can usually make it faster by changing to full screen and, if you do that, changing the color depth. Decreasing the resolution will always help too. Other changes are most likely to make it worse or have no effect, but experimenting is allowed.
+</P>
+
+<P>
+Note that if you choose a mode which the hardware (driver) accepts but which doesn&rsquo;t work, and therefore Outgun thinks the mode change went OK, you may have to delete <CODE>config/client.cfg</CODE> to return all settings to defaults, or use <A HREF="commandline.html">command line arguments</A> <A HREF="commandline.html#defmode"><CODE>-defmode</CODE></A>, <A HREF="commandline.html#fs"><CODE>-fs</CODE></A>, <A HREF="commandline.html#win"><CODE>-win</CODE></A>, <A HREF="commandline.html#flip"><CODE>-flip</CODE></A>, or <A HREF="commandline.html#dbuf"><CODE>-dbuf</CODE></A> to recover to a working mode.
+</P>
+
+<P>
+If you wish to add screen modes (or window sizes) that aren&rsquo;t autodetected, see the documentation for <A HREF="gfxmodes.html"><CODE>gfxmodes.txt</CODE></A>.
+</P>
+
+<P>
+Before Outgun 1.0.3, these settings were in the graphic options menu.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Color depth<TD>The color depth has a rather small effect to how the game looks. It is most noticeable in the flag position markers where the color slide gets slightly choppy with 16-bit colors. When you&rsquo;re playing in a window, the fastest color depth is usually the desktop depth, which is shown in the menu. In full screen, 16-bit is normally the fastest mode (in Linux, the desktop depth is usually the best there too). It depends on many factors, so you may experiment with the setting.
+ <TR><TH>Screen size<TD>In a windowed mode, this determines the window size; in full screen, the resolution. In either case this directly tells the amount of pixels Outgun must draw for each frame, which is crucial to the FPS.
+ <TR><TH>Windowed mode<TD>Select whether you want to run in a window or in full screen. Full screen is usually much faster, especially in Windows. Also, full screen allows you to decrease the color depth to 16-bit and get a further increase in speed from that. This setting can be toggled without entering the menu by pressing <STRONG>alt</STRONG>+<STRONG>enter</STRONG> at any time.
+ <TR><TH>Use page flipping<TD>Page flipping is a technique whose speed greatly depends on the hardware (and its drivers). With it, most of the screen manipulation is done in the graphic card&rsquo;s memory instead of the main memory. Page flipping can only be used in full screen modes, and it may either help or hinder the performance; often hinder so use with care. Especially all transparency effects become very slow with page flipping, so be sure to set stats screen alpha to 0 or 100%, and consider enabling the &ldquo;less transparency effects&rdquo; setting in the <A HREF="#graphics">graphic options</A> menu.
+ <TR><TH>Alternative page flipping method<TD>Change a minor detail in how page flipping is performed. Try enabling this if the screen flashes or there is another visual problem with page flipping.
+ <TR><TH>Apply changes<TD>Enter the chosen screen mode without exiting the menu. The same can be acquired by pressing <STRONG>enter</STRONG> regardless of which item is selected.
+</TABLE>
+
+<H2 ID="graphics">Graphic options</H2>
+
+<P>
+In the graphic options menu you can control the appearance of the game. Some of these settings have an effect on performance (FPS), but mostly it&rsquo;s just a small one.
+</P>
+
+<P>
+Some items that were previously in the graphic options menu, have been moved to the <A HREF="#screenmode">screen mode menu</A> in Outgun 1.0.3.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Theme<TD>Select the graphics theme among those in the <CODE>graphics</CODE> directory.
+ <TR><TH>Background theme<TD>Select the background image from the themes that have a background.
+ <TR><TH>Prefer theme background image<TD>Use the background image from the main theme if it exists. If not, use it from the selected background theme.
+ <TR><TH>Font<TD>Select the font among those in the <CODE>fonts</CODE> directory.
+ <TR><TH>Antialiasing<TD>Make triangular and round walls&rsquo; edges look smoother by drawing pixels in correct shades. Contrary to 3D games, antialiasing requires calculations only when you move from one room to another, so you have no need to disable it unless you notice the room changes not happening instantly. That should only happen if you have a low end computer, even so that the regular FPS you get out of Outgun probably isn&rsquo;t very playable either.
+ <TR><TH>Less transparency effects<TD>Disable all nonessential transparency effects in the game to gain more FPS. The removed effects are minimap room graying fade, deathbringer smoke transparency, the darkened circle around a deathbringer carrier, and the turbo effect. This setting has more performance benefits when page flipping is enabled.
+ <TR><TH>Continuous textures between rooms<TD>Make the next room&rsquo;s textures continue where they ended in the previous room. This adds more feeling of the room actually being another one, but can also be annoying. It has no impact on performance, so toggle at your pleasure.
+ <TR><TH>Disappeared players on minimap<TD>Choose how players whose position is no longer known are removed from the minimap. You can choose between a sooner and a later instant removal, and a slower fade. A too long delay might be confusing while a too short one hides useful information. This is entirely a matter of taste.
+ <TR><TH>Stats screen alpha<TD>Set the background opacity of the stats screens (<STRONG>F3</STRONG>, <STRONG>F4</STRONG>) and the map list screen (<STRONG>F2</STRONG>). If set to 0%, there&rsquo;s no background and the texts are just drawn over the game view; at 100%, there&rsquo;s a gray background that fully blocks the game view. Calculating the transparency is slow, so set it exactly at either 0 or 100% for better performance. 0% is the fastest option.
+ <TR><TH>FPS limit<TD>Limit the number of frames Outgun tries to draw per second. Setting this slightly below what the system can do when not restricted, may make it look more smooth. If you want to leave more CPU power to other processes, you should lower the limit more. There should be no reason to set the limit higher than your screen refresh rate, other than just testing how high your system can do. Just notice that it isn&rsquo;t a good measure of anything much.
+ <TR><TH>Map info mode<TD>Draw a 16×12 grid on top of the game view, and mark the otherwise invisible player spawn spots. This is useful when editing a map.
+</TABLE>
+
+<H2 ID="sound">Sound options</H2>
+
+<TABLE BORDER>
+ <TR><TH>Sounds enabled<TD>A quick way to turn sounds on and off. The memory used for the samples is also freed when sounds are disabled here.
+ <TR><TH>Volume<TD>Set the volume. This setting doesn&rsquo;t change the system mixer, but rather can be used to balance Outgun&rsquo;s volume with other applications.
+ <TR><TH>Theme<TD>Select the sound theme among those in the <CODE>sound</CODE> directory.
+</TABLE>
+
+<H2 ID="localserver">Local server</H2>
+
+<P>
+The local server menu allows you to start your own server easily. If you wish to run the server also when you&rsquo;re not playing, to conserve resources you should run as a <A HREF="commandline.html#ded">dedicated server</A> instead.
+</P>
+
+<P>
+The settings are disabled while your server is running. To change them you must stop the server and then restart it when you&rsquo;ve changed them.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Add to public serverlist<TD>Toggles whether information about the server is sent to the server list master server, which distributes it to all players around the world. It is preferable to disable this if you don&rsquo;t want random players on your server, rather than kick them out or set up passwords. This option overrides the equivalent gamemod option <A HREF="gamemod.html#private_server"><CODE>private_server</CODE></A> and command line parameters <A HREF="commandline.html#priv"><CODE>-priv</CODE></A> and <A HREF="commandline.html#public"><CODE>-public</CODE></A>.
+ <TR><TH>Server port<TD>Choose the UDP port on which your server is run. 25000 is the default, but it must be changed if you want to run something else on 25000. This setting overrides the equivalent gamemod setting <A HREF="gamemod.html#server_port"><CODE>server_port</CODE></A> and command line parameter <A HREF="commandline.html#port"><CODE>-port</CODE></A>.
+ <TR><TH>IP address<TD>Enter your public IP address here, if Outgun doesn&rsquo;t detect it correctly. This setting overrides the equivalent gamemod setting <A HREF="gamemod.html#server_ip"><CODE>server_ip</CODE></A> and command line parameter <A HREF="commandline.html#ip"><CODE>-ip</CODE></A>. This field is disabled if Autodetect IP below is set. If no valid public IP address is entered (or detected), and &ldquo;add to public serverlist&rdquo; is set, the master server will try to automatically detect the address.
+ <TR><TH>Autodetect IP<TD>Use the IP address Outgun detects automatically. This is useful if the detected address is the correct one, because you won&rsquo;t have to enter it every time it changes.
+ <TR><TH>Start server<TD>Start the server with the above settings.
+ <TR><TH>Play on the server<TD>Connect to your server.
+ <TR><TH>Stop server<TD>Stop the server. If you&rsquo;re playing on it, you will be disconnected as will any other players. Shutting down the server may take a while if there&rsquo;s ongoing network activity.
+</TABLE>
+
+<HR>
+
+<DIV>
+Updated 2006-02-13 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

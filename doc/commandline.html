@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Command line arguments</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Command line arguments
+</DIV>
+
+<H1>Command line arguments</H1>
+
+<P>
+This document describes the command line arguments of Outgun. Most of the arguments aren&rsquo;t normally needed. If you are an advanced user and are running a server, you might want to learn about the server settings (most of which can better be set in the gamemod) and miscellaneous arguments, to better set up your server. Also less advanced users might want to run a <A HREF="#ded">dedicated server</A>.
+</P>
+
+<P>
+Arguments are case sensitive, and don&rsquo;t accept &lsquo;/&rsquo; instead of &lsquo;-&rsquo;. Those arguments that have a value associated with them, need to be followed by a space and the value. For example,<BR>
+<CODE>outgun -ded -port 25001 -priv</CODE><BR>
+is a valid command line.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#server">Server settings</A>
+  <UL>
+   <LI><A HREF="#ded"><CODE>-ded</CODE></A>
+   <LI><A HREF="#nowindow"><CODE>-nowindow</CODE></A>
+   <LI><A HREF="#priv"><CODE>-priv</CODE></A>
+   <LI><A HREF="#public"><CODE>-public</CODE></A>
+   <LI><A HREF="#maxp"><CODE>-maxp</CODE></A>
+   <LI><A HREF="#port"><CODE>-port</CODE></A>
+   <LI><A HREF="#sport"><CODE>-sport</CODE></A>
+   <LI><A HREF="#ip"><CODE>-ip</CODE></A>
+   <LI><A HREF="#unsafeserver"><CODE>-unsafeserver</CODE></A>
+  </UL>
+ <LI><A HREF="#client">Client rescue settings</A>
+  <UL>
+   <LI><A HREF="#win"><CODE>-win</CODE></A>
+   <LI><A HREF="#fs"><CODE>-fs</CODE></A>
+   <LI><A HREF="#dbuf"><CODE>-dbuf</CODE></A>
+   <LI><A HREF="#flip"><CODE>-flip</CODE></A>
+   <LI><A HREF="#defmode"><CODE>-defmode</CODE></A>
+   <LI><A HREF="#nosound"><CODE>-nosound</CODE></A>
+  </UL>
+ <LI><A HREF="#misc">Miscellaneous</A>
+  <UL>
+   <LI><A HREF="#info"><CODE>-info</CODE></A>
+   <LI><A HREF="#defaultprio"><CODE>-defaultprio</CODE></A>
+   <LI><A HREF="#prio"><CODE>-prio</CODE></A>
+   <LI><A HREF="#suppressmessages"><CODE>-suppressmessages</CODE></A>
+   <LI><A HREF="#debug"><CODE>-debug</CODE></A>
+   <LI><A HREF="#cport"><CODE>-cport</CODE></A>
+   <LI><A HREF="#mappic"><CODE>-mappic</CODE></A>
+  </UL>
+</UL>
+
+<H2 ID="server">Server settings</H2>
+
+<H3 ID="ded"><CODE>-ded</CODE></H3>
+
+<P>
+Run a dedicated server. The server starts in an independent small window or even without a window. No memory is used to load the client with its menus, sounds, and graphics. Also, no keypresses are needed to start the server &ndash; it&rsquo;s running right away. If you want to play on your server, you will have to start another instance of Outgun without <CODE>-ded</CODE>, and the server will continue running even after the client is closed.
+</P>
+
+<H3 ID="nowindow"><CODE>-nowindow</CODE></H3>
+
+<P>
+Make the server not open a window. This argument has effect only when combined with <A HREF="#ded"><CODE>-ded</CODE></A>. In Windows, a window title bar is created but nothing more. In Unix-like systems (Linux) there are no graphical elements, but instead the server dumps its status line to the console periodically. A deprecated alias of <CODE>-nowindow</CODE> is <CODE>-text</CODE>.
+</P>
+
+<H3 ID="priv"><CODE>-priv</CODE></H3>
+
+<P>
+Make the server private. It will not be posted on the master list. Use it if you don&rsquo;t want random players entering the server. For a dedicated server, this overrides the gamemod setting <A HREF="gamemod.html#private_server"><CODE>private_server</CODE></A>; otherwise it unsets the &ldquo;add to public serverlist&rdquo; option in the <A HREF="menus.html#localserver">local server</A> menu which has the same effect.
+</P>
+
+<H3 ID="public"><CODE>-public</CODE></H3>
+
+<P>
+Make the server public. It will be posted on the master list. For a dedicated server, this overrides the gamemod setting <A HREF="gamemod.html#private_server"><CODE>private_server</CODE></A>; otherwise it sets the &ldquo;add to public serverlist&rdquo; option in the <A HREF="menus.html#localserver">local server</A> menu which has the same effect.
+</P>
+
+<H3 ID="maxp"><CODE>-maxp</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>an even number between 2 and 32
+<TR><TH>Default<TD>16
+</TABLE>
+<P>
+Set the maximum number of players accepted to the server at once. This only has effect if the gamemod setting <A HREF="gamemod.html#max_players"><CODE>max_players</CODE></A> is not set.
+</P>
+
+<H3 ID="port"><CODE>-port</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 65535
+<TR><TH>Default<TD>The <A HREF="gamemod.html#server_port"><CODE>server_port</CODE></A> gamemod setting, or 25000
+</TABLE>
+<P>
+The UDP port the server is run in. If you want to run multiple servers at once, you have to set a different port for each server. For dedicated servers, this overrides the gamemod setting <A HREF="gamemod.html#server_port"><CODE>server_port</CODE></A>; otherwise it sets the &ldquo;server port&rdquo; setting in the <A HREF="menus.html#localserver">local server</A> menu which has the same effect.
+</P>
+
+<H3 ID="sport"><CODE>-sport</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 65535, &lsquo;:&rsquo;, 1 to 65535
+<TR><TH>Default<TD>1:65535
+</TABLE>
+<P>
+Select the range of UDP ports for the server to use dynamically for client communication. The argument is the first port and the last port separated by a colon (&lsquo;:&rsquo;). The purpose of this setting is to limit the range of ports so that those ports can be let through a firewall; this is needed if outbound traffic is filtered. You should reserve enough ports for this: some more than the maximal number of players. If the ports run out, additional clients can&rsquo;t connect and to them the server just seems to not respond at all.
+</P>
+
+<H3 ID="ip"><CODE>-ip</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid IP address
+<TR><TH>Default<TD>The <A HREF="gamemod.html#server_ip"><CODE>server_ip</CODE></A> gamemod setting, or autodetected
+</TABLE>
+<P>
+The server IP address that is sent to the master server for server listing purposes. Do not specify a port here, use <A HREF="#port"><CODE>-port</CODE></A> for that. Only use this if your server doesn&rsquo;t appear on the master list without. To determine what to put here, check <A HREF="http://www.whatismyip.com/">whatismyip.com</A> which will hopefully show your public IP address. For dedicated servers, this overrides the gamemod setting <A HREF="gamemod.html#server_ip"><CODE>server_ip</CODE></A>; otherwise it sets the &ldquo;IP address&rdquo; setting in the <A HREF="menus.html#localserver">local server</A> menu which has the same effect.
+</P>
+
+<H3 ID="unsafeserver"><CODE>-unsafeserver</CODE></H3>
+
+<P>
+Enable threading in the server. There is a multitude of places in the server code where this is not perfectly safe, but running into problems is not frequent. Nevertheless, if you use this switch, you might have unexpected problems at random intervals. This is the way the Outgun server has always been in the previous versions, but 1.0 is slightly less tolerable to it. If you have problems with this option, please don&rsquo;t report them as bugs. We are not sure if enabling this actually helps at all, but it is possible. If you have a slow computer (probably so slow that you can&rsquo;t sensibly run the Outgun client in it) or a heavy load, and are having performance problems with the Outgun server, you might want to try this switch, but remove it if it doesn&rsquo;t help.
+</P>
+
+
+<H2 ID="client">Client rescue settings</H2>
+
+<P>
+The primary use for these settings is recovering from a situation where Outgun is stuck with a graphics mode it thinks works, but which doesn&rsquo;t really work so you can&rsquo;t see the menu and change it back. Hopefully, with a combination of these settings you can restore a working mode. When there&rsquo;s no existing configuration, Outgun uses the equivalent of <CODE>-win -defmode</CODE>, so if the graphics worked when it was first run, that should cure it.
+</P>
+
+<H3 ID="win"><CODE>-win</CODE></H3>
+
+<P>
+Force Outgun to choose a windowed mode.
+</P>
+
+<H3 ID="fs"><CODE>-fs</CODE></H3>
+
+<P>
+Force Outgun to choose a full screen mode.
+</P>
+
+<H3 ID="dbuf"><CODE>-dbuf</CODE></H3>
+
+<P>
+Force Outgun to use double buffering instead of page flipping.
+</P>
+
+<H3 ID="flip"><CODE>-flip</CODE></H3>
+
+<P>
+Force Outgun to use page flipping.
+</P>
+
+<H3 ID="defmode"><CODE>-defmode</CODE></H3>
+
+<P>
+Force Outgun to use the default graphics mode, which is 640×480 (or the smallest available mode if that is not available) with the desktop color depth.
+</P>
+
+<H3 ID="nosound"><CODE>-nosound</CODE></H3>
+
+<P>
+Disable sound. This is mostly useful if Outgun crashes at startup because of sound driver problems, since otherwise you can disable sound in the menu.
+</P>
+
+
+<H2 ID="misc">Miscellaneous</H2>
+
+<P>
+In addition to the settings listed here, there is the <CODE>-fps</CODE> setting, but it&rsquo;s hard to imagine a use for it since it can be set in the menu.
+</P>
+
+<H3 ID="info"><CODE>-info</CODE></H3>
+
+<P>
+Get information about possible values for <A HREF="#prio"><CODE>-prio</CODE></A> and Outgun&rsquo;s idea about your IP addresses.
+</P>
+
+<H3 ID="defaultprio"><CODE>-defaultprio</CODE></H3>
+
+<P>
+Using <CODE>-defaultprio</CODE> is equal to looking up the system default priority in the <A HREF="#info"><CODE>-info</CODE></A> output, and using it with <A HREF="#prio"><CODE>-prio</CODE></A>. Basically that means that every thread in Outgun has the same priority as any non-prioritized processes. It is not recommended, as it will grow your ping and if you&rsquo;re running a server, grow every player&rsquo;s ping; the benefit for other processes is questionable.
+</P>
+
+<H3 ID="prio"><CODE>-prio</CODE></H3>
+
+<P>
+Set the priority Outgun uses. Outgun has three different kinds of threads in both server and client side: client&ndash;server networking threads, low priority background threads and regular threads. Of these, the background threads as well as client side regular threads are always given the system default priority. The remaining threads (networking threads and server side regular threads) are critical for player pings and therefore quality of play. Their priority is set by this argument. It should never be less than the system default, but you can experiment if you feel the Outgun default (maximum priority minus 1) bothers other applications. Run with <A HREF="#info"><CODE>-info</CODE></A> to find out the range and defaults on your machine.
+</P>
+
+<H3 ID="suppressmessages"><CODE>-suppressmessages</CODE></H3>
+
+<P>
+Prevent Outgun from using message boxes which wait for the user to click OK. That way, assertion messages and others are only output to the console and saved in <CODE>log/suppressed_messages.txt</CODE> for future reference. This is useful if you&rsquo;re running an unadministered dedicated server with a script automatically restarting it when it dies. That way, bugs in Outgun don&rsquo;t keep the server down for more than is necessary. Just make sure that with some interval, you check the logs so that any errors can be fixed.
+</P>
+
+<H3 ID="debug"><CODE>-debug</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>0 to 2
+<TR><TH>Default<TD>2 in beta versions, 0 otherwise
+</TABLE>
+<P>
+Set the level of detail for the log files Outgun creates. If the level is set to 2, all possible logs are created. This is useful in case there&rsquo;s a bug: the logs can be used in finding the problem. With level 1, leetnet data logs (which contain all player&ndash;server network traffic) aren&rsquo;t created. This saves a lot of disk space but removes a great aid to debugging. Level 0 disables leetnet textual logs too, again saving space. They aren&rsquo;t useful in debugging very often, so the most sensible choices are 0 and 2. The more regular logs can&rsquo;t be disabled, but if you absolutely need the last bit of space and are running a server for such a long time that it does create too much logs, you could set up a script to periodically remove the log files. Note that all the large-growing logs that can&rsquo;t be disabled, are cleared when the server is started.
+</P>
+
+<H3 ID="cport"><CODE>-cport</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 65535, or 1 to 65535, &lsquo;:&rsquo;, 1 to 65535
+<TR><TH>Default<TD>1:65535
+</TABLE>
+<P>
+Select a range of UDP ports for the client to use. It may be useful to limit the ports to one or a few so that those ports can be let through a firewall or forwarded over a NAT, although most firewalls and NATs work fine without this setting. In order for the setting to help, you need to alter the firewall/NAT configuration too. To choose more than one port to enable running many instances of Outgun, use as value the first port and the last port separated by a colon (&lsquo;:&rsquo;).
+</P>
+
+<H3 ID="mappic"><CODE>-mappic</CODE></H3>
+
+<P>
+Activate the special map picture saving mode. Outgun will create a directory &lsquo;<CODE>mappic</CODE>&rsquo; and store there a map picture (in PCX format) for each map in the <CODE>maps</CODE> directory. The pictures are named after the map files, with the extension <CODE>.pcx</CODE>. Their size depends on the map size: every room is assigned 60×45 pixels. <CODE>-mappic</CODE> can not be combined with any other options.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-01-25 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

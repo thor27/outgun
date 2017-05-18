@@ -1,0 +1,823 @@
+; This is an Outgun translation file.
+; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+; Translation copyright © 2004, 2005, 2006 Thomaz de Oliveira dos Reis
+; Contato: E-Mails: thommy@globo.com, thor27@ibest.com.br (serve como MSNM)
+;	   ICQ: 117089308 - YIM: thommybill - Jabber: thor27@jabber.org
+;
+; Agradecimentos especiais: Nix (Niko Ritari) e todo o pessoal do Fórum do
+; outgun que ajudou a melhorar a tradução!
+
+
+; Language of the translation, in the target language.
+Português (Brasil)
+
+
+; You should not modify en.txt, it is the English reference file. Outgun uses
+; it (only) to index the translated strings. To make a new translation, copy
+; en.txt to a new name (languagename.txt) and translate each phrase (non-
+; commented line) in that file. Please send your translation to us at
+; outgun@mbnet.fi for inclusion in the official packages.
+
+; The length restrictions mentioned in the comments should guarantee that the
+; translations fit on the screen in the 640×400 resolution with a 8×8 font that
+; is the default. To allow for smaller resolutions or larger fonts, shorter is
+; always better.
+
+
+; - - - - - - - - - - - - - - miscellaneous texts - - - - - - - - - - - - - -
+;
+; The longer they are the more stupid they look.
+
+; Used in the window title bar, alone.
+Outgun - Cliente
+
+; Used in the window title bar, like: Connected to Server name (127.0.0.1)
+Connectado à $1 ($2)
+
+; Used in the window title bar when server is running, like:
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
+; version. First and/or last part are added conditionally.
+ERROS:$1
+$1/$2j $3k/s v$4 porta:$5
+ESC: Sair
+
+; Time units. These should be formed so that "duration: # <unit>" makes sense.
+; Lengths up to 25 characters are ok, but short is preferred.
+segundo
+segundos
+minuto
+minutos
+hora
+horas
+dia
+dias
+semana
+semanas
+ano
+anos
+
+; Abbreviated time units. Up to 10 characters in addition to "$1" is allowed,
+; but short is strongly preferred.
+$1 s
+$1 min
+
+; Generic terms. Currently, 'unknown' is used in the graphics menu for a
+; refresh rate and in the local server menu for IP address; 'private' and
+; 'invalid' are also for IP address; 'default' is used in font selection;
+; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
+; (F5), as well as 'special' which is used for the player collisions setting.
+; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
+; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; usual UI meaning. All may be used elsewhere in a similar context in the
+; future.
+; Lengths up to 25 characters are ok, but short is preferred.
+OK
+Cancelar
+desconhecido
+privativo
+inválido
+padrão
+nenhum
+ligado
+desligado
+especial
+desabilitado
+mínimo
+completo
+
+
+; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
+;
+; Length restrictions vary:
+; With the standard resolution (640 in width) and standard 8-wide font, the end
+; of the line is not visible after 76 characters. The actual maximal length of
+; each text depends on the type of the menu component and many lines are made
+; of two parts.
+;
+; Usually, considerably longer than original texts do fit well. To be sure
+; they fit, you should test each menu in the standard resolution and preferably
+; a wider-than-standard font, if you use translations that are considerably
+; longer than the original texts.
+
+Nova versão: $1
+Lista de servidores
+Desconectar
+Opções
+Ajuda
+Sair do Outgun
+
+Atualizar lista de servidores
+Atualizar servidores
+Atualizar estado
+Mostrar servidores favoritos
+Entrar o IP manualmente
+
+; IP address is used in both the add server dialog and the local server menu.
+Endereço de IP
+
+Adicionar a lista de servidores favoritos
+Adicionar servidor
+
+; This key help is not currently used, but is in reserve for the server list.
+Insert = Adicionar aos favoritos    Delete = Remover servidor
+
+; Table heading in the server list menu.
+; The fields appear here commented below the title line. The IP address field
+; extends over the comment mark ';'.
+Endereço de IP        Ping D Jgdrs Versão  Nome do Host
+;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
+
+Nome e senha
+Nome
+Pegar um nome aleatório
+Senha do campeonato
+Estado do registo
+Faça parte do campeonato
+Remover senha específica de servidor para o jogador 
+
+Opções do jogo
+Mostrar nome dos jogadores
+Cores favoritas
+Prevenção de lag
+Quantidade da prevenção de lag
+Salvar as mensagens do chat
+Salvar estatísticas do jogo
+Mostrar estatísticas depois do round
+Mostrar info do servidor quando conectado
+Continuar morto quando no menu durante o inicio da partida
+Sublinhar jogadores autenticados pelo mestre
+Sublinhar jogadores auntenticados pelo servidor
+Pegar lista do servidor na inicialização
+
+Controles
+Layout do teclado
+Usar keypad para se movimentar
+Setas do teclado nas estatísticas
+Abilitar controle por joystick
+Stick de movimento
+Botões do joystick (0 = disabilitado)
+
+; These texts are originally manually padded to the same length. You can do
+; the same to make the menu look neater.
+Atirar
+Correr
+Esquivar
+
+Controles ativos
+
+Modos de tela
+Profundidade de cores
+ desktop
+$1-bit
+Tamanho da tela
+Modo janela
+Usar "page flipping"
+Método alternativo de "page flipping"
+Taxa de atualização atual
+$1 Hz
+Aplicar alterações
+
+Opções gráficas
+Tema
+Tema de fundo
+Preferir fundo do tema principal
+Fonte
+Antialiasing
+Menos efeitos de transparência
+Textura continua entre salas
+Jogadores desaparecidos no mini mapa
+Estado alfa da tela
+Limite do FPS
+Modo de informação do mapa
+
+Opções sonoras
+Habilitar som
+Volume
+
+Alterar idiona
+Idioma
+
+Política da reportagem de bugs
+Reportagem automática de bugs
+
+Servidor local (rodando)
+Servidor local
+Adicionar a lista pública de servidores
+Porta do servidor
+Autodetectar IP
+Iniciar servidor
+Jogar no servidor
+Parar servidor
+
+; Used in name and passwords menu as registration status.
+Nenhuma senha colocada
+Inicializando...
+Erro de soquete
+Enviando login...
+Erro enviando
+Esperando por resposta...
+Sem resposta
+Resposta inválida recebida
+Servidor mestre indisponível
+Logado
+Falha no login: verifique sua senha
+Logado; enviado para o servidor
+Logado; servidor aceitou
+Erro: servidor rejeitou
+
+; Setting names in the server settings dialog (F5).
+; Max length 25 characters each, otherwise the dialog layout is ruined.
+Limite de captura
+Limite de tempo
+Tempo extra
+Colisão de jogadores
+Tiro do parceiro
+Times balanceados
+Soltar poderes
+Sombre invisível
+Alternar fumaça
+Escudo de 1 tiro
+Nível máximo da arma
+Poderes
+Poder mínimo
+Poder máximo
+Tempo do poder
+Tempo adicional do poder
+Tempo máximo do poder
+
+; Used in server settings dialog (F5) as the value of powerups, minimum
+; powerups or maximum powerups, when they are set as a percentage of map size.
+$1% das salas
+
+; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
+Tentando conectar...
+Sem resposta do servidor.
+Conexão rejeitada.
+Nenhuma reação dada.
+Código de reação desconhecido ($1).
+O servidor está lotado.
+Protocolo incorreto. Servidor: $1, cliente: $2.
+Senha do jogador incorreta.
+Senha do servidor incorreta.
+Você foi banido do servidor.
+Você foi desconectado.
+O servidor foi desligado.
+Conexão estorou o limite de tempo.
+Você foi chutado.
+Você foi chutado por ficar inativo.
+Erro interno (Problema no cliente).
+
+; Used in the server list menu as refresh status.
+Inativo
+Rodando
+Falhou
+Contactando os servidores...
+Pegando a lista de servidores: connectando...
+Pegando a lista de servidores: recebendo...
+
+; Used in the server list menu on a server's line. At least 40 chars is OK.
+sem resposta
+
+; Keyboard layout names. Used in the controls menu.
+Bélgica
+Brasil
+Canadá (Francês)
+República Checa
+Dinamarca
+Dvorak
+Finlândia
+França
+Alemanha
+Itália
+Noruega
+Polônia
+Portugal
+Russia
+Eslováquia
+Espanha
+Suécia
+Suiça
+Reino Unido
+Estados Unidos
+desconhecido ($1)
+
+; Used as values for 'save messages' in the game menu.
+todas as mensagens
+apenas conversa
+
+; Used as values for 'show stats after the round' in the game menu.
+jogadores
+times
+
+; Used as values for 'arrow keys in statistics' in the controls menu.
+mudar a visão das estatísticas
+mover o jogador
+
+; Used in the controls menu 'active controls' display.
+cima
+baixo
+esquerda
+direita
+atirar
+correr
+esquivar
+
+; Used as values for 'Disappeared players on minimap' in the graphics menu.
+desbotamento
+esconder cedo
+esconder tarde
+
+; Used in the error collection dialogs. The last two are only used in the main
+; program error dialog which is shown for example when invalid command line
+; arguments are used. "(server)" is prepended to server generated error
+; messages within the client.
+Erros
+(servidor)
++ $1 mais
+Veja o diretório 'log' para maiores informações.
+
+; Used in an external dialog to contain an "assertion failed" message. No
+; length restriction.
+Erro interno
+Isso é resultado de um bug no outgun. Para ajudar a concertar, por-favor, envie o assert.log e o stackdump.bin do diretório log e diga oque você estava fazendo para outgun@mbnet.fi (Por-favor, envie em inglês)
+
+; Used in an external dialog as title. No length restriction.
+Erro crítico
+
+; Used in a simple dialog, started from the name and passwords menu.
+1 senha removida.
+$1 senha removida.
+Nenhuma senha encontrada.
+
+; Used in a simple dialog, started from the language menu. Actually, this is
+; used in the target language, so it's the first thing users see of the
+; translation. If you must, this is a good place to also put information about
+; the translation. No length restriction: will be wrapped.
+Por-favor, feche e reinicie o Outgun para completar a alteração do idioma.
+
+; Used in a simple dialog message when an invalid IP address is entered.
+Indereço de IP inválido.
+
+; Used in the help screen; $1 is the expected file name.
+Nenhuma ajuda encontrada. Deveria estar em $1
+
+; Field names for player or server password input dialog.
+Senha
+Salvar senha
+Senha do jogador para $1
+Senha do servidor
+
+; Used in the theme selections. (<no theme> for graphics, <no themes found> for
+; sounds)
+<sem temas>
+<nenhum tema encontrado>
+<sem fundo>
+
+; Reserved for if the theme names from theme.txt are used in the future.
+(Tema sem nome)
+
+
+; - - - - - - - - - - - - - -  in-game messages - - - - - - - - - - - - - - -
+;
+; No length restriction. May be wrapped if line totals over 79 chars.
+
+$1 CAPTUROU A BANDEIRA VERMELHA!
+$1 CAPTUROU A BANDEIRA AZUL!
+$1 CAPTUROU A BANDEIRA SELVAGEM!
+$1 PERDEU A BANDEIRA VERMELHA!
+$1 PERDEU A BANDEIRA AZUL!
+$1 PERDEU A BANDEIRA SELVAGEM!
+$1 PEGOU A BANDEIRA VERMELHA!
+$1 PEGOU A BANDEIRA AZUL!
+$1 PEGOU A BANDEIRA SELVAGEM!
+$1 RETORNOU A BANDEIRA VERMELHA!
+$1 RETORNOU A BANDEIRA AZUL!
+$1 LARGOU A BANDEIRA VERMELHA!
+$1 LARGOU A BANDEIRA AZUL!
+$1 LARGOU A BANDEIRA SELVAGEM!
+$1 foi morto.
+$1 foi morto pelo parceiro $2.
+$1 foi morto pelo $2.
+$1 se sufocou.
+$1 foi sufocado pelo parceiro $2.
+$1 foi sufocado pelo $2.
+$1 recebeu um impacto mortal.
+$1 recebeu um impacto mortal do parceiro $2.
+$1 recebeu um impacto mortal do $2.
+$1 defendeu o carregador vermelho.
+$1 defendeu o carregador azul.
+$1 defendeu a bandeira vermelha.
+$1 defendeu a bandeira azul.
+$1 é um assassino em série!
+o assassino em série $1 foi morto pelo $2.
+$1 não é mais um assassino em série.
+$1 entrou no jogo.
+$1 deixou o jogo com $2 mortos.
+$1 moveu para o time azul.
+$1 moveu para o time vermelho.
+$1 e $2 trocaram de time.
+$1 mudou de nome para $2.
+*** Cinco minutos restantes
+*** Um minuto restante
+*** 30 segundos restantes
+*** Fim do tempo - CTF acabou o jogo
+*** Fim do tempo extra - CTF acabou o jogo
+*** Tempo normal acabou - Tempo extra iniciado
+
+; Optionally added to the previous message.
+(morte súbita)
+
+*** Chute por inatividade: mova-se ou será chutado em $1 segundos.
+*** $1/$2 votos para a troca de mapas.
+Seu voto não tem nenhum efeito até você votar por um mapa específico.
+
+; Optionally added to the previous message.
+(Todos os jogadores precisam mais $1 segundos.)
+
+; Used like: This map is mapname (5 of 13)
+Esse é o mapa $1 ($2 de $3).
+
+CTF ACABOU O JOGO - PONTUAÇÃO FINAL: VERMELHO $1 - AZUL $2
+CAPTURE $1 BANDEIRAS PARA GANHAR O JOGO.
+O LIMITE DO TEMPO É DE $1 MINUTOS.
+Você está mudo. Não pode enviar mensagens.
+Você não está mais mudo (agora pode mandar mensagens de novo).
+$1 fez você um mudo (você não pode mandar mensagens).
+$1 deixou $2 falar.
+$1 fez $2 um mudo.
+Você foi chutado desse servidor por $1!
+
+; Here $2 is a measure of time, constructed using the generic time units.
+; Note how the time units are formed, this should accommodate that form.
+$1 BANIU você desse servidor por $2!
+
+$1 chutou $2 (desconectando em 10 segundos).
+$1 baniu $2 (desconectando em 10 segundos).
+$1 decidiu que era hora de trocar o mapa.
+$1 decidiu que era hora de reiniciar.
+
+; Used in the mute/kick/ban messages as the subject, when the admin has no
+; name (using the separate server monitor program).
+O administrador
+
+Muita conversa. Shhhhh...
+Desconectando em $1...
+Esse mapa está quebrado. Tem uma bandeira e captura instantânea. Evite-a.
+A atualização de sua pontuação no torneio falhou!
+
+Salvou captura de tela para $1.
+Não foi possivel salvar captura de tela para $1.
+Baixando o mapa "$1" (CRC $2)...
+
+; Used to report authorization status when connected to a server.
+; "Recording" means recording scores with the ranking system.
+; An in-game message is composed of these, for example:
+; Status: master authorized, not recording; administrator
+Estado
+autorizado pelo mestre
+gravando
+não está sendo gravado
+auth do mestre pendente
+vai gravar
+não vai gravar
+sem login de torneio
+autorizado localmente
+administrador
+
+; Used below the messages when typing a message: Say: Hello world_
+Diga
+Diga ao time
+Comando
+
+
+; - - - - - - - - texts used in the middle of the game screen - - - - - - - -
+;
+; Maximum length 59 characters.
+
+TIME VERMELHO VENCEU
+TIME AZUL VENCEU
+JOGO EMPATADO
+PONTUAÇÃO $1 - $2
+
+; The name of the next map is printed on the line below this message.
+Esperando o jogo iniciar - o próximo mapa é
+
+Carregando mapa: $1 bytes
+
+
+; - - - - - - - - - - - - various game screen texts - - - - - - - - - - - - -
+;
+; Length restrictions are different on each item.
+
+; A piece of history. Printed quasi-randomly when a player dies, on top of
+; a picture of an ice cream. "Virou sorvete" is Portuguese for "turned into
+; ice cream", but you might want to consider not translating it at all.
+; More than 10 characters per line looks weird. If you only need one line for
+; the text, enter a space for the other line so it's not skipped like empty
+; lines are, when reading the translation file.
+VIROU
+SORVETE!
+
+; The shorter the better, but if one is long, it doesn't help if the other is
+; shorter.
+Saúde
+Energia
+
+; The shorter the better, but if one is long, it doesn't help if others are
+; shorter.
+Força
+Turbo
+Sombra
+
+; The shorter the better; test it.
+Arma $1
+
+; No limit really, but small and discreet is good.
+FPS:$1
+
+; Recommended max length 7. If more length is needed, please test if they
+; overlap and pad accordingly if it looks bad.
+ALTERAR
+TIMES
+SAIR
+MAPA
+
+; All three lines are used as a menu, first line as its title. Menu length
+; restrictions apply.
+Servidor não respondendo
+Perda temporária de pacotes
+ou o servidor desconectou.
+
+; Used to produce the game screen scoreboard titles. Team names are also used
+; in team and player stats screens (F3, F4).
+; For example "Blue Team pings" should fit in 20 characters. As well, "Blue
+; Team ### capt" ("capt" is short for "captures") should fit in 20 characters.
+; The better the more room for digits in ### there is, for long games. You can
+; drop " Team" from the team names if space is needed.
+Time vermelho
+Time azul    
+pings
+$1 cap
+
+; Used in the team stats screen (F3).
+; 16 is the maximum width for most, the menu title "Team stats" can be longer.
+Estado do time
+Capturas
+Matou
+Morreu
+Suicidios
+Bandeiras pegas
+Bandeiras largadas
+Bandeiras retornadas
+Tiros
+Precisão do tiro
+Tiros levados
+Movimentos
+Força do time
+
+; Used in the player stats screen (F4).
+; It's a pretty tight fit. The number fields are fixed in position, and 40
+; characters is the maximum length of a line, to keep the right margin equal
+; to the left; 42 characters is still within the dialog box.
+; The number fields appear here commented below the title lines. On all but
+; the 2nd line, the first field extends over the comment mark ';'. '|' marks
+; position 41; the title text should end before that.
+
+     Frags    total/in-row/most
+Ping     Capt Matou     Morreu  Suicidios
+;000  000 00 000/00/00  000/00/00   00  |
+
+      Bandeiras          Carrega. Tempo
+pegou  largou  retornou   Mortos Carrega.
+; 00      00      00       00     00:00 |
+
+    Precisão
+Tiros   | Pegos Movimentos Velocidade
+;0000 100% 0000  000000 u  00.00 u/s    |
+
+          Melhor        Campeonato
+T. jogo    T.vida  posição força  pontos
+;0000 min   00:00    0000  00.00 -00000 |
+
+; Used in the map list dialog (F2). Can be quite long.
+Lista de mapas do servidor
+
+; Used in the map list dialog (F2).
+; The fields appear here commented below the title line. The Nr field extends
+; over the comment mark ';'. The title text should end before the '|'.
+ N° Votos Título             Tamanho Autor
+;00 00 * <--------20--------> 00×00 <-----------26----------->|
+
+; Used as a prompt in the map list dialog (F2). Can be quite long.
+Votar no número do mapa
+
+; Used in the player stats screen (F4) page 4.
+$1 jogadores estão no torneio.
+
+; Used in the debug panel (F9).
+Joystick axes
+Joystick buttons
+Traffic: $1 B/s
+in $1 B/s, out $2 B/s
+
+
+; - - - - - - - - - - - - -  special mode messages  - - - - - - - - - - - - -
+;
+; No length restrictions.
+
+; The message printed by the -info command line option.
+Informações
+Possíveis prioridades de thread (-prio <val>):
+* Mínimo: $1
+* Máximo: $1
+* Padrão do sistema (use -defaultprio): $1
+* Padrão do Outgun: $1
+Endereços de IP:
+
+; Used as a window title.
+Outgun - Salvando figuras do mapa
+
+; Used in an external dialog message.
+Figuras do mapa salvas no diretório 'mappic'.
+
+
+; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
+;
+; We are sorry for the many similar messages; some day they will be unified.
+; You may consider not translating some or all of the error messages.
+; No length restrictions.
+
+; Command line errors.
+-cport precisa ser seguido de um espaço e o número da porta ou porta mínima:porta máxima.
+-cport X ou -cport X:Y: X e Y precisa estar entre 1 e 65535.
+-cport X:Y: Y precisa ser maior que X.
+-debug precisa ser seguido de um espaço e um número.
+-debug X: X precisa estar entre 0 e 2.
+-fps precisa ser seguido de um espaço e um número.
+-fps X: X precisa estar entre 1 e 1000.
+-ip  precisa ser seguido de um espaço e um endereço de IP.
+-ip X: X precisa ser um endereço de IP válido sem :port.
+-mappic não pode ser combinado com outras opções de linha de comando.
+-maxp precisa ser seguido de um espaço e o número de jogadores.
+-maxp X: X precisa ser um número impar entre 2 e $1.
+-port precisa ser seguido de espaço e um número de porta.
+-port X: X precisa estar entre 1 e 65535.
+-sport precisa ser seguido de um espaço e porta mínima:porta máxima.
+-sport X:Y: X e Y precisa estar entre 1 e 65535.
+-sport X:Y: Y precisa ser maior que X.
+A prioridade escolhida, $1 não está dentro dos limites do sistema. Rode com -info para mais informações.
+Argumento '$1' da linha de comando inválido.
+
+; Overview statements about failing processes.
+Não foi possível adicionar '$1' para a rotação de mapas.
+Não foi possível carregar: erro no mapa '$1'.
+Não foi possível iniciar o servidor de escuta.
+Não foi possível inciar o cliente.
+Não foi possível iniciar o servidor.
+Não foi possível salvar as figuras do mapa para o diretório 'mappic'.
+
+; Graphic mode errors.
+Não foi possível iniciar a resolução $1×$2×$3 em qualquer modo.
+Não foi possível iniciar a resolução $1×$2×$3 no modo $4; alterado para $5.
+
+; Used as $4 and $5 in the previous message.
+telacheia backbuffered 
+telacheia flipped 
+janela
+
+; Missing files.
+Não foi possivel abrir o arquivo gamemod: '$1'.
+Não foi possível ler '$1'.
+
+; Gamemod format errors.
+Configuração do gamemod desconhecida: '$1'.
+Não é possível alterar $1 para '$2' - Esperado $3.
+
+; Different expectations used as $3 in the previous message.
+0 ou 1
+$1 ou $2
+um entre no, balance e shuffle
+um entre no, normal e special
+um número inteiro e ímpar entre 2 e $1
+um número inteiro
+um número inteiro, maior que $1
+um número inteiro, menor que $1
+um número inteiro entre 0 e $1, ou 'n %' onde n 0 ou superior
+um número inteiro, entre $1 e $2, inclusive
+um número real
+um número real, maior que $1
+um número real, menor que $1
+um número real, entre $1 e $2, inclusive
+um número real ou 'x %' onde x 0 ou superior
+endereço de ip sem :port
+
+; Added to some of the above, where outside the normal range, 0 is allowed.
+, ou 0
+
+; Map format errors.
+Linha inválida no mapa: $1
+Label '$1' não encontrado: $2
+Label line não é permitido no label block: $1
+Está faltando a altura, largura ou título do mapa.
+Autor do mapa redefinido.
+Altura do mapa redefinida.
+Título do mapa redefinido.
+Largura do mapa redefinida.
+Room line não é permitido no label block: $1
+Time $1, bandeira $2 na parede.
+Time $1, ponto de nascimento $2 na parede.
+Dois label names indênticos não é permitido: $1
+Linha do mapa irreconhecível: $1
+
+; This is not detected when the map is loaded, but later at an instant capture.
+O mapa não é válido: Captura estantânea da bandeira é possível.
+
+; Other file format errors.
+'$1', do master.txt não é um endereço de IP válido.
+Admin shell: caracteres não imprimiveis, mensagem ignorada.
+Alpha bitmaps precisa ser imagens na escala de cinza de 8-bit; $1 is $2-bit.
+Comando de ban inválido (Endereço de IP) no auth.txt: "$1"
+Linha inválida (sem nome) no auth.txt: "$1"
+Sintaxe inválida no client.cfg ("$1").
+Comando de usuário inválido (sem senha) no auth.txt: "$1"
+Salvador de figuras do mapa: Mapa '$1' não é um arquivo válido de mapa.
+Erro de sintaxe no gfxmodes.txt, linha '$1'.
+Tradução $1 não pode ser lida.
+Dado desconhecido em client.cfg ("$1").
+Comando desconhecido "$1" no auth.txt
+Modo não utilizável no gfxmodes.txt: $1×$2×$3 (precisa ser no mínimo 320×200 com 16, 24 ou 32 de bits).
+Altura e largura das texturas precisam ser potência de 2; a textura do chão $1 é $2×$3.
+Altura e largura das texturas precisam ser potência de 2; a textura da parede $1 é $2×$3.
+
+; Miscellaneous errors.
+Não é possível alterar max_players enquanto os jogadores estão conectados.
+Não é possível criar um thread. Recursos do sistema insuficie.
+Não foi possível colocar o servidor para rodar em segundo plano.
+Comunicador mestre:Você possuí uma versão inválida do Outgun. O servidor não o aceitará na lista mestre. Por-favor, atualize.
+Sem mapas para rotação.
+
+; Network errors. Most of these can occur in normal operation when there's
+; something wrong with the network or a remote server. Where it's not clear
+; what $1 is, it is a message in English, telling what went wrong within the
+; network subsystem.
+Não foi possível iniciar HawkNL. $1
+Sem rede de IP.
+Admin shell: Não foi possível abrir o soquete na porta $1.
+Admin shell: Não foi possível alterar o soquete para o modo de escuta...
+Admin shell: Não foi possível aceitar a conexão.
+Admin shell: leitura falhou. Motivo: $1
+Admin shell: Falhou enviando resposta. Motivo: $1
+Não foi possível conectar no servidor mestre. $1
+Não foi possível abrir o soquete.
+Não foi possível abrir o soquete para atualizar os servidores. $1
+Não foi possível abrir o soquete para conectar no servidor mestre. $1
+Não foi possível iniciar a rede do servidor na porta $1.
+Comunicador mestre: Não foi possível abrir o soquete para conectar no servidor mestre.
+Comunicador mestre: (Sair) Não foi possível conectar ao servidor mestre.
+Comunicador mestre: (Sair) C Não foi possível abrir o soquete para conectar no servidor mestre.
+Comunicador mestre: (Sair) Erro enviando info: $1
+Comunicador mestre: (Sair) Erro enquanto esperando por resposta: $1
+Website thread: Não foi possível abrir o soquete para conectar ao servidor do website.
+Website thread: (Sair) Não foi possível conectar ao servidor do website.
+Website thread: (Sair) Não foi possível abrir o soquete para o servidor do website.
+
+; Rare external network errors. These may happen but there's rarely anything
+; the user can do to fix them.
+Dado incorreto recebido do servidor mestre.
+Comunicador mestre: (Sair) Ocorreu um erro inesperado enquanto enviando para lista ao servidor mestre. Veja log/master.log.
+Comunicador mestre: Ocorreu um erro inesperado enquanto enviando para lista ao servidor mestre. Veja log/master.log. Para retirar esse erro, faça um servidor privado usando o argumento -priv.
+
+; File writing errors. These should be quite rare.
+Não foi possível abrir $1 para gravação.
+Não foi possível salvar a senha do jogador para '$1'!
+Não foi possível gravar '$1'.
+config/language.txt não pode ser gravado.
+Erro gravando para '$1'.
+Arquivo baixado: Não é possível abrir '$1' para gravação.
+Salvador de figuras do mapa: Não é possível salvar a figura do mapa para '$1'.
+O diretório '$1' não foi encontrado e não pode ser criado.
+
+
+; - - - - - - - - - - - - - - - - other texts - - - - - - - - - - - - - - - -
+;
+; These need not be translated. Length restrictions are different on each item.
+
+; Server shutdown messages. These are briefly shown as the window title while
+; the server is shutting down. In rare cases they take longer to disappear.
+Desligando: ABORTANDO $1 atualizações do torneio
+Desligando: threads do admin shell
+Desligando: thread principal
+Desligando: thread do comunicador mestre
+Desligando: servidor da net
+Desligando: esperando por $1 atualizações do torneio
+Desligando: thread do website
+
+; Comment written to auth.txt. It may be sensible to translate this in case
+; you're translating the entire Outgun distribution with other configuration
+; files too.
+This file is automatically rewritten whenever the ban list changes.
+To reserve a name add a row:
+user <name> <tab> <password>  or  admin <name> [<tab> <password>]
+where <tab> is a tabulator character.
+Passwordless admins need to authenticate by logging in to the tournament.

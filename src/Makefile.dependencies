@@ -1,0 +1,121 @@
+# This file has been automatically created using makedep.sh
+
+admshell_inc =	admshell.h
+allegro_icon_inc =	allegro_icon.h	$(incalleg_inc)
+antialias_inc =	antialias.h	$(incalleg_inc)	$(nassert_inc)
+antialias_internal_inc =	antialias_internal.h	$(antialias_inc)
+client_inc =	client.h	$(client_menus_inc)	$(function_utility_inc)	$(gameserver_interface_inc)	$(graphics_inc)	$(log_inc)	$(menu_inc)	$(mutex_inc)	$(names_inc)	$(protocol_inc)	$(sounds_inc)	$(thread_inc)	$(world_inc)
+client_menus_inc =	client_menus.h	$(graphics_inc)	$(menu_inc)
+commont_inc =	commont.h
+debugconfig_inc =	debugconfig.h
+debug_inc =	debug.h	$(commont_inc)	$(nassert_inc)
+effects_inc =	effects.h
+function_utility_inc =	function_utility.h
+gamemod_inc =	gamemod.h	$(function_utility_inc)	$(language_inc)	$(world_inc)
+gameserver_interface_inc =	gameserver_interface.h	$(commont_inc)	$(utility_inc)
+graphics_inc =	graphics.h	$(incalleg_inc)	$(mutex_inc)	$(utility_inc)	$(world_inc)
+incalleg_inc =	incalleg.h	$(utility_inc)
+language_inc =	language.h
+log_inc =	log.h	$(mutex_inc)	$(utility_inc)
+mappic_inc =	mappic.h	$(utility_inc)
+menu_inc =	menu.h	$(function_utility_inc)	$(nassert_inc)
+mutex_inc =	mutex.h	$(debugconfig_inc)	$(nassert_inc)	$(utility_inc)
+nameauth_inc =	nameauth.h	$(utility_inc)
+names_inc =	names.h
+nassert_inc =	nassert.h
+network_inc =	network.h
+platform_inc =	platform.h	$(utility_inc)
+protocol_inc =	protocol.h	$(leetnet_server_inc)
+server_inc =	server.h	$(gameserver_interface_inc)	$(log_inc)	$(nameauth_inc)	$(servnet_inc)	$(utility_inc)	$(world_inc)
+servnet_inc =	servnet.h	$(mutex_inc)	$(network_inc)	$(protocol_inc)	$(thread_inc)	$(utility_inc)
+sounds_inc =	sounds.h	$(incalleg_inc)	$(commont_inc)	$(log_inc)	$(utility_inc)
+thread_inc =	thread.h	$(errno_inc)	$(nassert_inc)
+timer_inc =	timer.h
+utility_inc =	utility.h	$(nassert_inc)
+world_inc =	world.h	$(commont_inc)	$(nassert_inc)	$(protocol_inc)	$(utility_inc)
+
+leetnet_client_inc =	leetnet/client.h
+leetnet_ConditionVariable_inc =	leetnet/ConditionVariable.h	$(leetnet_gneintern_inc)
+leetnet_dlog_inc =	leetnet/dlog.h	$(debugconfig_inc)	$(mutex_inc)	$(nassert_inc)	$(leetnet_Time_inc)	$(leetnet_Timer_inc)
+leetnet_gneintern_inc =	leetnet/gneintern.h
+leetnet_leetnet_inc =	leetnet/leetnet.h
+leetnet_Mutex_inc =	leetnet/Mutex.h	$(leetnet_gneintern_inc)
+leetnet_rudp_inc =	leetnet/rudp.h
+leetnet_server_inc =	leetnet/server.h
+leetnet_Time_inc =	leetnet/Time.h	$(leetnet_gneintern_inc)
+leetnet_Timer_inc =	leetnet/Timer.h	$(leetnet_gneintern_inc)	$(leetnet_Time_inc)
+
+antialias.o:	antialias.cpp	$(nassert_inc)	$(world_inc)	$(antialias_internal_inc)	$(antialias_inc)
+	$(OBJCOMPILE)
+client.o:	client.cpp	$(incalleg_inc)	$(leetnet_client_inc)	$(commont_inc)	$(debug_inc)	$(debugconfig_inc)	$(gameserver_interface_inc)	$(language_inc)	$(names_inc)	$(nassert_inc)	$(network_inc)	$(platform_inc)	$(protocol_inc)	$(timer_inc)	$(utility_inc)	$(world_inc)	$(client_inc)
+	$(OBJCOMPILE)
+client_menus.o:	client_menus.cpp	$(incalleg_inc)	$(debugconfig_inc)	$(graphics_inc)	$(language_inc)	$(menu_inc)	$(network_inc)	$(sounds_inc)	$(utility_inc)	$(client_menus_inc)
+	$(OBJCOMPILE)
+commont.o:	commont.cpp	$(incalleg_inc)	$(commont_inc)	$(language_inc)	$(nassert_inc)	$(network_inc)	$(timer_inc)	$(utility_inc)
+	$(OBJCOMPILE)
+debug.o:	debug.cpp	$(debug_inc)	$(debugconfig_inc)	$(log_inc)	$(mutex_inc)	$(thread_inc)	$(utility_inc)
+	$(OBJCOMPILE)
+gamemod.o:	gamemod.cpp	$(language_inc)	$(server_inc)	$(servnet_inc)	$(world_inc)	$(gamemod_inc)
+	$(OBJCOMPILE)
+globals.o:	globals.cpp	$(commont_inc)	$(debugconfig_inc)	$(mutex_inc)	$(timer_inc)
+	$(OBJCOMPILE)
+graphics.o:	graphics.cpp	$(incalleg_inc)	$(antialias_inc)	$(client_inc)	$(commont_inc)	$(effects_inc)	$(language_inc)	$(platform_inc)	$(sounds_inc)	$(timer_inc)	$(world_inc)	$(graphics_inc)
+	$(OBJCOMPILE)
+language.o:	language.cpp	$(incalleg_inc)	$(commont_inc)	$(log_inc)	$(utility_inc)	$(language_inc)
+	$(OBJCOMPILE)
+log.o:	log.cpp	$(platform_inc)	$(timer_inc)	$(utility_inc)	$(log_inc)
+	$(OBJCOMPILE)
+main.o:	main.cpp	$(incalleg_inc)	$(allegro_icon_inc)	$(debug_inc)	$(debugconfig_inc)	$(gameserver_interface_inc)	$(log_inc)	$(language_inc)	$(network_inc)	$(platform_inc)	$(timer_inc)	$(utility_inc)	$(client_inc)	$(mappic_inc)
+	$(OBJCOMPILE)
+mappic.o:	mappic.cpp	$(commont_inc)	$(graphics_inc)	$(language_inc)	$(platform_inc)	$(world_inc)	$(mappic_inc)
+	$(OBJCOMPILE)
+menu.o:	menu.cpp	$(incalleg_inc)	$(client_inc)	$(language_inc)	$(nassert_inc)	$(network_inc)	$(menu_inc)
+	$(OBJCOMPILE)
+nameauth.o:	nameauth.cpp	$(commont_inc)	$(language_inc)	$(nameauth_inc)	$(nassert_inc)	$(network_inc)
+	$(OBJCOMPILE)
+names.o:	names.cpp	$(names_inc)	$(utility_inc)
+	$(OBJCOMPILE)
+nassert.o:	nassert.cpp	$(incalleg_inc)	$(commont_inc)	$(debugconfig_inc)	$(language_inc)	$(mutex_inc)	$(platform_inc)	$(utility_inc)	$(nassert_inc)
+	$(OBJCOMPILE)
+network.o:	network.cpp	$(nassert_inc)	$(utility_inc)	$(timer_inc)	$(network_inc)
+	$(OBJCOMPILE)
+platform_unix.o:	platform_unix.cpp	$(incalleg_inc)	$(commont_inc)	$(platform_inc)	$(timer_inc)
+	$(OBJCOMPILE)
+platform_win.o:	platform_win.cpp	$(commont_inc)	$(incalleg_inc)	$(mutex_inc)	$(platform_inc)	$(timer_inc)
+	$(OBJCOMPILE)
+server.o:	server.cpp	$(incalleg_inc)	$(gamemod_inc)	$(language_inc)	$(nassert_inc)	$(platform_inc)	$(thread_inc)	$(timer_inc)	$(world_inc)	$(server_inc)	$(gameserver_interface_inc)
+	$(OBJCOMPILE)
+servnet.o:	servnet.cpp	$(leetnet_server_inc)	$(leetnet_rudp_inc)	$(admshell_inc)	$(debug_inc)	$(debugconfig_inc)	$(function_utility_inc)	$(language_inc)	$(mutex_inc)	$(nassert_inc)	$(network_inc)	$(platform_inc)	$(protocol_inc)	$(server_inc)	$(servnet_inc)	$(thread_inc)	$(timer_inc)
+	$(OBJCOMPILE)
+sounds.o:	sounds.cpp	$(language_inc)	$(platform_inc)	$(sounds_inc)
+	$(OBJCOMPILE)
+thread.o:	thread.cpp	$(language_inc)	$(mutex_inc)	$(thread_inc)	$(utility_inc)
+	$(OBJCOMPILE)
+utility.o:	utility.cpp	$(incalleg_inc)	$(commont_inc)	$(log_inc)	$(platform_inc)	$(language_inc)	$(utility_inc)
+	$(OBJCOMPILE)
+world.o:	world.cpp	$(language_inc)	$(nassert_inc)	$(network_inc)	$(protocol_inc)	$(timer_inc)	$(utility_inc)	$(world_inc)	$(server_inc)
+	$(OBJCOMPILE)
+
+leetnet/client.o:	leetnet/client.cpp	$(leetnet_leetnet_inc)	$(leetnet_client_inc)	$(leetnet_rudp_inc)	$(leetnet_server_inc)	$(thread_inc)	$(log_inc)	$(debugconfig_inc)	$(debug_inc)	$(leetnet_dlog_inc)	$(commont_inc)	$(timer_inc)
+	$(LEETNETCOMPILE)
+leetnet/ConditionVariable.o:	leetnet/ConditionVariable.cpp	$(leetnet_gneintern_inc)	$(leetnet_ConditionVariable_inc)	$(leetnet_Mutex_inc)	$(leetnet_Time_inc)	$(leetnet_Timer_inc)
+	$(LEETNETCOMPILE)
+leetnet/dlog.o:	leetnet/dlog.cpp	$(leetnet_dlog_inc)
+	$(LEETNETCOMPILE)
+leetnet/Mutex.o:	leetnet/Mutex.cpp	$(leetnet_gneintern_inc)	$(leetnet_Mutex_inc)
+	$(LEETNETCOMPILE)
+leetnet/rudp.o:	leetnet/rudp.cpp	$(debugconfig_inc)	$(leetnet_dlog_inc)	$(mutex_inc)	$(nassert_inc)	$(leetnet_rudp_inc)
+	$(LEETNETCOMPILE)
+leetnet/server.o:	leetnet/server.cpp	$(commont_inc)	$(debug_inc)	$(debugconfig_inc)	$(log_inc)	$(mutex_inc)	$(network_inc)	$(thread_inc)	$(utility_inc)	$(leetnet_leetnet_inc)	$(leetnet_server_inc)	$(leetnet_rudp_inc)	$(leetnet_Timer_inc)	$(timer_inc)	$(leetnet_ConditionVariable_inc)	$(leetnet_Mutex_inc)
+	$(LEETNETCOMPILE)
+leetnet/Time.o:	leetnet/Time.cpp	$(leetnet_gneintern_inc)	$(leetnet_Time_inc)
+	$(LEETNETCOMPILE)
+leetnet/Timer.o:	leetnet/Timer.cpp	$(leetnet_gneintern_inc)	$(leetnet_Timer_inc)	$(leetnet_Time_inc)
+	$(LEETNETCOMPILE)
+
+tools/makedep.o:	tools/makedep.cpp
+	$(OBJCOMPILE)
+tools/mapconv.o:	tools/mapconv.cpp
+	$(OBJCOMPILE)
+tools/srvmonit.o:	tools/srvmonit.cpp	$(incalleg_inc)	$(admshell_inc)	$(nassert_inc)	$(platform_inc)	$(utility_inc)
+	$(OBJCOMPILE)

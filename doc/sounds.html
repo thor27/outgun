@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun sound themes</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Sound themes</DIV>
+
+<H1>Outgun sound themes</H1>
+
+<P>
+If you want sounds in the game, you must provide sound files with the following names
+for the respective game events.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>File name<TH>Event
+ <TR><TD>1_min.wav<TD>1 minute remaining in the game
+ <TR><TD>5_min.wav<TD>5 minutes remaining in the game
+ <TR><TD>capture.wav<TD>flag capture
+ <TR><TD>chanteam.wav<TD>player change teams
+ <TR><TD>colldam.wav<TD>players collide with damage to one of them (special: if this sample does not exist, hit.wav is used instead)
+ <TR><TD>death1.wav<TD>player death
+ <TR><TD>death2.wav<TD>another player death
+ <TR><TD>diedb.wav<TD>die by the deathbringer poison cloud
+ <TR><TD>entergam.wav<TD>player enters game
+ <TR><TD>fire.wav<TD>player shoots
+ <TR><TD>gameover.wav<TD>CTF game is over
+ <TR><TD>getdb.wav<TD>get the deathbringer powerup
+ <TR><TD>got.wav<TD>player gets enemy flag
+ <TR><TD>helmoff.wav<TD>shadow powerup worn off
+ <TR><TD>helmon.wav<TD>shadow powerup got
+ <TR><TD>hit.wav<TD>player shot hits target
+ <TR><TD>hitdb.wav<TD>player is struck by the deathbringer shockwave
+ <TR><TD>leftgam.wav<TD>player leaves game
+ <TR><TD>lost.wav<TD>player loses enemy flag
+ <TR><TD>megaheal.wav<TD>player gets the megahealth powerup
+ <TR><TD>plbounce.wav<TD>two players bounce from each other
+ <TR><TD>quadfire.wav<TD>player shoots with power powerup
+ <TR><TD>quadoff.wav<TD>power powerup worn off
+ <TR><TD>quadon.wav<TD>power powerup got
+ <TR><TD>qwallhit.wav<TD>a powered player shot hits a wall
+ <TR><TD>return.wav<TD>flag returned to base
+ <TR><TD>shieldd.wav<TD>a player&rsquo;s shield is hit
+ <TR><TD>shieldl.wav<TD>a player&rsquo;s shield wears out
+ <TR><TD>shieldp.wav<TD>player receives a shield
+ <TR><TD>speedoff.wav<TD>speed powerup wears off
+ <TR><TD>speedon.wav<TD>speed powerup got
+ <TR><TD>spree.wav<TD>killing spree (10, 20, 30, etc. kills in a row without dying)
+ <TR><TD>talk.wav<TD>message from other player received on screen
+ <TR><TD>usedb.wav<TD>use of the deathbringer when the carrier dies
+ <TR><TD>wabounce.wav<TD>player bounces out of wall
+ <TR><TD>wallhit.wav<TD>a player shot hits a wall
+ <TR><TD>weaponup.wav<TD>player picks up a weapon upgrade
+</TABLE>
+
+<P>
+After that, you must create a directory under the <CODE>sound</CODE> directory, e.g.
+<SAMP>C:\outgun\sound\mysounds</SAMP>.
+</P>
+<P>
+Then place your sounds there. You can add a <CODE>theme.txt</CODE> text file to this
+directory. The first line of the file will contain the description of your sound theme.
+</P>
+<P>
+If you want to have the same sound in two events, you don&rsquo;t have to copy the sound file. Instead, you can make a redirection. To make player bounce sound same as wall bounce sound, make <CODE>plbounce.txt</CODE> file. Write on the first line of that file <CODE>wabounce</CODE>. That way Outgun uses <CODE>wabounce.wav</CODE> instead of <CODE>plbounce.wav</CODE>.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2004-12-14 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

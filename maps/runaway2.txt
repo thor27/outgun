@@ -1,0 +1,201 @@
+;
+; runaway2.txt
+;
+; By Juggis and Huntta 2003, 2005
+;
+
+P width 5
+P height 5
+P title Runaway 2
+P author Juggis and Huntta
+
+; punainen lippu ja syntymäpaikat
+flag  0 0 0 0.5 0.5
+spawn 0 1 1 0.3 0.4
+spawn 0 1 1 0.4 0.4
+spawn 0 1 1 0.5 0.4
+spawn 0 1 1 0.6 0.4
+spawn 0 1 1 0.7 0.4
+spawn 0 1 1 0.4 0.6
+spawn 0 1 1 0.5 0.6
+spawn 0 1 1 0.6 0.6
+
+; sininen lippu ja syntymäpaikat
+flag  1 4 4 0.5 0.5
+spawn 1 3 3 0.3 0.6
+spawn 1 3 3 0.4 0.6
+spawn 1 3 3 0.5 0.6
+spawn 1 3 3 0.6 0.6
+spawn 1 3 3 0.7 0.6
+spawn 1 3 3 0.4 0.4
+spawn 1 3 3 0.5 0.4
+spawn 1 3 3 0.6 0.4
+
+;keskimmäiset 3x3 ruutua:
+X room_cross 1 2 3 2
+X room_cross 2 1
+X room_cross 2 3
+X room_hyrra 1 1 3 3
+X room_korvat 1 1 3 3
+
+;pesien viereiset
+X room_hyrra 0 1
+X room_korvat 0 1
+X niple 0 1
+
+X room_hyrra 1 0
+X room_korvat 1 0
+X niple 1 0
+
+X room_hyrra 4 3
+X room_korvat 4 3
+X niple 4 3
+
+X room_hyrra 3 4
+X room_korvat 3 4
+X niple 3 4
+
+;pesät
+X room_hyrra 0 0
+X room_korvat 0 0
+
+X vasen_lyhyt 0 0 0 1
+X yla_lyhyt 0 0 1 0
+
+X room_hyrra 4 4
+X room_korvat 4 4
+
+X oikee_lyhyt 4 3 4 4
+X ala_lyhyt 3 4 4 4
+
+;huoneet 3 0 ja 1 4
+X room_hyrra 3 0
+X oikee_pitka 3 0
+X vasen_pitka 3 0
+X yla_lyhyt 3 0
+X room_hyrra 1 4
+X oikee_pitka 1 4
+X vasen_pitka 1 4
+X ala_lyhyt 1 4
+
+; huoneet 0 3 ja 4 1
+X room_korvat 0 3
+X yla_pitka 0 3
+X ala_pitka 0 3
+X vasen_lyhyt 0 3
+X room_korvat 4 1
+X yla_pitka 4 1
+X ala_pitka 4 1
+X oikee_lyhyt 4 1
+
+X room02 0 2
+
+X room04 0 4
+
+X room20 2 0
+
+X room24 2 4
+
+X room40 4 0
+
+X room42 4 2
+
+; huone jossa ohuet kaytavat ristiin
+:room_cross
+W 0.0 0.0 0.3 0.3
+W 0.7 0.0 1.0 0.3
+W 0.0 0.7 0.3 1.0
+W 0.7 0.7 1.0 1.0
+
+; huone jossa vert:ohuet hor:leveat
+:room_hyrra
+W 0.0 0.0 0.3 0.1
+W 0.7 0.0 1.0 0.1
+W 0.0 0.9 0.3 1.0
+W 0.7 0.9 1.0 1.0
+
+; huone jossa hor:ohuet vert:leveat
+:room_korvat
+W 0.0 0.0 0.1 0.3
+W 0.9 0.0 1.0 0.3
+W 0.0 0.7 0.1 1.0
+W 0.9 0.7 1.0 1.0
+
+:yla_pitka
+W 0.4 0.0 0.6 0.3
+
+:yla_lyhyt
+W 0.3 0.0 0.7 0.1
+
+:vasen_pitka
+W 0.0 0.4 0.3 0.6
+
+:vasen_lyhyt
+W 0.0 0.3 0.1 0.7
+
+:oikee_pitka
+W 0.7 0.4 1.0 0.6
+
+:oikee_lyhyt
+W 0.9 0.3 1.0 0.7
+
+:ala_pitka
+W 0.4 0.7 0.6 1.0
+
+:ala_lyhyt
+W 0.3 0.9 0.7 1.0
+
+;piste keskella
+:niple
+W 0.4 0.4 0.6 0.6
+
+;huone 0 2 eli vasen keskella
+:room02
+W 0.0 0.0 0.3 0.3
+W 0.7 0.0 1.0 0.3
+W 0.9 0.7 1.0 1.0
+W 0.0 0.7 0.1 1.0
+W 0.4 0.7 0.6 1.0
+
+;huone 0 4 eli vasen alakulma
+:room04
+W 0.0 0.0 0.1 1.0
+W 0.1 0.9 1.0 1.0
+W 0.4 0.0 0.6 0.6
+W 0.6 0.4 1.0 0.6
+W 0.9 0.0 1.0 0.1
+
+
+;huone 2 0 eli yla keskella
+:room20
+W 0.0 0.0 0.3 0.3
+W 0.0 0.7 0.3 1.0
+W 0.7 0.0 1.0 0.1
+W 0.7 0.4 1.0 0.6
+W 0.7 0.9 1.0 1.0
+
+
+;huone 2 4 eli ala keskella
+:room24
+W 0.7 0.0 1.0 0.3
+W 0.7 0.7 1.0 1.0
+W 0.0 0.0 0.3 0.1
+W 0.0 0.4 0.3 0.6
+W 0.0 0.9 0.3 1.0
+
+;huone 4 0 eli oikee ylakulma
+:room40
+W 0.0 0.0 1.0 0.1
+W 0.9 0.1 1.0 1.0
+W 0.0 0.4 0.6 0.6
+W 0.4 0.6 0.6 1.0
+W 0.0 0.9 0.1 1.0
+
+
+;huone 4 2 eli oikee keskella
+:room42
+W 0.0 0.0 0.1 0.3
+W 0.4 0.0 0.6 0.3
+W 0.9 0.0 1.0 0.3
+W 0.0 0.7 0.3 1.0
+W 0.7 0.7 1.0 1.0

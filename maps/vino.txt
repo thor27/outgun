@@ -1,0 +1,98 @@
+; 2005-03-29
+
+P width 5
+P height 5
+P title Vino
+P author Huntta
+S 16 12
+
+flag  0 3 3 12  9
+spawn 0 2 2 10  7.5
+spawn 0 2 2 12  6
+spawn 0 2 2  8  9
+spawn 0 2 2 14  4.5
+spawn 0 2 2  6  10.5
+spawn 0 2 2 12  8
+spawn 0 2 2 14  6.5
+spawn 0 2 2 10  9.5
+spawn 0 2 2  8  11
+spawn 0 2 2 14  8.5
+spawn 0 2 2 12  10
+spawn 0 2 2 10  11.5
+
+flag  1 1 1  4  3
+spawn 1 2 2 6 4.5
+spawn 1 2 2 4 6
+spawn 1 2 2 8 3
+spawn 1 2 2 2 7.5
+spawn 1 2 2 10 1.5
+spawn 1 2 2 4 4
+spawn 1 2 2 2 5.5
+spawn 1 2 2 6 2.5
+spawn 1 2 2 8 1
+spawn 1 2 2 2 3.5
+spawn 1 2 2 4 2
+spawn 1 2 2 6 0.5
+
+X nurkat 0 0 4 4
+
+X viisto  0 0
+X viisto  2 0 4 0
+X viisto  0 1 1 1
+X viisto  2 2
+X viisto  3 3 4 3
+X viisto  0 4 2 4
+X viisto  4 4
+
+X ylä     2 0
+X ala     2 4
+X vasen   0 1 0 3
+X oikea   4 1 4 3
+
+X yläsini 2 0
+X yläsini 1 1
+X yläsini 0 2
+X alasini 1 0
+X alasini 0 1
+
+X alapuna 2 4
+X alapuna 3 3
+X alapuna 4 2
+X yläpuna 3 4
+X yläpuna 4 3
+
+:nurkat
+T W  16 -1.5 16  1.5 12  1.5
+T W  16  1.5 12  1.5 12  4.5
+T W 0 13.5 0 10.5 4 10.5
+T W 0 10.5 4 10.5 4 7.5
+T W -2  3  4 -1.5  0  0
+T W 18 9 12 13.5 16 12
+
+:viisto
+T W  16 -1.5 16  1.5  0 10.5
+T W 0 13.5 0 10.5 16 1.5
+
+:ylä
+  W  0  0 16  1
+
+:ala
+  W  0 12 16 11
+
+:vasen
+  W  0  0  1 12
+
+:oikea
+  W 16  0 15 12
+
+:yläsini
+T G  0  0 16  0  0 12  4
+
+:alasini
+T G 16 12  0 12 16  0  4
+
+:yläpuna
+T G  0  0 16  0  0 12  3
+
+:alapuna
+T G 16 12  0 12 16  0  3

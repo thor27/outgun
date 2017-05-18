@@ -1,0 +1,51 @@
+Lisätietoa saa näistä paikoista:
+ Pelin dokumentaatio         hakemisto "doc"
+ Outgun-sivusto              http://koti.mbnet.fi/outgun/
+ Brasilian Outgun-sivusto    http://outgun.sf.net/
+ 
+Pelaajan ohjaus
+ 
+ Liikkuminen            nuolet tai numeronäppäimet
+ Ampuminen              Control
+ Juokseminen            Shift
+ Sivuttaisliike         Alt tai Alt Gr
+ 
+Muut näppäimet
+ 
+ Viestit                Kirjoita viesti ja paina Enteriä.
+ Joukkueviestit         Aloita viesti pisteellä (".").
+ Joukkueen vaihto       End (vain, jos joukkueellasi on ylivoima)
+ Itsemurha              Delete
+ Lipun pudotus          Page Down
+ Karttalista            F2
+ Joukkuetilastot        F3
+ Pelaajatilastot        F4
+ Palvelimen asetukset   F5
+ Äänestä kartan vaihtoa F8
+ Kuvankaappaus          F11
+ Näytä enemmän viestejä Insert
+ 
+Pelin idea
+ 
+ Kuulut joko punaiseen tai siniseen joukkueeseen. Tavoitteesi on auttaa joukkueesi voittoon ryöstämällä vastustajan lippu. Lipun ryöstö onnistuu hakemalla se oman joukkueen kotipesään, kunhan oma lippu on tallella.
+ 
+Terveys ja energia
+ 
+ Pelaaja kuolee, kun hänen terveytensä putoaa nollaan. Energiaa käytetään juoksemiseen, ampumiseen ja suojan ylläpitämiseen. Terveys ja energia palautuvat vähitellen 200:een.
+ 
+Kartta
+ 
+ Oikeassa yläkulmassa on kartta. Siinä näkyvät joukkuetoverisi ja ne vastustajat, jotka he näkevät. Jos sinulla on varjo, näet kaikki varjottomat vastustajat.
+ 
+Herkut
+ 
+ Silloin tällöin maassa näkyy erilaisia esineitä. Niitä kannattaa kerätä, sillä niistä saa mukavia lisäominaisuuksia.
+ 
+ lisäammus       yksi ammus lisää ja lisää energiaa
+ turbo           lisää nopeutta
+ varjo           näkymättömyys, vastustajien näkeminen kartalla
+ tehoammukset    ammukset tekevät enemmän vahinkoa
+ lääkepaketti    lisää terveyttä ja energiaa
+ suoja           terveys ei kulu niin kauan kuin suoja on ehjä
+ savupommi       räjähtää kuollessa ja vahingoittaa huoneessa
+                 olevia pelaajia

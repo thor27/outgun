@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Highlighting favourite maps</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Highlighting favourite maps</DIV>
+
+<H1>Highlighting favourite maps</H1>
+
+<P>
+This document describes <CODE>config/maps.txt</CODE>, a favourite maps file which you can use to highlight your favourite maps in the Outgun map list.
+</P>
+
+<P>
+You don&rsquo;t need <CODE>maps.txt</CODE> in normal operation; it&rsquo;s useful to catch the best maps in the map list. If you like some particular maps, you can highlight them so they are more easily found in the list when you want to vote a map.
+</P>
+
+<P>
+The format Outgun 1.0 understands is very simple. Every non-empty line that is not a comment (those start with a semicolon, &lsquo;;&rsquo;), should be a map <STRONG>title</STRONG>. Those maps will be highlighted (green) in the map list. The map titles are case-insensitive. For example:
+</P>
+
+<PRE><CODE>2x2
+Attack
+Attack2
+The Blunt</CODE></PRE>
+
+<P>
+For easy adding new maps, you can edit the file while Outgun is running. <CODE>maps.txt</CODE> is reloaded each time you open the map list.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-05-25 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

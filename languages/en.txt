@@ -1,0 +1,818 @@
+; This is an Outgun translation file.
+; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+; Translation copyright © 2006 <no one>
+
+
+; Language of the translation, in the target language.
+English
+
+
+; You should not modify en.txt, it is the English reference file. Outgun uses
+; it (only) to index the translated strings. To make a new translation, copy
+; en.txt to a new name (languagename.txt) and translate each phrase (non-
+; commented line) in that file. Please send your translation to us at
+; outgun@mbnet.fi for inclusion in the official packages.
+
+; The length restrictions mentioned in the comments should guarantee that the
+; translations fit on the screen in the 640×400 resolution with a 8×8 font that
+; is the default. To allow for smaller resolutions or larger fonts, shorter is
+; always better.
+
+
+; - - - - - - - - - - - - - - miscellaneous texts - - - - - - - - - - - - - -
+;
+; The longer they are the more stupid they look.
+
+; Used in the window title bar, alone.
+Outgun client
+
+; Used in the window title bar, like: Connected to Server name (127.0.0.1)
+Connected to $1 ($2)
+
+; Used in the window title bar when server is running, like:
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
+; version. First and/or last part are added conditionally.
+ERRORS:$1
+$1/$2p $3k/s v$4 port:$5
+ESC:quit
+
+; Time units. These should be formed so that "duration: # <unit>" makes sense.
+; Lengths up to 25 characters are ok, but short is preferred.
+second
+seconds
+minute
+minutes
+hour
+hours
+day
+days
+week
+weeks
+year
+years
+
+; Abbreviated time units. Up to 10 characters in addition to "$1" is allowed,
+; but short is strongly preferred.
+$1 s
+$1 min
+
+; Generic terms. Currently, 'unknown' is used in the graphics menu for a
+; refresh rate and in the local server menu for IP address; 'private' and
+; 'invalid' are also for IP address; 'default' is used in font selection;
+; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
+; (F5), as well as 'special' which is used for the player collisions setting.
+; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
+; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; usual UI meaning. All may be used elsewhere in a similar context in the
+; future.
+; Lengths up to 25 characters are ok, but short is preferred.
+OK
+Cancel
+unknown
+private
+invalid
+default
+none
+on
+off
+special
+disabled
+minimal
+complete
+
+
+; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
+;
+; Length restrictions vary:
+; With the standard resolution (640 in width) and standard 8-wide font, the end
+; of the line is not visible after 76 characters. The actual maximal length of
+; each text depends on the type of the menu component and many lines are made
+; of two parts.
+;
+; Usually, considerably longer than original texts do fit well. To be sure
+; they fit, you should test each menu in the standard resolution and preferably
+; a wider-than-standard font, if you use translations that are considerably
+; longer than the original texts.
+
+New version: $1
+Server list
+Disconnect
+Options
+Help
+Exit Outgun
+
+Update server list
+Refresh servers
+Refresh status
+Show favorite servers
+Manually enter IP
+
+; IP address is used in both the add server dialog and the local server menu.
+IP address
+
+Add to favorite list
+Add server
+
+; This key help is not currently used, but is in reserve for the server list.
+Insert = add to favorites    Delete = remove server
+
+; Table heading in the server list menu.
+; The fields appear here commented below the title line. The IP address field
+; extends over the comment mark ';'.
+IP address            Ping D Players Vers. Host name
+;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
+
+Name and passwords
+Name
+Get random name
+Tournament password
+Registration status
+Take part in the tournament
+Remove server-specific player passwords
+
+Game options
+Show player names
+Favorite colors
+Lag prediction
+Lag prediction amount
+Save game messages
+Save game statistics
+Show stats after the round
+Show server info when connected
+Stay dead when in a menu at round start
+Underline master-authenticated players
+Underline server-authenticated players
+Get server list at startup
+
+Controls
+Keyboard layout
+Use keypad for moving
+Arrow keys in statistics
+Enable joystick control
+Moving stick
+Joystick buttons (0 = disabled)
+
+; These texts are originally manually padded to the same length. You can do
+; the same to make the menu look neater.
+Shoot 
+Run   
+Strafe
+
+Active controls
+
+Screen mode
+Color depth
+ desktop
+$1-bit
+Screen size
+Windowed mode
+Use page flipping
+Alternative page flipping method
+Current refresh rate
+$1 Hz
+Apply changes
+
+Graphic options
+Theme
+Background theme
+Prefer main theme background
+Font
+Antialiasing
+Less transparency effects
+Continuous textures between rooms
+Disappeared players on minimap
+Stats screen alpha
+FPS limit
+Map info mode
+
+Sound options
+Sounds enabled
+Volume
+
+Change language
+Language
+
+Bug report policy
+Automatic bug reporting
+
+Local server (running)
+Local server
+Add to public serverlist
+Server port
+Autodetect IP
+Start server
+Play on the server
+Stop server
+
+; Used in name and passwords menu as registration status.
+No password set
+Initializing...
+Socket error
+Sending login...
+Error sending
+Waiting for response...
+No response
+Invalid response received
+Master server unavailable
+Logged in
+Login failed: check password
+Logged in; sent to server
+Logged in; server accepted
+Error: server rejected
+
+; Setting names in the server settings dialog (F5).
+; Max length 25 characters each, otherwise the dialog layout is ruined.
+Capture limit
+Time limit
+Extra-time
+Player collisions
+Friendly fire
+Balance teams
+Drop power-ups
+Invisible shadow
+Switch deathbringer
+One hit shield
+Maximum weapon level
+Powerups
+Minimum powerups
+Maximum powerups
+Powerup time
+Powerup add time
+Powerup max time
+
+; Used in server settings dialog (F5) as the value of powerups, minimum
+; powerups or maximum powerups, when they are set as a percentage of map size.
+$1% of rooms
+
+; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
+Trying to connect...
+No response from server.
+Connection refused.
+No reason given.
+Unknown reason code ($1).
+The server is full.
+Protocol mismatch. Server: $1, client: $2.
+Wrong player password.
+Wrong server password.
+You are banned from this server.
+You have been disconnected.
+Server was shut down.
+Connection timed out.
+You were kicked.
+You were kicked for being idle.
+Internal error (client misbehaved).
+
+; Used in the server list menu as refresh status.
+Inactive
+Running
+Failed
+Contacting the servers...
+Getting server list: connecting...
+Getting server list: receiving...
+
+; Used in the server list menu on a server's line. At least 40 chars is OK.
+no response
+
+; Keyboard layout names. Used in the controls menu.
+Belgium
+Brazil
+Canada (French)
+Czech Republic
+Denmark
+Dvorak
+Finland
+France
+Germany
+Italy
+Norway
+Poland
+Portugal
+Russia
+Slovakia
+Spain
+Sweden
+Switzerland
+United Kingdom
+United States
+unknown ($1)
+
+; Used as values for 'save messages' in the game menu.
+all messages
+chat only
+
+; Used as values for 'show stats after the round' in the game menu.
+players
+teams
+
+; Used as values for 'arrow keys in statistics' in the controls menu.
+change stats view
+move player
+
+; Used in the controls menu 'active controls' display.
+up
+down
+left
+right
+shoot
+run
+strafe
+
+; Used as values for 'Disappeared players on minimap' in the graphics menu.
+fade out
+hide early
+hide late
+
+; Used in the error collection dialogs. The last two are only used in the main
+; program error dialog which is shown for example when invalid command line
+; arguments are used. "(server)" is prepended to server generated error
+; messages within the client.
+Errors
+(server)
++ $1 more
+See the 'log' directory for more information.
+
+; Used in an external dialog to contain an "assertion failed" message. No
+; length restriction.
+Internal error
+This results from a bug in Outgun. To help us fix it, please send assert.log and stackdump.bin from the log directory and describe what you were doing to outgun@mbnet.fi
+
+; Used in an external dialog as title. No length restriction.
+Critical error
+
+; Used in a simple dialog, started from the name and passwords menu.
+1 password removed.
+$1 passwords removed.
+No passwords found.
+
+; Used in a simple dialog, started from the language menu. Actually, this is
+; used in the target language, so it's the first thing users see of the
+; translation. If you must, this is a good place to also put information about
+; the translation. No length restriction: will be wrapped.
+Please close and restart Outgun to complete the change of language.
+
+; Used in a simple dialog message when an invalid IP address is entered.
+Invalid IP address.
+
+; Used in the help screen; $1 is the expected file name.
+No help found. It should be in $1
+
+; Field names for player or server password input dialog.
+Password
+Save password
+Player password for $1
+Server password
+
+; Used in the theme selections. (<no theme> for graphics, <no themes found> for
+; sounds)
+<no theme>
+<no themes found>
+<no background>
+
+; Reserved for if the theme names from theme.txt are used in the future.
+(unnamed theme)
+
+
+; - - - - - - - - - - - - - -  in-game messages - - - - - - - - - - - - - - -
+;
+; No length restriction. May be wrapped if line totals over 79 chars.
+
+$1 CAPTURED THE RED FLAG!
+$1 CAPTURED THE BLUE FLAG!
+$1 CAPTURED THE WILD FLAG!
+$1 LOST THE RED FLAG!
+$1 LOST THE BLUE FLAG!
+$1 LOST THE WILD FLAG!
+$1 GOT THE RED FLAG!
+$1 GOT THE BLUE FLAG!
+$1 GOT THE WILD FLAG!
+$1 RETURNED THE RED FLAG!
+$1 RETURNED THE BLUE FLAG!
+$1 DROPPED THE RED FLAG!
+$1 DROPPED THE BLUE FLAG!
+$1 DROPPED THE WILD FLAG!
+$1 was nailed.
+$1 was nailed by teammate $2.
+$1 was nailed by $2.
+$1 was choked.
+$1 was choked by teammate $2.
+$1 was choked by $2.
+$1 received a mortal blow.
+$1 received a mortal blow from teammate $2.
+$1 received a mortal blow from $2.
+$1 defends the red carrier.
+$1 defends the blue carrier.
+$1 defends the red flag.
+$1 defends the blue flag.
+$1 is on a killing spree!
+$1's killing spree was ended by $2.
+$1's killing spree was ended.
+$1 entered the game.
+$1 left the game with $2 frags.
+$1 moved to blue team.
+$1 moved to red team.
+$1 and $2 swapped teams.
+$1 changed name to $2.
+*** Five minutes remaining
+*** One minute remaining
+*** 30 seconds remaining
+*** Time out - CTF game over
+*** Extra-time out - CTF game over
+*** Normal time out - extra-time started
+
+; Optionally added to the previous message.
+(sudden death)
+
+*** Idle kick: move or be kicked in $1 seconds.
+*** $1/$2 votes for mapchange.
+Your vote has no effect until you vote for a specific map.
+
+; Optionally added to the previous message.
+(All players needed for $1 more seconds.)
+
+; Used like: This map is mapname (5 of 13)
+This map is $1 ($2 of $3).
+
+CTF GAME OVER - FINAL SCORE: RED $1 - BLUE $2
+CAPTURE $1 FLAGS TO WIN THE GAME.
+TIME LIMIT IS $1 MINUTES.
+You are muted. You can't send messages.
+You have been unmuted (you can send messages again).
+You have been muted by $1 (you can't send messages).
+$1 has unmuted $2.
+$1 has muted $2.
+You are being kicked from this server by $1!
+
+; Here $2 is a measure of time, constructed using the generic time units.
+; Note how the time units are formed, this should accommodate that form.
+$1 has BANNED you from this server for $2!
+
+$1 has kicked $2 (disconnect in 10 seconds).
+$1 has banned $2 (disconnect in 10 seconds).
+$1 decided it's time for a map change.
+$1 decided it's time for a restart.
+
+; Used in the mute/kick/ban messages as the subject, when the admin has no
+; name (using the separate server monitor program).
+The admin
+
+Too much talk. Chill...
+Disconnecting in $1...
+This map is broken. There is an instantly capturable flag. Avoid it.
+Updating your tournament score failed!
+
+Saved screenshot to $1.
+Could not save screenshot to $1.
+Downloading map "$1" (CRC $2)...
+
+; Used to report authorization status when connected to a server.
+; "Recording" means recording scores with the ranking system.
+; An in-game message is composed of these, for example:
+; Status: master authorized, not recording; administrator
+Status
+master authorized
+recording
+not recording
+master auth pending
+will record
+will not record
+no tournament login
+locally authorized
+administrator
+
+; Used below the messages when typing a message: Say: Hello world_
+Say
+Say team
+Command
+
+
+; - - - - - - - - texts used in the middle of the game screen - - - - - - - -
+;
+; Maximum length 59 characters.
+
+RED TEAM WINS
+BLUE TEAM WINS
+GAME TIED
+SCORE $1 - $2
+
+; The name of the next map is printed on the line below this message.
+Waiting game start - next map is
+
+Loading map: $1 bytes
+
+
+; - - - - - - - - - - - - various game screen texts - - - - - - - - - - - - -
+;
+; Length restrictions are different on each item.
+
+; A piece of history. Printed quasi-randomly when a player dies, on top of
+; a picture of an ice cream. "Virou sorvete" is Portuguese for "turned into
+; ice cream", but you might want to consider not translating it at all.
+; More than 10 characters per line looks weird. If you only need one line for
+; the text, enter a space for the other line so it's not skipped like empty
+; lines are, when reading the translation file.
+VIROU
+SORVETE!
+
+; The shorter the better, but if one is long, it doesn't help if the other is
+; shorter.
+Health
+Energy
+
+; The shorter the better, but if one is long, it doesn't help if others are
+; shorter.
+Power
+Turbo
+Shadow
+
+; The shorter the better; test it.
+Weapon $1
+
+; No limit really, but small and discreet is good.
+FPS:$1
+
+; Recommended max length 7. If more length is needed, please test if they
+; overlap and pad accordingly if it looks bad.
+CHANGE
+TEAMS
+EXIT
+MAP
+
+; All three lines are used as a menu, first line as its title. Menu length
+; restrictions apply.
+Server not responding
+May be heavy packet loss,
+or the server disconnected.
+
+; Used to produce the game screen scoreboard titles. Team names are also used
+; in team and player stats screens (F3, F4).
+; For example "Blue Team pings" should fit in 20 characters. As well, "Blue
+; Team ### capt" ("capt" is short for "captures") should fit in 20 characters.
+; The better the more room for digits in ### there is, for long games. You can
+; drop " Team" from the team names if space is needed.
+Red Team
+Blue Team
+pings
+$1 capt
+
+; Used in the team stats screen (F3).
+; 16 is the maximum width for most, the menu title "Team stats" can be longer.
+Team stats
+Captures
+Kills
+Deaths
+Suicides
+Flags taken
+Flags dropped
+Flags returned
+Shots
+Hit accuracy
+Shots taken
+Movement
+Team power
+
+; Used in the player stats screen (F4).
+; It's a pretty tight fit. The number fields are fixed in position, and 40
+; characters is the maximum length of a line, to keep the right margin equal
+; to the left; 42 characters is still within the dialog box.
+; The number fields appear here commented below the title lines. On all but
+; the 2nd line, the first field extends over the comment mark ';'. '|' marks
+; position 41; the title text should end before that.
+
+     Frags    total/in-row/most
+Ping     Capt Kills      Deaths Suicides
+;000  000 00 000/00/00  000/00/00   00  |
+
+         Flags          Carriers  Carry
+taken dropped returned   killed    time
+; 00      00      00       00     00:00 |
+
+   Accuracy
+Shots   | Taken  Movement     Speed
+;0000 100% 0000  000000 u  00.00 u/s    |
+
+          Average        Tournament
+Playtime lifetime    rank  power  score
+;0000 min   00:00    0000  00.00 -00000 |
+
+; Used in the map list dialog (F2). Can be quite long.
+Server map list
+
+; Used in the map list dialog (F2).
+; The fields appear here commented below the title line. The Nr field extends
+; over the comment mark ';'. The title text should end before the '|'.
+ Nr Vote Title                Size  Author
+;00 00 * <--------20--------> 00×00 <-----------26----------->|
+
+; Used as a prompt in the map list dialog (F2). Can be quite long.
+Vote map number
+
+; Used in the player stats screen (F4) page 4.
+$1 players in the tournament.
+
+; Used in the debug panel (F9).
+Joystick axes
+Joystick buttons
+Traffic: $1 B/s
+in $1 B/s, out $2 B/s
+
+
+; - - - - - - - - - - - - -  special mode messages  - - - - - - - - - - - - -
+;
+; No length restrictions.
+
+; The message printed by the -info command line option.
+Information
+Possible thread priorities (-prio <val>):
+* Minimum: $1
+* Maximum: $1
+* System default (use -defaultprio): $1
+* Outgun default: $1
+IP addresses:
+
+; Used as a window title.
+Outgun - Saving map pictures
+
+; Used in an external dialog message.
+Saved map pictures to the directory 'mappic'.
+
+
+; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
+;
+; We are sorry for the many similar messages; some day they will be unified.
+; You may consider not translating some or all of the error messages.
+; No length restrictions.
+
+; Command line errors.
+-cport must be followed by a space and either a port number or minport:maxport.
+-cport X or -cport X:Y: X and Y must be in the range of 1 to 65535.
+-cport X:Y: Y must be greater than X.
+-debug must be followed by a space and a number.
+-debug X: X must be in the range of 0 to 2.
+-fps must be followed by a space and a number.
+-fps X: X must be in the range of 1 to 1000.
+-ip must be followed by a space and an IP address.
+-ip X: X must be a valid IP address without :port.
+-mappic can't be combined with other command line options.
+-maxp must be followed by a space and a player count.
+-maxp X: X must be an even number in the range of 2 to $1.
+-port must be followed by a space and a port number.
+-port X: X must be in the range of 1 to 65535.
+-sport must be followed by a space and minport:maxport.
+-sport X:Y: X and Y must be in the range of 1 to 65535.
+-sport X:Y: Y must be greater than X.
+The given priority $1 isn't within system limits. Run with -info for more information.
+Unknown command-line argument '$1'.
+
+; Overview statements about failing processes.
+Can't add '$1' to map rotation.
+Can't load: error in map '$1'.
+Can't start listen server.
+Can't start the client.
+Can't start the server.
+Could not save map pictures to the directory 'mappic'.
+
+; Graphic mode errors.
+Couldn't initialize resolution $1×$2×$3 in any mode.
+Couldn't initialize resolution $1×$2×$3 in $4 mode; reverted to $5.
+
+; Used as $4 and $5 in the previous message.
+backbuffered fullscreen
+flipped fullscreen
+windowed
+
+; Missing files.
+Can't open game mod file '$1'.
+Can't read '$1'.
+
+; Gamemod format errors.
+Unrecognized gamemod setting: '$1'.
+Can't set $1 to '$2' - expecting $3.
+
+; Different expectations used as $3 in the previous message.
+0 or 1
+$1 or $2
+one of no, balance, and shuffle
+one of no, normal, and special
+an even integer between 2 and $1
+an integer
+an integer, at least $1
+an integer, at most $1
+an integer between 0 and $1, or 'n %' with n 0 or greater
+an integer, between $1 and $2, inclusive
+a real number
+a real number, at least $1
+a real number, at most $1
+a real number, between $1 and $2, inclusive
+a real number or 'x %' with x 0 or greater
+IP address without :port
+
+; Added to some of the above, where outside the normal range, 0 is allowed.
+, or 0
+
+; Map format errors.
+Invalid map line: $1
+Label '$1' not found: $2
+Label line not allowed in label block: $1
+Map is missing a width, height or title.
+Redefined map author.
+Redefined map height.
+Redefined map title.
+Redefined map width.
+Room line not allowed in label block: $1
+Team $1, flag $2 on the wall.
+Team $1, spawn point $2 on the wall.
+Two identical label names not allowed: $1
+Unrecognized map line: $1
+
+; This is not detected when the map is loaded, but later at an instant capture.
+This map is invalid: instant flag capture is possible.
+
+; Other file format errors.
+'$1', given in master.txt is not a valid IP address.
+Admin shell: unprintable characters, message ignored.
+Alpha bitmaps must be 8-bit grayscale images; $1 is $2-bit.
+Invalid ban command (IP address) in auth.txt: "$1"
+Invalid line (no name) in auth.txt: "$1"
+Invalid syntax in client.cfg ("$1").
+Invalid user command (no password) in auth.txt: "$1"
+Map picture saver: Map '$1' is not a valid map file.
+Syntax error in gfxmodes.txt, line '$1'.
+Translation $1 can't be read.
+Unknown data in client.cfg ("$1").
+Unrecognized command "$1" in auth.txt
+Unusable mode in gfxmodes.txt: $1×$2×$3 (should be at least 320×200 with bits 16, 24 or 32).
+Width and height of textures must be powers of 2; floor texture $1 is $2×$3.
+Width and height of textures must be powers of 2; wall texture $1 is $2×$3.
+
+; Miscellaneous errors.
+Can't change max_players while players are connected.
+Can't create new thread. Insufficient system resources.
+Can't set server to run in the background.
+Master talker: You have a deprecated Outgun version. The server is not accepted on the master list. Please update.
+No maps for rotation.
+
+; Network errors. Most of these can occur in normal operation when there's
+; something wrong with the network or a remote server. Where it's not clear
+; what $1 is, it is a message in English, telling what went wrong within the
+; network subsystem.
+Can't init HawkNL. $1
+No IP network.
+Admin shell: Can't open socket on port $1.
+Admin shell: Can't set socket to listen mode.
+Admin shell: Can't accept connection.
+Admin shell: read failed. Reason: $1
+Admin shell: sending response failed. Reason: $1
+Can't connect to master server. $1
+Can't open socket.
+Can't open socket for refreshing servers. $1
+Can't open socket to connect to master server. $1
+Can't start network server on port $1.
+Master talker: Can't open socket to connect to master server.
+Master talker: (Quit) Can't connect to master server.
+Master talker: (Quit) Can't open socket to connect to master server.
+Master talker: (Quit) Error sending info: $1
+Master talker: (Quit) Error while waiting for a response: $1
+Website thread: Can't open socket to connect to server website.
+Website thread: (Quit) Can't connect to server website.
+Website thread: (Quit) Can't open socket to connect to server website.
+
+; Rare external network errors. These may happen but there's rarely anything
+; the user can do to fix them.
+Incorrect data received from master server.
+Master talker: (Quit) There was an unexpected error while sending information to the master list. See log/master.log.
+Master talker: There was an unexpected error while sending information to the master list. See log/master.log. To suppress this error, make the server private by using the -priv argument.
+
+; File writing errors. These should be quite rare.
+Can't open $1 for writing.
+Can't save player password to '$1'!
+Can't write '$1'.
+config/language.txt can't be written.
+Error writing to '$1'.
+File download: Can't open '$1' for writing.
+Map picture saver: Can't save map picture to '$1'.
+The directory '$1' was not found and could not be created.
+
+
+; - - - - - - - - - - - - - - - - other texts - - - - - - - - - - - - - - - -
+;
+; These need not be translated. Length restrictions are different on each item.
+
+; Server shutdown messages. These are briefly shown as the window title while
+; the server is shutting down. In rare cases they take longer to disappear.
+Shutdown: ABORTING $1 tournament updates
+Shutdown: admin shell threads
+Shutdown: main thread
+Shutdown: master talker thread
+Shutdown: net server
+Shutdown: waiting for $1 tournament updates
+Shutdown: website thread
+
+; Comment written to auth.txt. It may be sensible to translate this in case
+; you're translating the entire Outgun distribution with other configuration
+; files too.
+This file is automatically rewritten whenever the ban list changes.
+To reserve a name add a row:
+user <name> <tab> <password>  or  admin <name> [<tab> <password>]
+where <tab> is a tabulator character.
+Passwordless admins need to authenticate by logging in to the tournament.

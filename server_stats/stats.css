@@ -1,0 +1,68 @@
+/* Outgun style sheet */
+
+BODY, H3, H4, H5, H6 {
+  color: black;
+  background: #F9FFF9 none;
+}
+
+A:link, H2 A:link, .changeinfo A:link { color: blue; background: transparent none }
+A:visited, H2 A:visited, .changeinfo A:visited { color: #009; background: transparent none }
+A:link:hover, A:visited:hover, A:link:active, A:visited:active,
+H2 A:link:hover, H2 A:visited:hover, H2 A:link:active, H2 A:visited:active,
+.changeinfo A:link:hover, .changeinfo A:visited:hover, .changeinfo A:link:active, .changeinfo A:visited:active {
+  color: red;
+  background: transparent none;
+}
+
+H1 {
+  color: black;
+  background: #CFC none;
+  margin-top: 0.5em;
+  padding: 0.25em;
+  border-bottom: thick solid #AFA;
+  text-align: center;
+}
+
+H2 {
+  color: black;
+  background: #EFE none;
+  padding: 0 0.25em;
+  border-bottom: medium solid #CFC;
+}
+
+/*H3 { border-bottom: medium solid #CFC; display: inline }*/
+
+HR { border: thin solid #AFA; }
+
+LI { margin-top: 0.25em }
+
+PRE {
+  padding: 0.2em;
+  border: thin solid green;
+}
+
+TABLE { color: black; background: #DFD none; }
+TD, TH { color: black; background: #F9FFF9 none; }
+
+.changeinfo {
+  color: #800;
+  background: transparent none;
+}
+
+H1 CODE, H2 CODE, H3 CODE, H4 CODE, H5 CODE, H6 CODE { font-weight: bold }
+
+/* Stats specific styles */
+
+.pl-stats-thr { font-size: 85% }
+.pl-stats-thr TH { padding: 1px }
+
+TABLE.teams, TABLE.players, TABLE.captures { border-collapse: collapse }
+
+.teams TH, .teams TD, .players TH, .players TD, .captures TH, .captures TD {
+  border: solid thin green;
+  color: black;
+  background: #F8FFF8 none;
+  padding: 0.2em;
+}
+
+.contents-list H3 { font-size: 1em }

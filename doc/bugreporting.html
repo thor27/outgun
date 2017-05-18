@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Reporting bugs</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Reporting bugs
+</DIV>
+
+<H1>Reporting bugs</H1>
+
+<P>
+This document gives general guidelines for reporting bugs in Outgun. Some information here is beneficial to read even before you&rsquo;ve actually come across a bug.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#overview">Overview</A>
+ <LI><A HREF="#crashinfo">Getting information from crashes</A>
+  <UL>
+   <LI><A HREF="#watson">Dr. Watson</A> (Windows)
+   <LI><A HREF="#coredump">Core dumps</A> (Linux)
+  </UL>
+ <LI><A HREF="#outgun">Getting more information out of Outgun</A>
+ <LI><A HREF="#reporting">How to report</A>
+  <UL>
+   <LI><A HREF="#report_what">What is a bug</A>
+   <LI><A HREF="#report_include">What to include in a report</A>
+   <LI><A HREF="#report_send">How to send the report</A>
+  </UL>
+</UL>
+
+<H2 ID="overview">Overview</H2>
+
+<P>
+Reporting bugs as well as possible is not very simple. You can just tell us when something goes wrong, but with bad luck that doesn&rsquo;t help at all in finding and fixing the actual problem. You can use the advice on this page to get more information afterwards from a bug that happens to be repeatable, but in case you hit a bug that only happens randomly, it helps to prepare in advance.
+</P>
+
+<P>
+There are many kinds of bugs, as explained in the section <A HREF="#report_what">what is a bug</A>. Of those, crashes are the hardest to investigate, since by default almost no useful information is produced. Enabling the information to be produced is not very simple, but you should be able to enable it with these instructions. In the case of Linux you need to know how to use the console to do that.
+</P>
+
+<P>
+Assertions are easier to deal with than crashes, and you can help us without going through any trouble by enabling &ldquo;automatic bug reporting&rdquo; in Outgun&rsquo;s <A HREF="menus.html#options">options menu</A>. However, you should still report the bug yourself, and not only for the credit. Often the automatic information is not enough without knowing what you were doing when the assertion was triggered. Also, partly because the reporting system is made as simple and unobtrusive as possible, some automatic bug reports don&rsquo;t reach us even if the feature is enabled. Notice that the automatic bug reports are anonymous and we have no means of asking you for more details, unless you directly contact us about the bug.
+</P>
+
+<P>
+Finally, note that reporting bugs properly (or at least at all) is doing a huge favor to the whole Outgun community, rather than just us developers. Most bugs are elusive and occur rarely, so don&rsquo;t just think someone else will report it if you don&rsquo;t! We wish to thank all reporters of bugs here, also the anonymous ones who can&rsquo;t be credited in Outgun&rsquo;s readme.
+</P>
+
+<H2 ID="crashinfo">Getting information from crashes</H2>
+
+<P>
+This chapter explains how to get an idea about what happened in a crash. This information is crucial for us in order to fix the bug. Here, crash means when Outgun abruptly closes without a message or with a message other than &ldquo;assertion failed&rdquo;. In contrast, the assertions produce an useful message and a <CODE>log/stackdump.bin</CODE>, and from other kinds of errors all the useful information is in the logs.
+</P>
+
+<UL>
+ <LI><A HREF="#watson">Dr. Watson</A> (Windows)
+ <LI><A HREF="#coredump">Core dumps</A> (Linux)
+</UL>
+
+<H3 ID="watson">Dr. Watson <SMALL>(Windows)</SMALL></H3>
+
+<P>
+Dr. Watson is a tool built into Windows that extracts necessary information from a program that crashes. When Outgun (or any other program) crashes, it takes a moment while Dr. Watson creates its log file. When reporting a crash, send the latest log file to us. It will often tell us pretty exactly what finally went wrong. (But it doesn&rsquo;t remove the need to know what you were doing and if some other unexpected thing happened.)
+</P>
+
+<P>
+Operating Dr. Watson depends on your Windows version. We only know exactly how to do it on a few Windows platforms. If you manage to run it on another platform according to one of these instructions or somehow else, do tell us and it&rsquo;ll be included here.
+</P>
+
+<H4 ID="watson98">Windows 98 SE (probably 95, 98; maybe ME)</H4>
+
+<P>
+In these older Windowses you must manually start Dr. Watson whenever you use Outgun. You can start it manually by running (Start / Run...) <KBD>drwatson.exe</KBD>, or by creating a shortcut to it. To make it automatically start with Windows, add a shortcut to it in your start menu startup group. Whenever it&rsquo;s running, it will display an icon in the system tray. You can click on it to change its options, but the default ones are good. To make the logs smaller, you can change the &ldquo;Number of instructions&rdquo; field to the minimum of 1, but do not reduce the &ldquo;Number of stack frames&rdquo; field to much less than 100.
+</P>
+
+<P>
+On these Windows versions, by default Dr. Watson saves its logs to <CODE>C:\Windows\Drwatson\</CODE> or similar. Each crash is usually given its own file, while some crashes may produce many files. In that case, send all the logs from the crash; you can see which ones to send from the file dates.
+</P>
+
+<H4 ID="watsonxp">Windows XP pro (probably XP home; maybe NT, 2000, 2003)</H4>
+
+<P>
+In newer Windowses, Dr. Watson runs automatically. You can check this by verifying that there are logs in <CODE>C:\Documents and Settings\All Users\Application Data\Microsoft\Dr Watson\</CODE> (replace &ldquo;<CODE>Application data</CODE>&rdquo; with &ldquo;<CODE>Dados de aplicativos</CODE>&rdquo; for a Portuguese Windows). If it&rsquo;s not running, you might try running it by Start / Run... / <KBD>drwatson.exe</KBD>. To access Dr. Watson&rsquo;s settings, go to Start / Programs / Accessories / System Tools / System Information / Tools / Dr Watson. You should configure it to overwrite its old logs (uncheck &ldquo;Append To Existing Log File&rdquo;), otherwise you&rsquo;ll have to periodically delete the old logs manually to avoid sending larger files than needed. You can also reduce the &ldquo;Number of Instructions&rdquo; to the minimum to save in log size.
+</P>
+
+<P>
+On these Windows versions, by default Dr. Watson saves its log as <CODE>C:\Documents and Settings\All Users\Application Data\Microsoft\Dr Watson\drwtsn32.log</CODE> (replace &ldquo;<CODE>Application data</CODE>&rdquo; with &ldquo;<CODE>Dados de aplicativos</CODE>&rdquo; for a portuguese Windows). Unless you uncheck &ldquo;Append To Existing Log File&rdquo; or periodically delete this file, it contains a whole lot of crash logs and can grow very large.
+</P>
+
+<P>
+These Windows versions can be configured to close crashing programs without giving you any visible info. If Outgun crashes this way, you can see from the date of Watson&rsquo;s log that it was indeed a crash. In that case, do send us the log.
+</P>
+
+<H3 ID="coredump">Core dumps <SMALL>(Linux)</SMALL></H3>
+
+<P>
+Linux can easily be configured to produce core dumps whenever a program crashes. The dumps contain all the information there is about the crashing program. The problem is, they&rsquo;re large, and system specific. However, you can extract the most important information out of them in a relatively simple way.
+</P>
+
+<P>
+If your system doesn&rsquo;t produce core dumps by default, you must enable them, usually by executing &ldquo;<KBD>ulimit -c unlimited</KBD>&rdquo; (bash) or &ldquo;<KBD>unlimit coredumpsize</KBD>&rdquo; (csh) in the shell you run Outgun from. You can automate this by appending the line to the shell startup script, for example <CODE>.bashrc</CODE>. That way it will affect every application. To only get dumps from Outgun, you should create a script which removes the core dump limit and then executes Outgun, and use this script instead whenever you intend to run Outgun.
+</P>
+
+<P>
+Extracting information from the core dump (usually a file whose name starts with <CODE>core</CODE> in the directory in which you run Outgun) happens by running the GNU debugger, gdb. If the core dump is called <CODE>core.5636</CODE> and resides in the Outgun directory, and that is your current directory, type:
+</P>
+
+<PRE><KBD>gdb outgun core.5636
+bt
+q</KBD></PRE>
+
+<P>
+The first command runs gdb telling it to read debugging information about the executable <CODE>outgun</CODE>, and the core dump <CODE>core.5636</CODE>. <CODE>bt</CODE> tells gdb to output a backtrace, which hopefully shows a list of addresses and function names in Outgun. This list you should send to us. <CODE>q</CODE> tells gdb to quit.
+</P>
+
+<H2 ID="outgun">Getting more information out of Outgun</H2>
+
+<P>
+To prepare for the hardest-to-solve bugs, it is useful to run Outgun with the command line switch &ldquo;<A HREF="commandline.html#debug"><CODE>-debug</CODE></A><CODE> 2</CODE>&rdquo;. That way you will have some more log files that may prove useful in debugging a problem.
+</P>
+
+<P>
+The regular logs usually contain some useful clues too, so it is important you don&rsquo;t remove them after noticing a new bug. Notice that restarting Outgun clears the old logs, so it is best to back up the whole log directory on the event of a bug; otherwise if the bug happens to not be repeatable, all useful information is lost.
+</P>
+
+<H2 ID="reporting">How to report</H2>
+
+<H3 ID="report_what">What is a bug</H3>
+
+<P>
+Anything that doesn&rsquo;t feel right, qualifies for reporting as a bug. This includes (but is not necessarily limited to)
+</P>
+
+<UL>
+ <LI>something that doesn&rsquo;t work (but should),
+ <LI>something that works otherwise than expected (or inconsistently),
+ <LI>when Outgun crashes (&ldquo;This program has performed an illegal operation and will be shut down&rdquo;, or &ldquo;Segmentation fault&rdquo;, or similar),
+ <LI>when Outgun closes when it&rsquo;s not supposed to (this is probably a crash too, but your OS hides it),
+ <LI>when Outgun hangs and stops responding, and
+ <LI>when Outgun pops up a message saying &ldquo;Assertion failed&rdquo;.
+</UL>
+
+<P>
+In any of these cases, or when something just feels weird, consider reporting. However, don&rsquo;t report stuff that&rsquo;s already been reported: check the web page of known issues first (see <A HREF="http://koti.mbnet.fi/outgun/1.0/known_issues.html">known issues for Outgun 1.0</A> online). There, both bugs and legitimate behavior reported as weird by someone, are listed. Also, avoid reporting something that is probably an issue with your own system &ndash; particularly problems that are common with other games.
+</P>
+
+<H3 ID="report_include">What to include in a report</H3>
+
+<P>
+What you should include in a bug report varies with the kind of bug you&rsquo;re reporting. Choose from the list below those items that apply to your situation. You don&rsquo;t have to be formal and write pages of information, but the more you include, the easier it is to find and fix the problem. When you have a problem that happens every time you do a certain thing in a certain way, it is enough to send information about what to do to make it happen. However, if we can&rsquo;t reproduce it on our computers, we&rsquo;ll have to ask you for more information from this list.
+</P>
+
+<P>
+When you first have a problem, a good procedure for testing if it&rsquo;s repeatable, is to backup (copy to another directory) the Outgun <CODE>log</CODE> directory, not delete any other log, and then try again. If you can&rsquo;t repeat it, send the original logs and as much of other information as possible. If you can repeat it, just tell us what to do to repeat it here.
+</P>
+
+<UL>
+ <LI>The exact version of Outgun you had the bug with (which should be the most recent version). The first line of <CODE>log/log.txt</CODE> tells this information.
+ <LI>What you were doing when you had the problem. If the problem always happens when you do something specific, this is clear. Sending the contents of the Outgun <CODE>log</CODE> directory (except <CODE>message.log</CODE>, <CODE>sayadmin.log</CODE> and other unrelated files) will often help.
+ <LI>What is the problem. Including a log file or a screenshot might help.
+ <LI>Why do you think this is a bug, or wrong. (if it isn&rsquo;t obvious)
+ <LI>If Outgun crashed, attach Dr. Watson&rsquo;s log, as explained <A HREF="#watson">above</A>, for Windows, or for Linux a gdb backtrace, also explained <A HREF="#coredump">above</A>.
+ <LI>If you had the message &ldquo;Assertion failed&rdquo;, attach <CODE>assert.log</CODE> and <CODE>stackdump.bin</CODE> from Outgun&rsquo;s <CODE>log</CODE> directory.
+ <LI>Your Outgun configuration files (the <CODE>config</CODE> directory), if appropriate.
+ <LI>What hardware and operating system you&rsquo;re running on (briefly), and if you compiled Outgun from sources or not.
+</UL>
+
+<H3 ID="report_send">How to send the report</H3>
+
+<P>
+Send e-mail to <A HREF="mailto:&#111;&#117;&#116;&#103;&#117;&#110;&#64;&#109;&#98;&#110;&#101;&#116;&#46;&#102;&#105;">&#111;&#117;&#116;&#103;&#117;&#110;&#64;&#109;&#98;&#110;&#101;&#116;&#46;&#102;&#105;</A> with &ldquo;Bug report&rdquo; mentioned in the subject. This is easier than ICQ in that you don&rsquo;t have to wait for us to be online. Attach any files to the message (zipped, rarred or plain), if possible, or alternatively send a URL to the file(s). Notice that accounts in kit.net, or other servers that don&rsquo;t upload to Finland, can&rsquo;t be used.
+</P>
+
+<P>
+If you don&rsquo;t have an e-mail address, or if you want instant feedback to your report, contact Nix at ICQ (<STRONG>6160624</STRONG>) or, secondarily, Huntta (<STRONG>6220878</STRONG>).
+</P>
+
+<P>
+If neither of the above work for you, but you can upload the files (if any are needed) to a FTP or HTTP server, you can leave a message with the URL on the <A HREF="http://outgun.sourceforge.net/phpBB/phpBB2/viewforum.php?f=4"> English section</A> of the Outgun Forum. In that case, make extra sure you don&rsquo;t give any details you want to keep private (e.g. passwords in Outgun configuration files; the Dr. Watson logs may also include some information about your system which you can inspect by opening the log with Dr. Watson).
+</P>
+
+<HR>
+
+<DIV>
+Created 2005-01-25 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

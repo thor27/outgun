@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Authentication and remote administration</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Authentication and remote administration
+</DIV>
+
+<H1>Authentication and remote administration</H1>
+
+<P>
+This document describes <CODE>config/auth.txt</CODE> and the in-game administration commands. The topic is rather advanced.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#overview">Overview</A>
+ <LI><A HREF="#auth">Authentication: <CODE>auth.txt</CODE></A>
+ <LI><A HREF="#commands">In-game administration commands</A>
+</UL>
+
+<H2 ID="overview">Overview</H2>
+
+<P>
+To simply reserve some player names for a certain player, protected by a password, see <A HREF="#auth">authentication</A> below.
+</P>
+
+<P>
+The remote administration support in Outgun first requires the players to authenticate themselves. This happens automatically for those playing from the same computer that the server runs on. Otherwise they need to use a password &ndash; either log in to the tournament, or enter a server-specific password, depending on if they are set with a password in <CODE>auth.txt</CODE> or not.
+</P>
+
+<P>
+Players who are recognized through tournament login, have an &lsquo;<STRONG>M</STRONG>&rsquo; (&ldquo;master&rdquo;) in the player stats screen (opened with <STRONG>F4</STRONG>). Server authentication (password or being on the same computer) is shown with an &lsquo;<STRONG>S</STRONG>&rsquo; (&ldquo;server&rdquo;). When either of these is active, and the player is set as an admin in <CODE>auth.txt</CODE> (or is on the same computer), an &lsquo;<STRONG>A</STRONG>&rsquo; (&ldquo;admin&rdquo;) is shown. Whenever it is, the player can use <A HREF="#commands">admin commands</A> to kick, ban, and mute players, and force mapchanges.
+</P>
+
+<H2 ID="auth">Authentication: <CODE>auth.txt</CODE></H2>
+
+<P>
+The purpose of <CODE>config/auth.txt</CODE> is three-fold. It can contain reserved user names of two levels: standard users and those with administrator privileges. It is also used to save the list of players banned from the server.
+</P>
+
+<P>
+The syntax is simple. There is one command per line. There are separate commands for <A HREF="#user">reserved names</A>, <A HREF="#admin">administrators</A>, and <A HREF="#ban">bans</A>. You are required to use tabulator characters (ASCII 8) in the file. Some editors don&rsquo;t produce them by default when you press <STRONG>tab</STRONG>; use a different editor or change the setup in that case. Notepad is good in Windows, as well as many other editors; in Linux most editors except Emacs are good in their default configuration.
+</P>
+
+<H3 ID="user">Reserved names: <CODE>user</CODE></H3>
+
+<P>
+Password-protect a player name with the <CODE>user</CODE> command.
+</P>
+
+<P>
+Syntax:<BR>
+<CODE>user </CODE><EM>name</EM><CODE> </CODE><STRONG>tab</STRONG><CODE> </CODE><EM>password</EM><BR>
+</P>
+
+<P>
+The command <CODE>user</CODE> is followed by a space, the player name to be protected, a tabulator character, and the password. This prohibits anyone from using the given name without knowing the password. Similar names are not blocked except for those very similar (with the same alphanumerics regardless of case, and other characters similarly located), but other players will see that the player with a similar name is not authorized by the server. Note that you should not protect names that have zero or one alphanumerics (A-Z and 0-9), unless you&rsquo;re OK with blocking lots of similar names.
+</P>
+
+<H3 ID="admin">Administrators: <CODE>admin</CODE></H3>
+
+<P>
+Assign a player administrator status, and optionally password-protect the name, with the <CODE>admin</CODE> command.
+</P>
+
+<P>
+Syntax:<BR>
+<CODE>admin </CODE><EM>name</EM><BR>
+or<BR>
+<CODE>admin </CODE><EM>name</EM><CODE> </CODE><STRONG>tab</STRONG><CODE> </CODE><EM>password</EM><BR>
+</P>
+
+<P>
+The command <CODE>admin</CODE> is followed by a space and the player name to be protected. To use a local password instead of tournament login, add a tabulator character and the password. With password-protection, the same considerations exist as with the <A HREF="#user"><CODE>user</CODE></A> command. If no password is given, a player with this name is granted administrator rights whenever they are logged in to the tournament.
+</P>
+
+<H3 ID="ban">Banned players: <CODE>ban</CODE></H3>
+
+<P>
+When a player gets banned, Outgun re-writes <CODE>auth.txt</CODE> adding to it a <CODE>ban</CODE> command. Similarly, it is modified when a ban expires. You can add, remove or modify the ban commands if you want to.
+</P>
+
+<P>
+Syntax:<BR>
+<CODE>ban </CODE><EM>name</EM><CODE> </CODE><STRONG>tab</STRONG><CODE> </CODE><EM>IP</EM><BR>
+or<BR>
+<CODE>ban </CODE><EM>name</EM><CODE> </CODE><STRONG>tab</STRONG><CODE> </CODE><EM>IP</EM><CODE> </CODE><EM>time</EM><BR>
+</P>
+
+<P>
+The command <CODE>ban</CODE> is followed by a space, the player name (just to remind you who the IP belongs to), a tabulator character, and the banned IP address. To limit the ban in time, add a space and the time code for when the ban should expire. The time code is a large integer representing seconds since the start of the year 1970; adjusting the times by hand is not very practical. You may want to restrict yourself to removing bans and creating new permanent ones, or let Outgun do the time calculations for you.
+</P>
+
+<H2 ID="commands">In-game administration commands</H2>
+
+<P>
+For authorized admins, these admin commands will be shown on the &lsquo;console&rsquo; when they type &ldquo;<CODE>/help</CODE>&rdquo;, in addition to normal console commands. The commands are:
+</P>
+
+<TABLE BORDER>
+ <TR><TH><CODE>/list</CODE><TD>list the player IDs
+ <TR><TH><CODE>/kick </CODE><EM>ID</EM><TD>remove the player <EM>ID</EM> from the server
+ <TR><TH><CODE>/ban </CODE><EM>ID</EM><CODE> </CODE><EM>time</EM><TD>ban the player <EM>ID</EM> from the server for <EM>time</EM> minutes
+ <TR><TH><CODE>/mute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM>
+ <TR><TH><CODE>/smute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM> without telling them that they&rsquo;re muted
+ <TR><TH><CODE>/unmute </CODE><EM>ID</EM><TD>unmute the player <EM>ID</EM>
+ <TR><TH><CODE>/forcemap</CODE><TD>force map change or restart the round
+</TABLE>
+
+<P>
+The <CODE>/list</CODE> command must be used to get the player ID of a player that can then be kicked, banned or muted via the respective commands. Silent muting with the <CODE>/smute</CODE> command means that the muted player will not know they&rsquo;re muted; it&rsquo;s pretty crude so use with care (or not at all). Banning made with the <CODE>/ban</CODE> command isn&rsquo;t permanent: the maximum time is 10 000 minutes (almost exactly one week). That&rsquo;s because the IP address of the banned player can change and we don&rsquo;t want to have banned someone else who gets their IP after them. If you don&rsquo;t give a time, it defaults to 60 minutes.
+</P>
+
+<P>
+The <CODE>/forcemap</CODE> command is a bit complicated: it can be used to either change the map or just restart the round. To change the map, the player issuing the command must first vote for that map (press <STRONG>F2</STRONG> to open the vote dialog). If they&rsquo;ve voted for no map, only a restart is issued. Having pressed <STRONG>F8</STRONG> or not has no effect.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2004-12-08 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

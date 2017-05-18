@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun map editing tutorial</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Map editing tutorial</DIV>
+
+<H1>Outgun map editing tutorial</H1>
+
+<P>
+This tutorial tries to explain how to make a map for Outgun 1.0. See the <A HREF="maps.html">map format specification</A> for technical details of the commands.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#plan">The plan</A>
+ <LI><A HREF="#info">Map information</A>
+ <LI><A HREF="#first-rooms">First rooms</A>
+ <LI><A HREF="#circ-walls">More circular walls</A>
+ <LI><A HREF="#tri-walls">Triangular walls</A>
+ <LI><A HREF="#wild-flag-room">Wild flag room</A>
+ <LI><A HREF="#flags-spawns">Flags and spawn points</A>
+ <LI><A HREF="#textures">Textures</A>
+</UL>
+
+<H2 ID="plan">The plan</H2>
+
+<P>
+The first thing to do is to make some plans about the map. Then we just make the map to fit the plans. How about this kind of a map? It has rectangular, triangular and circular walls as well as a wild flag.<BR>
+<IMG SRC="pics/tutorial.png" ALT="[The Tutorial map]">
+</P>
+
+<H2 ID="info">Map information</H2>
+
+<P>
+We start the &ldquo;coding&rdquo; by adding the basic information about the map. Our map is 3×2 rooms. The title is simply <CITE>Tutorial</CITE> and I am the original author of the map.
+</P>
+<P>
+Then there is the scale. The original 1×1 scale is quite confusing because a 0.1×0.1-unit sized wall is not square. We set the scale of 16×12. It means that the room is 16 units wide and 12 units high as it is seen in the picture.<BR>
+<IMG SRC="pics/tutorial-grid.png" ALT="[A room with 16×12-sized grid]">
+</P>
+<PRE><CODE>P width  3
+P height 2
+P title  Tutorial
+P author Huntta
+S 16 12</CODE></PRE>
+
+<H2 ID="first-rooms">First rooms</H2>
+
+<P>
+We see that the three upper rooms are quite similar. They all have walls on the left, right and top edge. We shall make three rectangular walls. The first one starts at the top left corner and continues to the right edge of the room with 1 unit in thickness.
+</P>
+
+<PRE><CODE>:basic
+W    0  0 16  1
+W    0  1  1 12
+W   16  1 15 12</CODE></PRE>
+
+<P>
+The blue and red bases have a round wall and two walls at the bottom of the room.
+</P>
+
+<PRE><CODE>:base
+W    1 11  5 12
+W   15 11 11 12
+C W  8  4  4  3  90 270</CODE></PRE>
+<P>
+The circular wall is at point (8, 4), its outer radius is 4 and inner radius 3. We just want half a circle, starting at 90° and ending at 270°.
+</P>
+
+<P>
+Those commands by themselves don&rsquo;t do much. We need the X commands before those to specify the rooms where these walls will be created. The basic room type needs to be in rooms (0, 0), (1, 0) and (2, 0).
+</P>
+<PRE><CODE>X basic 0 0 2 0
+X base  0 0
+X base  2 0</CODE></PRE>
+
+<P>
+At this point we have walls in three rooms.<BR>
+<IMG SRC="pics/tutorial-1.png" ALT="[The Tutorial map &ndash; phase 1]">
+</P>
+
+<P>
+The rest of the rooms we have to make one by one. Let&rsquo;s take next the room between the bases. We just need to add two rectangular walls there.
+</P>
+
+<PRE><CODE>R 1 0
+W    5  4  6 12
+W   11  4 10 12</CODE></PRE>
+<P>
+<CODE>R 1 0</CODE> makes the next commands affect room (1, 0). Then we make two walls from the middle of the room to the bottom edge.
+</P>
+
+<H2 ID="circ-walls">More circular walls</H2>
+
+<P>
+Now to the room below the blue base. It has round corners and a circle in the middle.
+</P>
+
+<PRE><CODE>R 0 1
+C W  8  6  2
+C W  4  4  6  3 -90   0
+C W 12  4  6  3   0  90
+C W  4  8  6  3 180 270
+C W 12  8  6  3  90 180</CODE></PRE>
+<P>
+The second line is the circle in the middle of the room. The corners are parts of a ring, 90° each, made in the next four lines. The inner radius of the every corner is 3. The outer radius is big enough to reach the corner of the room area.<BR>
+<IMG SRC="pics/tutorial-room-2-1.png" ALT="[The Tutorial map &ndash; room (2, 1)]">
+</P>
+<P>
+We need to add some rectangular walls to the left, bottom and top. Add the following code to the room (0, 1).
+</P>
+<PRE><CODE>W    4 12 12 11
+W    0  4  1  8
+W    4  0  5  1
+W   12  0 11  1</CODE></PRE>
+<P>
+The first line is the wall at the bottom hole and the second line at the left hole. The two last lines are squares to make the top walls match the ones in the blue base room.<BR>
+<IMG SRC="pics/tutorial-2.png" ALT="[The Tutorial map &ndash; phase 2]">
+</P>
+
+<H2 ID="tri-walls">Triangular walls</H2>
+
+<P>
+The room below the red base will mainly be made of triangles.
+</P>
+<PRE><CODE>R 2 1
+T W  8  4  8  8  6  6
+T W  8  4  8  8 10  6</CODE></PRE>
+<P>
+This code makes a diamond using two triangles in the middle of the room. The first line is the left triangle and the second is the right one.
+</P>
+<PRE><CODE>W    0 12 16 11
+W   16  0 15 11
+W    0  0  5  1
+W   15  0 11  1
+W    0  1  1  4
+W    0 11  1  8</CODE></PRE>
+<P>
+These lines make six rectangular walls as the outer walls of the room.
+</P>
+
+<PRE><CODE>T W  1  1  4  1  1  4
+T W 15  1 12  1 15  4
+T W  1 11  4 11  1  8
+T W 15 11 12 11 15  8</CODE></PRE>
+<P>
+The four triangles are at the corners. Our map has now five rooms out of six ready.<BR>
+<IMG SRC="pics/tutorial-3.png" ALT="[The Tutorial map &ndash; phase 3]">
+</P>
+
+<H2 ID="wild-flag-room">Wild flag room</H2>
+
+<P>
+The last room has five rectangular walls at the edges and two at the middle. There is also a wall formed as half a ring in the middle of the room.
+</P>
+
+<PRE><CODE>R 1 1
+W    0 12 16 11
+W    0  0  1  4
+W   16  0 15  4
+W    0 11  1  8
+W   16 11 15  8
+W    5  0  6  6
+W   11  0 10  6
+C W  8  6  3  2  90 270</CODE></PRE>
+<P>
+After that room, the map is ready &ndash; except the flags and spawn points.<BR>
+<IMG SRC="pics/tutorial-4.png" ALT="[The Tutorial map &ndash; phase 4]">
+</P>
+
+<H2 ID="flags-spawns">Flags and spawn points</H2>
+
+<PRE><CODE>flag  0 2 0  8  4</CODE></PRE>
+<P>
+This is the red flag (team 0). It is in the room (2, 0) at (8, 4).
+</P>
+
+<PRE><CODE>spawn 0 2 0  8  9
+spawn 0 2 0  6  9
+spawn 0 2 0 10  9
+spawn 0 2 0  4  9
+spawn 0 2 0 12  9
+spawn 0 2 0  2  9
+spawn 0 2 0 14  9</CODE></PRE>
+<P>
+These are the red spawn points. They are in the red base below the round wall.
+</P>
+
+<PRE><CODE>flag  1 0 0  8  4
+spawn 1 0 0  8  9
+spawn 1 0 0 10  9
+spawn 1 0 0  6  9
+spawn 1 0 0 12  9
+spawn 1 0 0  4  9
+spawn 1 0 0 14  9
+spawn 1 0 0  2  9</CODE></PRE>
+<P>
+The flag and spawn points of the blue team (team 1). The coordinates are the same as for the red team but the room is obviously different. Here is a picture of the blue base where you can see the flag and the spawn points.<BR>
+<IMG SRC="pics/tutorial-blue-base.png" ALT="[The blue base]">
+</P>
+
+<PRE><CODE>flag  2 1 1  8  6</CODE></PRE>
+<P>
+This adds the wild flag (team 2) in the cover in room (1, 1).<BR>
+<IMG SRC="pics/tutorial.png" ALT="[The Tutorial map with flags]">
+</P>
+
+<H2 ID="textures">Textures</H2>
+
+<P>
+To see how the textures work we change the ground texture at the wild flag cover. Add the following line to room (1, 0). The texture ID is 1 which means an alternative ground texture.
+</P>
+<PRE><CODE>G   5.5 4 10.5 12  1</CODE></PRE>
+
+<P>
+Add the following lines to room (1, 1).
+</P>
+<PRE><CODE>C G  8  6 2.5 0   0   0  1
+G   5.5 0 10.5 6  1</CODE></PRE>
+<P>
+<IMG SRC="pics/tutorial-textures.png" ALT="[The texture demonstration]">
+</P>
+
+<P>
+The Tutorial map is ready. See <A HREF="http://koti.mbnet.fi/janir/outgun/maps/tutorial.txt">the complete Tutorial map file</A>.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2004-10-23 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

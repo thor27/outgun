@@ -1,0 +1,62 @@
+; Simple
+; my first map
+; by :(
+; 2005
+P width  3
+P height 1
+P title Simple
+P author :(
+S 16 12
+
+;red flag
+flag  0 0 0  8  6
+
+;blue flag
+flag  1 2 0  8  6
+
+;spawnpoints
+;red
+spawn 0 0 0  3  3
+spawn 0 0 0  3  5
+;blue
+spawn 1 2 0  7  3
+spawn 1 2 0  7  5
+
+
+X basic 0 0 2 0
+X base 0 0
+X base 2 0
+
+R 0 0
+W    15  1 16 4
+W    15  12 16 8
+W    0 0 1 12
+G    0 0 16 12 3
+
+R 1 0
+W    15  1 16 4
+W    15  12 16 8
+W    0  1 1 4
+W    0  12 1 8
+G    0 0 16 4 2
+G    0 4 16 8 0
+G    0 8 16 12 2
+
+R 2 0
+W    0  1 1 4
+W    0  12 1 8
+W    15 0 16 12
+G   0 0 16 12 4
+
+:basic
+W    0  0 16   1
+W    0 11 16 12
+
+:base
+C W  8  6  4  3  45  135
+C W  8  6  4  3  225 315
+G  7  5  9  7  1
+T W 1 1 3 1 1 3
+T W 15  1 13  1 15  3
+T W  1 11  3 11  1  9
+T W 15 11 13 11 15  9

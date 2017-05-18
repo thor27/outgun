@@ -1,0 +1,90 @@
+; tutorial.txt
+; The official Outgun 1.0.0 tutorial map 
+; by Huntta, 2004
+; Outgun map tutorial is at
+; http://koti.mbnet.fi/outgun/documentation/map-tutorial.html
+
+P width  3
+P height 2
+P title  Tutorial
+P author Huntta
+S 16 12
+
+; red flag and spawn points
+flag  0 2 0  8  4
+spawn 0 2 0  8  9
+spawn 0 2 0  6  9
+spawn 0 2 0 10  9
+spawn 0 2 0  4  9
+spawn 0 2 0 12  9
+spawn 0 2 0  2  9
+spawn 0 2 0 14  9
+
+; blue flag and spawn points
+flag  1 0 0  8  4
+spawn 1 0 0  8  9
+spawn 1 0 0 10  9
+spawn 1 0 0  6  9
+spawn 1 0 0 12  9
+spawn 1 0 0  4  9
+spawn 1 0 0 14  9
+spawn 1 0 0  2  9
+
+; wild flag
+flag  2 1 1  8  6
+
+X basic 0 0 2 0
+X base  0 0
+X base  2 0
+
+R 1 0
+W    5  4  6 12
+W   11  4 10 12
+G   5.5 4 10.5 12  1
+
+R 0 1
+C W  8  6  2
+C W  4  4  6  3 -90   0
+C W 12  4  6  3   0  90
+C W  4  8  6  3 180 270
+C W 12  8  6  3  90 180
+W    4 12 12 11
+W    0  4  1  8
+W    4  0  5  1
+W   12  0 11  1
+
+R 1 1
+W    0 12 16 11
+W    0  0  1  4
+W   16  0 15  4
+W    0 11  1  8
+W   16 11 15  8
+W    5  0  6  6
+W   11  0 10  6
+C W  8  6  3  2  90 270
+C G  8  6 2.5 0   0   0  1
+G   5.5 0 10.5 6  1
+
+R 2 1
+T W  8  4  8  8  6  6
+T W  8  4  8  8 10  6
+W    0 12 16 11
+W   16  0 15 11
+W    0  0  5  1
+W   15  0 11  1
+W    0  1  1  4
+W    0 11  1  8
+T W  1  1  4  1  1  4
+T W 15  1 12  1 15  4
+T W  1 11  4 11  1  8
+T W 15 11 12 11 15  8
+
+:basic
+W    0  0 16  1
+W    0  1  1 12
+W   16  1 15 12
+
+:base
+W    1 11  5 12
+W   15 11 11 12
+C W  8  4  4  3  90 270

@@ -1,0 +1,62 @@
+; 2005-05-01
+; Idea: coiote
+; Coding: Huntta and coiote
+
+P width  1
+P height 4
+P title Hyökkäys
+P author coiote
+S 64 48
+
+flag   0 0 0 48 24
+spawn  0 0 0 48 36
+spawn  0 0 0 48 12
+spawn  0 0 0 56 24
+spawn  0 0 0 36 24
+
+flag   1 0 0 16 24
+spawn  1 0 0 16 36
+spawn  1 0 0 16 12
+spawn  1 0 0  8 24
+spawn  1 0 0 28 24
+
+X sides  0 0 0 3
+X posts  0 0 0 2
+
+R 0 0
+W  0  0 64  1
+
+R 0 1
+
+R 0 2
+
+R 0 3
+  W  0 48 64 47
+C W 32  0  0.8
+C W 32  4  0.8
+C W 32  8  0.8
+C W 32 12  0.8
+C W 32 16  0.8
+C W 32 20  0.8
+C W 32 24  0.8
+  W 31 24 33 29
+  W 28 24 36 26
+
+:sides
+  W  0  0  0.1 48
+  W 64  0 63.9 48
+
+:posts
+C W 32  0  0.8
+C W 32  4  0.8
+C W 32  8  0.8
+C W 32 12  0.8
+C W 32 16  0.8
+C W 32 20  0.8
+C W 32 24  0.8
+C W 32 28  0.8
+C W 32 32  0.8
+C W 32 36  0.8
+C W 32 40  0.8
+C W 32 44  0.8
+C W 32 48  0.8

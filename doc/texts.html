@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Highlighting messages</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Highlighting messages</DIV>
+
+<H1>Highlighting messages</H1>
+
+<P>
+This document describes <CODE>config/texts.txt</CODE>, a file which you can use to highlight chat messages.
+</P>
+
+<P>
+You don&rsquo;t need <CODE>texts.txt</CODE> in normal operation; it&rsquo;s useful to catch the messages that contain a particular string, for example your name.
+</P>
+
+<P>
+The format Outgun 1.0 understands is very simple. Every non-empty line that is not a comment (those start with a semicolon, &lsquo;;&rsquo;), is simply a string. If the string is found in any chat message, the message is highlighted (white). The strings are case-insensitive. For example:
+</P>
+
+<PRE><CODE>lag
+laag
+camp
+F8
+aff</CODE></PRE>
+
+<P>
+<CODE>texts.txt</CODE> is only loaded when Outgun starts.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-05-25 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

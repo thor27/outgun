@@ -1,0 +1,818 @@
+; This is an Outgun translation file.
+; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+; Translation copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+
+
+; Language of the translation, in the target language.
+suomi
+
+
+; You should not modify en.txt, it is the English reference file. Outgun uses
+; it (only) to index the translated strings. To make a new translation, copy
+; en.txt to a new name (languagename.txt) and translate each phrase (non-
+; commented line) in that file. Please send your translation to us at
+; outgun@mbnet.fi for inclusion in the official packages.
+
+; The length restrictions mentioned in the comments should guarantee that the
+; translations fit on the screen in the 640×400 resolution with a 8×8 font that
+; is the default. To allow for smaller resolutions or larger fonts, shorter is
+; always better.
+
+
+; - - - - - - - - - - - - - - miscellaneous texts - - - - - - - - - - - - - -
+;
+; The longer they are the more stupid they look.
+
+; Used in the window title bar, alone.
+Outgun
+
+; Used in the window title bar, like: Connected to Server name (127.0.0.1)
+Yhteydessä - $1 ($2)
+
+; Used in the window title bar when server is running, like:
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
+; version. First and/or last part are added conditionally.
+VIRHEET:$1
+$1/$2p $3k/s v$4 portti:$5
+ESC:sulje
+
+; Time units. These should be formed so that "duration: # <unit>" makes sense.
+; Lengths up to 25 characters are ok, but short is preferred.
+sekunti
+sekuntia
+minuutti
+minuuttia
+tunti
+tuntia
+päivä
+päivää
+viikko
+viikkoa
+vuosi
+vuotta
+
+; Abbreviated time units. Up to 10 characters in addition to "$1" is allowed,
+; but short is strongly preferred.
+$1 s
+$1 min
+
+; Generic terms. Currently, 'unknown' is used in the graphics menu for a
+; refresh rate and in the local server menu for IP address; 'private' and
+; 'invalid' are also for IP address; 'default' is used in font selection;
+; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
+; (F5), as well as 'special' which is used for the player collisions setting.
+; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
+; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; usual UI meaning. All may be used elsewhere in a similar context in the
+; future.
+; Lengths up to 25 characters are ok, but short is preferred.
+Selvä
+Peru
+tuntematon
+yksityinen
+virheellinen
+oletus
+ei
+päällä
+pois
+erikoinen
+pois päältä
+minimaalinen
+täysi
+
+
+; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
+;
+; Length restrictions vary:
+; With the standard resolution (640 in width) and standard 8-wide font, the end
+; of the line is not visible after 76 characters. The actual maximal length of
+; each text depends on the type of the menu component and many lines are made
+; of two parts.
+;
+; Usually, considerably longer than original texts do fit well. To be sure
+; they fit, you should test each menu in the standard resolution and preferably
+; a wider-than-standard font, if you use translations that are considerably
+; longer than the original texts.
+
+Uusi versio: $1
+Palvelinlista
+Katkaise yhteys
+Asetukset
+Ohjeita
+Sulje Outgun
+
+Päivitä palvelinlista
+Päivitä palvelimet
+Päivityksen vaihe
+Näytä suosikkipalvelimet
+Syötä IP-osoite
+
+; IP address is used in both the add server dialog and the local server menu.
+IP-osoite
+
+Lisää suosikkilistaan
+Lisää palvelin
+
+; This key help is not currently used, but is in reserve for the server list.
+Insert = lisää suosikkeihin    Delete = poista listalta
+
+; Table heading in the server list menu.
+; The fields appear here commented below the title line. The IP address field
+; extends over the comment mark ';'.
+IP-osoite            Pingi D Pelaajat Vers. Palvelimen nimi
+;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
+
+Nimi ja salasanat
+Nimi
+Arvo satunnainen nimi
+Turnauksen salasana
+Kirjautumisen tila
+Osallistu turnaukseen
+Poista palvelinkohtaiset pelaajasalasanat
+
+Peliasetukset
+Näytä pelaajien nimet
+Suosikkivärit
+Viive-ennustus
+Viive-ennustuksen määrä
+Tallenna viestit
+Tallenna tilastot
+Näytä tilastot pelin jälkeen
+Näytä palvelimen tiedot yhdistämisen jälkeen
+Pysy kuolleena pelin alussa valikoiden aikana
+Alleviivaa pääpalvelimen tunnistamat pelaajat
+Alleviivaa palvelimen tunnistamat pelaajat
+Hae palvelinlista pelin käynnistyessä
+
+Ohjaimet
+Näppäimistön asettelu
+Käytä numeronäppäimistöä liikkumiseen
+Nuolinäppäimet tilastoruuduissa
+Käytä peliohjainta
+Liikuttava sauva
+Ohjaimen napit (0 = ei käytössä)
+
+; These texts are originally manually padded to the same length. You can do
+; the same to make the menu look neater.
+Ampuminen   
+Juokseminen 
+Sivusiirtymä
+
+Aktiviiset ohjaimet
+
+Näyttötila
+Värisyvyys
+ työpöytä
+$1-bittinen
+Ruudun koko
+Ikkunassa
+Page flipping -tila
+Vaihtoehtoinen page flipping -tapa
+Virkistystaajuus
+$1 Hz
+Vaihda tähän tilaan
+
+Grafiikka
+Teema
+Taustakuva teemasta
+Käytä ensisijaisesti pääteeman taustakuvaa
+Fontti
+Reunanpehmennys
+Vähemmän läpinäkyvyystehosteita
+Tekstuurien jatkuvuus huoneesta toiseen
+Kadonneiden pelaajien näyttö kartalla
+Tilastoruudun läpinäkymättömyys
+FPS-rajoitus
+Ylimääräisten karttatietojen näyttö
+
+Äänet
+Äänet päällä
+Voimakkuus
+
+Vaihda kieltä
+Kieli
+
+Bugiraportointi
+Automaattinen bugiraportointi
+
+Oma palvelin (käynnissä)
+Oma palvelin
+Lisää julkiseen palvelinlistaan
+Palvelimen portti
+Automaattinen osoite
+Käynnistä palvelin
+Pelaa palvelimella
+Sulje palvelin
+
+; Used in name and passwords menu as registration status.
+Ei salasanaa
+Alustan...
+Socket-virhe
+Lähetän tiedot...
+Virhe lähetyksessä
+Odotan vastausta...
+Ei vastausta
+Virheellinen vastaus
+Pääpalvelin tavoittamattomissa
+Kirjautunut
+Kirjautuminen epäonnistui: tarkista salasana
+Kirjautunut; lähetetty palvelimelle
+Kirjautunut; palvelimen hyväksymä
+Virhe: palvelin ei hyväksynyt
+
+; Setting names in the server settings dialog (F5).
+; Max length 25 characters each, otherwise the dialog layout is ruined.
+Ryöstöraja
+Aikaraja
+Jatkoaika
+Pelaajien törmäykset
+Omiin osuminen
+Joukkueiden tasoitus
+Herkkujen pudotus
+Näkymätön varjo
+Vaihtava savupommi
+Kertakäyttösuoja
+Aserajoitus
+Herkkuja
+Herkkuja vähintään
+Herkkuja enintään
+Herkkujen aika
+Herkkujen aikalisäys
+Herkkujen maksimiaika
+
+; Used in server settings dialog (F5) as the value of powerups, minimum
+; powerups or maximum powerups, when they are set as a percentage of map size.
+$1 % huoneista
+
+; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
+Yhdistän...
+Palvelin ei vastannut.
+Palvelin hylkäsi.
+Ei selitystä.
+Tuntematon selityskoodi ($1).
+Palvelin on täynnä.
+Protokolla ei täsmää. Palvelin: $1, asiakas: $2.
+Väärä pelaajasalasana.
+Väärä palvelimen salasana.
+Sinulla on porttikielto tälle palvelimelle.
+Yhteys katkesi.
+Palvelin sammutettiin.
+Aikakatkaisu.
+Sinut potkaistiin.
+Sinut potkaistiin, koska et tehnyt mitään vähään aikaan.
+Sisäinen virhe (asiakasohjelman virheellinen toiminta).
+
+; Used in the server list menu as refresh status.
+Ei toimintaa
+Päivitän
+Epäonnistui
+Kyselen palvelimilta...
+Haen palvelinlistaa: yhdistän...
+Haen palvelinlistaa: vastaanotan...
+
+; Used in the server list menu on a server's line. At least 40 chars is OK.
+ei vastausta
+
+; Keyboard layout names. Used in the controls menu.
+Belgia
+Brasilia
+Kanada (ranskalainen)
+Tshekki
+Tanska
+Dvorak
+Suomi
+Ranska
+Saksa
+Italia
+Norja
+Puola
+Portugali
+Venäjä
+Slovakia
+Espanja
+Ruotsi
+Sveitsi
+Iso-Britannia
+Yhdysvallat
+tuntematon ($1)
+
+; Used as values for 'save messages' in the game menu.
+kaikki
+keskustelu
+
+; Used as values for 'show stats after the round' in the game menu.
+pelaajat
+joukkueet
+
+; Used as values for 'arrow keys in statistics' in the controls menu.
+vaihtavat näytettäviä tilastoja
+liikuttavat pelaajaa
+
+; Used in the controls menu 'active controls' display.
+ylös
+alas
+vasemmalle
+oikealle
+ampuminen
+juokseminen
+sivusiirtymä
+
+; Used as values for 'Disappeared players on minimap' in the graphics menu.
+häivytys
+nopea poisto
+hidas poisto
+
+; Used in the error collection dialogs. The last two are only used in the main
+; program error dialog which is shown for example when invalid command line
+; arguments are used. "(server)" is prepended to server generated error
+; messages within the client.
+Virheet
+(palvelin)
++ $1 lisää
+Lisätietoja saattaa löytyä lokitiedostoista (hakemisto "log").
+
+; Used in an external dialog to contain an "assertion failed" message. No
+; length restriction.
+Sisäinen virhe
+Tämä johtuu Outgunissa olevasta bugista. Auta meitä korjaamaan se: Lähetä assert.log ja stackdump.bin log-hakemistosta ja kerro, mitä olit tekemässä, osoitteeseen outgun@mbnet.fi
+
+; Used in an external dialog as title. No length restriction.
+Vakava virhe
+
+; Used in a simple dialog, started from the name and passwords menu.
+Poistin 1 salasanan.
+Poistin $1 salasanaa.
+Salasanoja ei ole.
+
+; Used in a simple dialog, started from the language menu. Actually, this is
+; used in the target language, so it's the first thing users see of the
+; translation. If you must, this is a good place to also put information about
+; the translation. No length restriction: will be wrapped.
+Sulje Outgun ja käynnistä se uudelleen, niin kielivalinta tulee voimaan.
+
+; Used in a simple dialog message when an invalid IP address is entered.
+Virheellinen IP-osoite.
+
+; Used in the help screen; $1 is the expected file name.
+Ohjetta ei löydy. Sen pitäisi olla tiedostossa $1
+
+; Field names for player or server password input dialog.
+Salasana
+Tallenna salasana
+Pelaajan $1 salasana
+Palvelimen salasana
+
+; Used in the theme selections. (<no theme> for graphics, <no themes found> for
+; sounds)
+<ei teemaa>
+<teemoja ei ole>
+<ei taustakuvaa>
+
+; Reserved for if the theme names from theme.txt are used in the future.
+(nimetön teema)
+
+
+; - - - - - - - - - - - - - -  in-game messages - - - - - - - - - - - - - - -
+;
+; No length restriction. May be wrapped if line totals over 79 chars.
+
+$1 RYÖSTI PUNAISEN LIPUN!
+$1 RYÖSTI SINISEN LIPUN!
+$1 RYÖSTI PUOLUEETTOMAN LIPUN!
+$1 MENETTI PUNAISEN LIPUN!
+$1 MENETTI SINISEN LIPUN!
+$1 MENETTI PUOLUEETTOMAN LIPUN!
+$1 OTTI PUNAISEN LIPUN!
+$1 OTTI SINISEN LIPUN!
+$1 OTTI PUOLUEETTOMAN LIPUN!
+$1 PALAUTTI PUNAISEN LIPUN!
+$1 PALAUTTI SINISEN LIPUN!
+$1 PUDOTTI PUNAISEN LIPUN!
+$1 PUDOTTI SINISEN LIPUN!
+$1 PUDOTTI PUOLUEETTOMAN LIPUN!
+$1 kuoli.
+$1 kuoli, tappaja joukkuetoveri $2.
+$1 kuoli, tappaja $2.
+$1 tukehtui.
+$1 tukehtui, tappaja joukkuetoveri $2.
+$1 tukehtui, tappaja $2.
+$1 tönittiin hengiltä.
+$1 tönittiin hengiltä, tappaja joukkuetoveri $2.
+$1 tönittiin hengiltä, tappaja $2.
+$1 suojaa punaista lipunkantajaa.
+$1 suojaa sinistä lipunkantajaa.
+$1 suojaa punaista lippua.
+$1 suojaa sinistä lippua.
+$1 tappaa porukkaa ihan solkenaan!
+$1 - tappoputken päätti $2.
+$1 - tappoputki päättyi.
+$1 liittyi peliin.
+$1 lähti pelistä ($2 pistettä).
+$1 siirtyi siniseen joukkueeseen.
+$1 siirtyi punaiseen joukkueeseen.
+$1 ja $2 vaihtoivat joukkuetta.
+$1 vaihtoi nimekseen $2.
+*** Viisi minuuttia jäljellä
+*** Minuutti jäljellä
+*** 30 sekuntia jäljellä
+*** Aika loppui - peli päättyi
+*** Jatkoaika loppui - peli päättyi
+*** Varsinainen peliaika loppui - jatkoaika alkoi
+
+; Optionally added to the previous message.
+(äkkikuolema)
+
+*** Liiku tai lennät ulos palvelmelta $1 sekunnin päästä.
+*** $1/$2 pelaajaa on äänestänyt kartan vaihtoa.
+Äänesi ei vaikuta ennen kuin äänestät karttaa.
+
+; Optionally added to the previous message.
+(Kaikkien äänet tarvitaan vaihtoon vielä $1 sekunnin ajan.)
+
+; Used like: This map is mapname (5 of 13)
+Tämä kartta on $1 ($2/$3).
+
+PELI PÄÄTTYI - PISTEET: PUNAINEN $1 - SININEN $2
+PELIN VOITTAA RYÖSTÄMÄLLÄ $1 LIPPUA.
+AIKARAJA ON $1 MINUUTTIA.
+Sinut on vaiennettu. Et voi lähettää viestejä.
+Voit taas lähettää viestejä.
+$1 on vaientanut sinut (et voi lähettää viestejä).
+$1 on sallinut pelaajan $2 lähettää viestejä.
+$1 on vaientanut pelaajan $2.
+$1 on päättänyt poistaa sinut palvelimelta!
+
+; Here $2 is a measure of time, constructed using the generic time units.
+; Note how the time units are formed, this should accommodate that form.
+$1 on antanut sinulle porttikiellon tälle palvelimelle - kesto $2!
+
+$1 on potkaissut pelaajan $2 (lähtee 10 sekunnin päästä).
+$1 on antanut porttikiellon pelaajalle $2 (lähtee 10 sekunnin päästä).
+$1 päätti vaihtaa karttaa.
+$1 päätti aloittaa uuden pelin.
+
+; Used in the mute/kick/ban messages as the subject, when the admin has no
+; name (using the separate server monitor program).
+Palvelimen ylläpitäjä
+
+Liikaa puhetta. Rauhoitu...
+Yhteys katkaistaan - $1...
+Tämä kartta on rikki, koska lipun voi ryöstää välittömästi.
+Turnauspisteidesi päivitys epäonnistui!
+
+Kuvankaappaus tallentui tiedostoon $1.
+Virhe kuvankaappauksen tallennuksessa tiedostoon $1.
+Lataan karttaa "$1" (CRC $2)...
+
+; Used to report authorization status when connected to a server.
+; "Recording" means recording scores with the ranking system.
+; An in-game message is composed of these, for example:
+; Status: master authorized, not recording; administrator
+Tila
+pääpalvelin tunnisti
+tallentaa
+ei tallenna
+pääpalvelimen tunnistus kesken
+tulee tallentamaan
+ei tallenna
+ei kirjautumista
+palvelin tunnisti
+ylläpitäjä
+
+; Used below the messages when typing a message: Say: Hello world_
+Sano
+Sano joukkueelle
+Komento
+
+
+; - - - - - - - - texts used in the middle of the game screen - - - - - - - -
+;
+; Maximum length 59 characters.
+
+PUNAINEN JOUKKUE VOITTI
+SININEN JOUKKUE VOITTI
+TASAPELI
+PISTEET $1 - $2
+
+; The name of the next map is printed on the line below this message.
+Odotetaan pelin alkua - seuraava kartta on
+
+Lataan karttaa: $1 tavua
+
+
+; - - - - - - - - - - - - various game screen texts - - - - - - - - - - - - -
+;
+; Length restrictions are different on each item.
+
+; A piece of history. Printed quasi-randomly when a player dies, on top of
+; a picture of an ice cream. "Virou sorvete" is Portuguese for "turned into
+; ice cream", but you might want to consider not translating it at all.
+; More than 10 characters per line looks weird. If you only need one line for
+; the text, enter a space for the other line so it's not skipped like empty
+; lines are, when reading the translation file.
+JÄÄTÄVÄÄ!
+ 
+
+; The shorter the better, but if one is long, it doesn't help if the other is
+; shorter.
+Terveys
+Energia
+
+; The shorter the better, but if one is long, it doesn't help if others are
+; shorter.
+Tehoase
+Turbo
+Varjo
+
+; The shorter the better; test it.
+Ase $1
+
+; No limit really, but small and discreet is good.
+FPS:$1
+
+; Recommended max length 7. If more length is needed, please test if they
+; overlap and pad accordingly if it looks bad.
+VAIHDA
+JOUKKUETTA
+VAIHDA
+KARTTAA
+
+; All three lines are used as a menu, first line as its title. Menu length
+; restrictions apply.
+Palvelin ei vastaa
+Syy on huono yhteys tai
+palvelimen kaatuminen.
+
+; Used to produce the game screen scoreboard titles. Team names are also used
+; in team and player stats screens (F3, F4).
+; For example "Blue Team pings" should fit in 20 characters. As well, "Blue
+; Team ### capt" ("capt" is short for "captures") should fit in 20 characters.
+; The better the more room for digits in ### there is, for long games. You can
+; drop " Team" from the team names if space is needed.
+Punainen
+Sininen
+pingit
+$1 p
+
+; Used in the team stats screen (F3).
+; 16 is the maximum width for most, the menu title "Team stats" can be longer.
+Joukkuetilastot
+Ryöstöt
+Tapot
+Kuolemat
+Itsemurhat
+Otetut liput
+Pudotetut liput
+Palautetut liput
+Laukaukset
+Osumatarkkuus
+Saadut osumat
+Liike
+Vahvuus
+
+; Used in the player stats screen (F4).
+; It's a pretty tight fit. The number fields are fixed in position, and 40
+; characters is the maximum length of a line, to keep the right margin equal
+; to the left; 42 characters is still within the dialog box.
+; The number fields appear here commented below the title lines. On all but
+; the 2nd line, the first field extends over the comment mark ';'. '|' marks
+; position 41; the title text should end before that.
+
+    Pisteet   yht./peräkk./eniten
+Pingi  Ryöstöt Tapot   Kuolemat Itsemurhat
+;000  000 00 000/00/00  000/00/00   00  |
+
+         Liput          Tapetut   Kanto-
+otetut pudot. palaut.   kantajat   aika
+; 00      00      00       00     00:00 |
+
+   Tarkkuus
+Lauk.   | Saadut   Matka      Nopeus
+;0000 100% 0000  000000 u  00.00 u/s    |
+
+          Keskim.         Turnaus
+Peliaika elinaika    sija vahvuus pisteet
+;0000 min   00:00    0000  00.00 -00000 |
+
+; Used in the map list dialog (F2). Can be quite long.
+Palvelimen karttalista
+
+; Used in the map list dialog (F2).
+; The fields appear here commented below the title line. The Nr field extends
+; over the comment mark ';'. The title text should end before the '|'.
+Nro Äänet Nimi                Koko  Tekijä
+;00 00 * <--------20--------> 00×00 <-----------26----------->|
+
+; Used as a prompt in the map list dialog (F2). Can be quite long.
+Äänestä karttaa nro
+
+; Used in the player stats screen (F4) page 4.
+$1 pelaajaa turnauksessa.
+
+; Used in the debug panel (F9).
+Ohjaimen akselit
+Ohjaimen napit
+Liikenne: $1 t/s
+sisään $1 t/s, ulos $2 t/s
+
+
+; - - - - - - - - - - - - -  special mode messages  - - - - - - - - - - - - -
+;
+; No length restrictions.
+
+; The message printed by the -info command line option.
+Tietoja
+Säieprioriteetin (-prio <val>) mahdolliset arvot:
+* Minimi: $1
+* Maksimi: $1
+* Järjestelmän oletus (-defaultprio): $1
+* Outgunin oletus: $1
+IP-osoitteet:
+
+; Used as a window title.
+Outgun - Tallennan karttakuvia
+
+; Used in an external dialog message.
+Karttakuvat tallentuneet hakemistoon "mappic".
+
+
+; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
+;
+; We are sorry for the many similar messages; some day they will be unified.
+; You may consider not translating some or all of the error messages.
+; No length restrictions.
+
+; Command line errors.
+-cport - perässä täytyy olla välilyönti ja portin numero tai minimiportti:maksimiportti.
+-cport X tai -cport X:Y: X:n ja Y:n täytyy olla 1 - 65535.
+-cport X:Y: Y:n täytyy olla suurempi kuin X.
+-debug - perässä täytyy olla välilyönti ja luku.
+-debug X: X:n pitää olla 0 - 2.
+-fps - perässä täytyy olla välilyönti ja luku.
+-fps X: X:n täytyy olla 1 - 1000.
+-ip - perässä täytyy olla välilyönti ja IP-osoite.
+-ip X: X:n pitää olla kelvollinen IP-osoite ilman porttia.
+-mappic - tätä parametria ei voi käyttää muiden parametrien kanssa.
+-maxp - perässä täytyy olla välilyönti ja pelaajien lukumäärä.
+-maxp X: X:n täytyy olla parillinen luku väliltä 2 - $1.
+-port - perässä täytyy olla välilyönti ja portin numero.
+-port X: X:n täytyy olla 1 - 65535.
+-sport - perässä täytyy olla välilyönti ja minimiportti:maksimiportti.
+-sport X:Y: X:n ja Y:n täytyy olla 1 - 65535.
+-sport X:Y: Y:n täytyy olla suurempi kuin X.
+Annettu prioriteetti $1 ei ole järjestelmän rajoissa. Aja ohjelma parametrin -info kanssa saadaksesi lisätietoa.
+Tuntematon komentoriviparametri "$1".
+
+; Overview statements about failing processes.
+Karttaa "$1" ei voi lisätä karttalistaan.
+Ei voi ladata: kartassa "$1" on virhe.
+Palvelin ei käynnisty.
+Asiakasohjelma ei käynnisty.
+Palvelin ei käynnisty.
+Karttakuvat eivät tallentuneet hakemistoon "mappic".
+
+; Graphic mode errors.
+Näyttötila $1×$2×$3 ei alustu.
+Näyttötila $1×$2×$3 ei alustu tilassa "$4"; käytössä $5.
+
+; Used as $4 and $5 in the previous message.
+kokoruutu ilman page flippingiä
+kokoruutu page flippingillä
+ikkuna
+
+; Missing files.
+Palvelimen asetustiedosto ei aukea: "$1".
+Tiedostoa "$1" ei voi lukea.
+
+; Gamemod format errors.
+Tuntematon palvelinasetus: "$1"
+Asetus $1 ei voi saada arvoa "$2" - sen pitää olla $3.
+
+; Different expectations used as $3 in the previous message.
+0 tai 1
+$1 tai $2
+joko no, balance tai shuffle
+joko no, normal tai special
+parillinen kokonaisluku 2 - $1
+kokonaisluku
+kokonaisluku, vähintään $1
+kokonaisluku, enintään $1
+kokonaisluku 0 - $1, tai "n %", missä n on vähintään 0
+kokonaisluku $1 - $2
+reaaliluku
+reaaliluku, vähintään $1
+reaaliluku, enintään $1
+reaaliluku $1 - $2
+reaaliluku tai "x %", missä x on vähintään 0
+IP-osoite ilman porttia
+
+; Added to some of the above, where outside the normal range, 0 is allowed.
+, tai 0
+
+; Map format errors.
+Virheellinen karttarivi: $1
+Nimeä "$1" ei löydy: $2
+Nimiriviä ei saa olla nimilohkossa: $1
+Kartasta puuttuu leveys, korkeus tai nimi.
+Kartan tekijä toiseen kertaan.
+Kartan korkeus toiseen kertaan.
+Kartan nimi toiseen kertaan.
+Kartan leveys toiseen kertaan.
+Huoneriviä ei saa olla nimilohkossa: $1
+Joukkue $1, lippu $2 seinän päällä.
+Joukkue $1, aloituspaikka $2 seinän päällä.
+Kahta samaa lohkon nimeä ei saa olla: $1
+Tuntematon karttarivi: $1
+
+; This is not detected when the map is loaded, but later at an instant capture.
+Tämä kartta on viallinen, koska lipun voi ryöstää välittömästi.
+
+; Other file format errors.
+"$1" master.txt:ssä ei ole kelvollinen IP-osoite.
+Ylläpitoyhteys: virheellisiä merkkejä, viesti ohitettu.
+Alfakuvien täytyy olla 8-bittisiä harmaasävykuvia; $1 on $2-bittinen.
+Virheellinen ban-komento (IP-osoite) tiedostossa auth.txt: "$1"
+Virheellinen rivi (ei nimeä) tiedostossa auth.txt: "$1"
+Virheellinen syntaksi tiedostossa client.cfg ("$1")
+Virheellinen user-komento (ei salasanaa) tiedostossa auth.txt: "$1"
+Karttakuvien tallennin: Tiedosto "$1" ei ole kelvollinen karttatiedosto.
+Syntaksivirhe tiedostossa gfxmodes.txt, rivillä "$1".
+Käännöstä $1 ei voi lukea.
+Tuntematonta dataa tiedostossa client.cfg ("$1")
+Tuntematon komento "$1" tiedostossa auth.txt
+Kelvoton näyttötila tiedostossa gfxmodes.txt: $1×$2×$3 (pitäisi olla vähintään 320×200 ja 16, 24 tai 32 bittiä).
+Tekstuurin leveyden ja korkeuden pitää olla kahden potensseja; lattiatekstuuri $1 on $2×$3.
+Tekstuurin leveyden ja korkeuden pitää olla kahden potensseja; seinätekstuuri $1 on $2×$3.
+
+; Miscellaneous errors.
+Asetusta max_players ei voi vaihtaa, kun palvelimella on pelaajia.
+Säikeen luonti ei onnistu. Järjestelmän resurssit eivät riitä.
+Palvelin ei pysty toimimaan taustalla.
+Pääpalvelinyhteys: Sinulla on vanhentunut Outgun-versio. Palvelimesi ei pääse palvelinlistalle. Päivitä ihmeessä.
+Karttoja ei ole.
+
+; Network errors. Most of these can occur in normal operation when there's
+; something wrong with the network or a remote server. Where it's not clear
+; what $1 is, it is a message in English, telling what went wrong within the
+; network subsystem.
+HawkNL:n alustus epäonnistui. $1
+Ei IP-verkkoa.
+Ylläpitoyhteys: Portti $1 ei aukea.
+Ylläpitoyhteys: Soketin asetus listen-tilaan epäonnistui.
+Ylläpitoyhteys: Yhteyden vastaanotto epäonnistui.
+Ylläpitoyhteys: luku epäonnistui. Syy: $1
+Ylläpitoyhteys: vastauksen lähetys epäonnistui. Syy: $1
+Pääpalvelimelle ei ole yhteyttä. $1
+Soketin avaus ei onnistu.
+Soketti ei aukea palvelinten tietojen päivitystä varten. $1
+Soketti ei aukea pääpalvelimelle yhdistämistä varten. $1
+Verkkopalvelin ei käynnisty portissa $1.
+Pääpalvelinyhteys: Soketti ei aukea pääpalvelimelle yhdistämistä varten.
+Pääpalvelinyhteys: (Sulkeutumassa) Pääpalvelimelle ei ole yhteyttä.
+Pääpalvelinyhteys: (Sulkeutumassa) Soketti ei aukea pääpalvelimelle yhdistämistä varten.
+Pääpalvelinyhteys: (Sulkeutumassa) Virhe tiedon lähetyksessä: $1
+Pääpalvelinyhteys: (Sulkeutumassa) Virhe vastauksen odotuksen aikana: $1
+WWW-säie: Soketti ei aukea palvelinsivulle yhdistämistä varten.
+WWW-säie: (Sulkeutumassa) Palvelinsivulle ei ole yhteyttä.
+WWW-säie: (Sulkeutumassa) Soketti ei aukea palvelinsivulle yhdistämistä varten.
+
+; Rare external network errors. These may happen but there's rarely anything
+; the user can do to fix them.
+Pääpalvelimelta tuli virheellistä dataa.
+Pääpalvelinyhteys: (Sulkeutumassa) Odottamaton virhe tiedon lähettämisessä palvelinlistalle. Katso log/master.log.
+Pääpalvelinyhteys: Odottamaton virhe tiedon lähettämisessä palvelinlistalle. Katso log/master.log. Jotta välttyisit tältä virheeltä, tee palvelimestasi yksityinen käyttämällä parametria -priv.
+
+; File writing errors. These should be quite rare.
+Tiedosto $1 ei aukea kirjoittamista varten.
+Pelaajasalasana ei tallennu tiedostoon $1!
+Tiedostoon $1 ei voi kirjoittaa.
+Tiedostoon config/language.txt ei voi kirjoittaa.
+Virhe tiedostoon $1 kirjoittamisessa.
+Tiedoston lataus: Tiedosto "$1" ei aukea kirjoittamista varten.
+Karttakuvien tallennin: Karttakuva ei tallennu tiedostoon "$1".
+Hakemistoa "$1" ei ole eikä sitä pysty luomaan.
+
+
+; - - - - - - - - - - - - - - - - other texts - - - - - - - - - - - - - - - -
+;
+; These need not be translated. Length restrictions are different on each item.
+
+; Server shutdown messages. These are briefly shown as the window title while
+; the server is shutting down. In rare cases they take longer to disappear.
+Sammutus: KESKEYTETÄÄN $1 turnauspäivitystä
+Sammutus: ylläpitoyhteyssäie
+Sammutus: pääsäie
+Sammutus: pääpalvelinsäie
+Sammutus: verkkopalvelin
+Sammutus: odotan $1 turnauspäivitystä
+Sammutus: WWW-säie
+
+; Comment written to auth.txt. It may be sensible to translate this in case
+; you're translating the entire Outgun distribution with other configuration
+; files too.
+Outgun luo tämän tiedoston aina, kun bannilista muuttuu.
+Varataksesi nimen lisää rivi
+user <nimi> <sarkain> <salasana>  tai  admin <nimi> [<sarkain> <salasana>]
+missä <sarkain> on sarkainmerkki (tab).
+Salasanattomien ylläpitäjien täytyy tunnistautua kirjautumalla turnaukseen.

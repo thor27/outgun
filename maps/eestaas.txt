@@ -1,0 +1,73 @@
+; 2005-05-22
+
+P width 3
+P height 3
+P title Eestaas
+P author Huntta
+S 16 12
+
+flag  0 0 0  8  6
+spawn 0 0 1  8  6
+spawn 0 0 1 11  9
+spawn 0 0 1  5  9
+spawn 0 0 1 11  3
+spawn 0 0 1  5  3
+spawn 0 0 1  2  6
+spawn 0 0 1 14  6
+spawn 0 0 1  8  9
+spawn 0 0 1  8  3
+spawn 0 0 1 11  6
+spawn 0 0 1  5  6
+spawn 0 0 1 14  9
+spawn 0 0 1  2  9
+spawn 0 0 1 14  3
+spawn 0 0 1  2  3
+
+flag  1 2 2  8  6
+spawn 1 2 1  8  6
+spawn 1 2 1  5  3
+spawn 1 2 1 11  3
+spawn 1 2 1  5  9
+spawn 1 2 1 11  9
+spawn 1 2 1 14  6
+spawn 1 2 1  2  6
+spawn 1 2 1  8  3
+spawn 1 2 1  8  9
+spawn 1 2 1  5  6
+spawn 1 2 1 11  6
+spawn 1 2 1  2  3
+spawn 1 2 1 14  3
+spawn 1 2 1  2  9
+spawn 1 2 1 14  9
+
+X nurkat 0 0 2 2
+
+X ylä    0 0 2 0
+
+X ala    0 2 2 2
+
+X vasen  0 0 0 2
+X vasen  1 0 1 1
+X vasen  2 1 2 2
+
+X oikea  0 0 0 1
+X oikea  1 1 1 2
+X oikea  2 0 2 2
+
+:nurkat
+C W  3  3  5  2 270   0
+C W 13  3  5  2   0  90
+C W  3  9  5  2 180 270
+C W 13  9  5  2  90 180
+
+:ylä
+  W  0  0 16  1
+
+:ala
+  W  0 12 16 11
+
+:vasen
+  W  0  3  1  9
+
+:oikea
+  W 16  3 15  9

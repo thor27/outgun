@@ -1,0 +1,50 @@
+For more information access these resources:
+ game documentation          directory 'doc'
+ Outgun website              http://koti.mbnet.fi/outgun/
+ Brazilian Outgun website    http://outgun.sf.net/
+ 
+Controls
+ 
+ Move               Arrow keys or keypad
+ Shoot              Control
+ Run                Shift
+ Strafe             Alt or Alt Gr
+ 
+Other keys
+ 
+ Talk               Just type your message and hit Enter.
+ Team talk          Begin your message with a dot ('.').
+ Change team        End (only if your team has more players)
+ Suicide            Delete
+ Drop flag          Page Down
+ Map list           F2
+ Team stats         F3
+ Player stats       F4
+ Server info        F5
+ Vote map change    F8
+ Screenshot         F11
+ Show more messages Insert
+ 
+Game concept
+ 
+ You are a member of a team, either red or blue, assigned to you at random when you connect. Your goal is to help your team to win, by capturing the enemy flag. To capture the flag, a member of your team must steal the enemy flag and bring it to your team's flag, provided your flag has not been stolen already.
+ 
+Health and energy
+ 
+ If your health drops to zero, you die. Energy is used for running, shooting and health protection when you have the shield powerup. Health and energy regenerate to 200 with time.
+ 
+Minimap
+ 
+ On the upper-right corner of the screen is the minimap. It shows your teammates and the opponents seen by them. If you have the shadow powerup, it shows all the opponents who don't have the shadow themselves.
+ 
+Powerups
+ 
+ If you see an item lying on the ground, grab it. It's a special powerup item.
+ 
+ weapon upgrade  an additional rocket and more energy
+ turbo           more speed
+ shadow          invisibility, see opponents on the minimap
+ weapon power    your shots make more damage
+ megahealth      more health and energy
+ shield          your health is protected while the shield lasts
+ deathbringer    damage players on the same room when you die

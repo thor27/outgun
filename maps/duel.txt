@@ -1,0 +1,28 @@
+; By Gloomy aka Huge Ping [ru]
+P width 2
+P height 1
+P title Duel
+P author Gloomy
+S 64 64
+flag 0 0 0 4 32
+flag 1 1 0 60 32
+spawn 0 0 0 60 32
+spawn 1 1 0 4  32
+
+R 0 0
+G 0 0 64 64   
+W 0 0 1 64   
+W 0 0 64 1
+W 0 63 64 64
+W 32 24 33 40
+W 58 24 64 25
+W 58 40 64 41
+
+R 1 0
+G 0 0 64 64   
+W 63 0 64 64   
+W 0 0 64 1
+W 0 63 64 64
+W 32 24 33 40
+W 0 40 6 41
+W 0 24 6 25

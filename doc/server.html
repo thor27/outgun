@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Server setup</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Server setup</DIV>
+
+<H1>Server setup</H1>
+
+<P>
+This document explains how to set up an Outgun server.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#req">Requirements</A>
+ <LI><A HREF="#listen">Listen server</A>
+ <LI><A HREF="#dedicated">Dedicated server</A>
+ <LI><A HREF="#firewall">Firewall settings</A>
+ <LI><A HREF="#srvmonit">Server monitor program</A>
+</UL>
+
+<H2 ID="req">Requirements</H2>
+
+<P>
+An Outgun server uses about 1.5 kB/s of bandwidth for each player. The exact amount depends on what the players do, and is slightly increased by larger numbers of players. For a LAN server, the network connection is not a problem. For an internet server, you should have at least an ADSL connection. A dial-up is out of the question because the lag becomes significally big. A heavy use of the connection affects the server and increases lag.
+</P>
+
+<H2 ID="listen">Listen server</H2>
+
+<P>
+For a temporary use, you can start a server in the Outgun client, in the <A HREF="menus.html#localserver">Local server</A> menu. When you close the client, the server stops too. The client uses some extra processor time and memory compared to just the server, so that is not very useful for a long time server.
+</P>
+
+<H2 ID="dedicated">Dedicated server</H2>
+
+<P>
+If you are planning to keep the server on many hours a day or even all the time, you should make it a dedicated server. The simplest way to start the server in command line is in Linux<BR>
+<KBD>./outgun -ded</KBD><BR>
+or in Windows<BR>
+<KBD>outgun -ded</KBD>
+</P>
+<P>
+Find more about the <A HREF="commandline.html#server">command line server options</A> in a separate document.
+</P>
+<P>
+The Windows version of Outgun has <CODE>Dedicated server.bat</CODE> file that starts a dedicated server.
+</P>
+<P>
+The default server settings in the <A HREF="gamemod.html">gamemod file</A> usually need some customising. You should at least set a new <EM>name of the server</EM> because &lsquo;Anonymous host&rsquo; is not too informative. A good practice is to include the name of the country where the server is located. That helps the players to understand why the ping is what it is (some people seem to think their ping should be good in every server in the world though).
+</P>
+<P>
+The server port is 25000 by default. Change that if you can&rsquo;t use it, by the command line option <CODE>-port</CODE> or in gamemod file.
+</P>
+<P>
+Maximum number of players depends partly on your connection. If you have 512 kbits/s for upload, you can probably have a server of 16 players, and with 2 Mbits/s, 32 players.
+</P>
+<P>
+For Linux there is a possibility to use a <A HREF="../1.0/download.html#linuxserver">text-only dedicated server</A> that has no graphics.
+</P>
+
+<H2 ID="firewall">Firewall settings</H2>
+
+<P>
+You will need to open the chosen server port for all incoming UDP traffic in your firewall. Having NAT (network address translation, done by many ADSL routers too) makes things more complicated, and especially in that case you will want to see the <A HREF="firewall.html">Firewall setup guide</A> for more detailed instructions.
+</P>
+
+<H2 ID="srvmonit">Server monitor program</H2>
+
+<P>
+There is a simple program to monitor the server. You can find it in the <A HREF="../tools/">tools</A> section with short instructions. With it you can see what is happening on your server also when you are not there.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-12-22 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

@@ -1,0 +1,934 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Gamemod settings</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Gamemod settings
+</DIV>
+
+<H1>Gamemod settings</H1>
+
+<P>
+The server configuration is all in one file: the &lsquo;gamemod&rsquo; file located at <CODE>config/gamemod.txt</CODE>. Apart from empty lines and comments, which are lines that begin with a semicolon &lsquo;;&rsquo;, every line is a command followed by a value, separated by a space or a tab. The commands and their effect is described in this document.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#general">General settings</A>
+ <LI><A HREF="#website">Server web site</A>
+ <LI><A HREF="#maprot">Map rotation</A>
+ <LI><A HREF="#game">Game config</A>
+ <LI><A HREF="#powerups">Powerups</A>
+ <LI><A HREF="#physics">Physics</A>
+</UL>
+
+<H2 ID="general">General settings</H2>
+
+<P>
+These are settings that don&rsquo;t affect the gameplay at all.
+</P>
+
+<UL>
+ <LI><A HREF="#server_name"><CODE>server_name</CODE></A>
+ <LI><A HREF="#max_players"><CODE>max_players</CODE></A>
+ <LI><A HREF="#welcome_message"><CODE>welcome_message</CODE></A>
+ <LI><A HREF="#info_message"><CODE>info_message</CODE></A>
+ <LI><A HREF="#sayadmin_enabled"><CODE>sayadmin_enabled</CODE></A>
+ <LI><A HREF="#sayadmin_comment"><CODE>sayadmin_comment</CODE></A>
+ <LI><A HREF="#server_password"><CODE>server_password</CODE></A>
+ <LI><A HREF="#tournament"><CODE>tournament</CODE></A>
+ <LI><A HREF="#save_stats"><CODE>save_stats</CODE></A>
+ <LI><A HREF="#idlekick_time"><CODE>idlekick_time</CODE></A>
+ <LI><A HREF="#idlekick_playerlimit"><CODE>idlekick_playerlimit</CODE></A>
+ <LI><A HREF="#server_port"><CODE>server_port</CODE></A>
+ <LI><A HREF="#server_ip"><CODE>server_ip</CODE></A>
+ <LI><A HREF="#private_server"><CODE>private_server</CODE></A>
+ <LI><A HREF="#join_start"><CODE>join_start</CODE></A>
+ <LI><A HREF="#join_end"><CODE>join_end</CODE></A>
+</UL>
+
+<H3 ID="server_name"><CODE>server_name</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>any string
+<TR><TH>Default<TD><CODE>Anonymous host</CODE>
+</TABLE>
+<P>
+The server name is shown to players in the <A HREF="http://koti.mbnet.fi/outgun/servers/">server list on the web</A> and in Outgun. You should put in something to identify this server, and tell as much else as you can fit. How much fits on Outgun&rsquo;s server list depends on the player&rsquo;s resolution, at minimum it&rsquo;s only 33 characters. The web list currently shows up to 128 characters. This setting replaces the file <CODE>hostname.txt</CODE> used in Outgun versions before 1.0.
+</P>
+
+<H3 ID="max_players"><CODE>max_players</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>an even number between 2 and 32
+<TR><TH>Default<TD>the <A HREF="commandline.html#maxp"><CODE>-maxp</CODE></A> command line parameter, or 16
+</TABLE>
+<P>
+The maximum number of players accepted to the server at once. If set, this overrides the <A HREF="commandline.html#maxp"><CODE>-maxp</CODE></A> setting given on command line.
+</P>
+
+<H3 ID="welcome_message"><CODE>welcome_message</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>any string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+These lines will be sent to each player when they enter the server. You can use multiple lines, but remember to start each line with the command <CODE>welcome_message</CODE>. Long lines (over 79 characters) will be wrapped to multiple lines.
+</P>
+
+<H3 ID="info_message"><CODE>info_message</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>any string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+These lines will be sent to a player when they enter the <CODE>/info</CODE> console command. You can tell how and when to contact you, or some more information about your server. You can use multiple lines, but remember to start each line with the command <CODE>info_message</CODE>. Long lines (over 79 characters) will be wrapped to multiple lines.
+</P>
+
+<H3 ID="sayadmin_enabled"><CODE>sayadmin_enabled</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This enables the <CODE>/sayadmin</CODE> console command to the players so that they can leave you messages. They will be saved to <CODE>log/sayadmin.log</CODE>.
+</P>
+
+<H3 ID="sayadmin_comment"><CODE>sayadmin_comment</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>any string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+This setting only has effect when sayadmin_enabled is set to 1. This message will be shown in the <CODE>/help</CODE> screen on the <CODE>/sayadmin</CODE> line. It is intended for you to give a preference of what to send using <CODE>/sayadmin</CODE>, for example which languages are acceptable. Longer than 29 characters will force the line to be wrapped.
+</P>
+
+<H3 ID="server_password"><CODE>server_password</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>up to 15 characters
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+If the server password is set, only players who know the password can enter the server.
+</P>
+
+<H3 ID="tournament"><CODE>tournament</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+If this is set, the server sends scoring information to the ranking master server, when players who are logged in play on the server. Disabling this will slightly decrease the amount of traffic the server creates, but it will still authenticate the players with master server. That can&rsquo;t be disabled, and there should be no need for it.
+</P>
+
+<H3 ID="save_stats"><CODE>save_stats</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of players, 1 or more, or 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If this is set non-zero, the server saves game statistics after each round to the <CODE>server_stats</CODE> directory, provided that there are at least as many players as this number. Set <CODE>save_stats</CODE> to 1, and you get lots of statistics with just one player; set it greater and only meaningful statistics are written.
+</P>
+
+<H3 ID="idlekick_time"><CODE>idlekick_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 10 or more, or 0 to disable
+<TR><TH>Default<TD>120
+</TABLE>
+<P>
+If enabled, players that are idle (don&rsquo;t move or shoot) for the given amount of seconds are automatically kicked off the server. This check is only active when the number of players reaches <A HREF="#idlekick_playerlimit"><CODE>idlekick_playerlimit</CODE></A>. There is an automatic warning to the players when they&rsquo;re 60, 30, 15 and 5 seconds away from being kicked.
+</P>
+
+<H3 ID="idlekick_playerlimit"><CODE>idlekick_playerlimit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 32
+<TR><TH>Default<TD>4
+</TABLE>
+<P>
+This setting is used to limit the application of <A HREF="#idlekick_time"><CODE>idlekick_time</CODE></A>. When there are less players on the server than the set number, they can&rsquo;t get kicked for being idle. This makes sense because players may want to stay on the server waiting for more players to appear, not playing before that happens. These players do no real harm to the game if this limit is set no higher than 4, because if one of three players is idle, the other two can always change teams so that they are against each other. Even though one of the players can score by killing the idle player, it doesn&rsquo;t affect the team score and regardless of players being idle or not, tournament scoring is disabled until there are four players on the server.
+</P>
+
+<H3 ID="server_port"><CODE>server_port</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 65535
+<TR><TH>Default<TD>25000
+</TABLE>
+<P>
+The UDP port the server is run in. If you want to run multiple servers at once, you have to set a different port for each server. This setting cannot be changed when the server is running, with the server monitor &ldquo;reload settings&rdquo; command or otherwise. This setting can be overridden with the command line argument <A HREF="commandline.html#port"><CODE>-port</CODE></A>. For servers started in the client, the setting on the <A HREF="menus.html#localserver">local server</A> menu overrides these.
+</P>
+
+<H3 ID="server_ip"><CODE>server_ip</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid IP address
+<TR><TH>Default<TD>autodetected
+</TABLE>
+<P>
+The server IP address that is sent to the master server for server listing purposes. Do not specify a port here, use <A HREF="#server_port"><CODE>server_port</CODE></A> for that. Only use this (or the corresponding command line parameter) if your server doesn&rsquo;t appear on the master list without. To determine what to put here, check <A HREF="http://www.whatismyip.com/">whatismyip.com</A> which will hopefully show your public IP address. If sending the server to master still fails, check <CODE>log/master.log</CODE> to see what the master server thinks your address is. This setting cannot be changed when the server is running, with the server monitor &ldquo;reload settings&rdquo; command or otherwise. This setting can be overridden with the command line argument <A HREF="commandline.html#ip"><CODE>-ip</CODE></A>. For servers started in the client, the setting on the <A HREF="menus.html#localserver">local server</A> menu overrides these.
+</P>
+
+<H3 ID="private_server"><CODE>private_server</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, the server will not be posted on the master list. Use it if you don&rsquo;t want random players entering the server. This setting cannot be changed when the server is running, with the server monitor &ldquo;reload settings&rdquo; command or otherwise. This setting can be overridden on the command line by using <A HREF="commandline.html#priv"><CODE>-priv</CODE></A> or <A HREF="commandline.html#public"><CODE>-public</CODE></A>. For servers started in the client, the setting on the local server menu overrides these.
+</P>
+
+<H3 ID="join_start"><CODE>join_start</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0 to 86399
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+The time when the server starts accepting players, in seconds after midnight. If <CODE>join_start</CODE> is set to a different value than <A HREF="#join_end"><CODE>join_end</CODE></A>, players can only join in the time between them, or if there already are players on the server.
+</P>
+
+<H3 ID="join_end"><CODE>join_end</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0 to 86399
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+The time when the server stops accepting players, in seconds after midnight. If <A HREF="#join_start"><CODE>join_start</CODE></A> is set to a different value than <CODE>join_end</CODE>, players can only join in the time between them, or if there already are players on the server.
+</P>
+
+<H2 ID="website">Server web site</H2>
+
+<P>
+These settings allow you to configure a web site with Outgun.
+</P>
+
+<UL>
+ <LI><A HREF="#server_website"><CODE>server_website</CODE></A>
+ <LI><A HREF="#web_server"><CODE>web_server</CODE></A>
+ <LI><A HREF="#web_script"><CODE>web_script</CODE></A>
+ <LI><A HREF="#web_auth"><CODE>web_auth</CODE></A>
+ <LI><A HREF="#web_refresh"><CODE>web_refresh</CODE></A>
+</UL>
+
+<H3 ID="server_website"><CODE>server_website</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid URL
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+This should be the URL to a page related to your server. The URL is sent to the server list on WWW, and there&rsquo;ll be a link, so that users can click on the server to see more info. The page linked to might be a static page including what you couldn&rsquo;t squeeze into the <A HREF="#info_message"><CODE>info_message</CODE></A>, or something else. Use the rest of these settings to make the page a dynamic one.
+</P>
+
+<H3 ID="web_server"><CODE>web_server</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid host name or IP address
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+To create a data link from your server to your web page, using <CODE>web_server</CODE>, <CODE>web_script</CODE>, <CODE>web_auth</CODE>, and <CODE>web_refresh</CODE>, see the separate <A HREF="http://koti.mbnet.fi/outgun/documentation/script.html">page of instructions</A> online.
+</P>
+
+<H3 ID="web_script"><CODE>web_script</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid part-URL
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+To create a data link from your server to your web page, using <CODE>web_server</CODE>, <CODE>web_script</CODE>, <CODE>web_auth</CODE>, and <CODE>web_refresh</CODE>, see the separate <A HREF="http://koti.mbnet.fi/outgun/documentation/script.html">page of instructions</A> online.
+</P>
+
+<H3 ID="web_auth"><CODE>web_auth</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>string:string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+To create a data link from your server to your web page, using <CODE>web_server</CODE>, <CODE>web_script</CODE>, <CODE>web_auth</CODE>, and <CODE>web_refresh</CODE>, see the separate <A HREF="http://koti.mbnet.fi/outgun/documentation/script.html">page of instructions</A> online.
+</P>
+
+<H3 ID="web_refresh"><CODE>web_refresh</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>minutes, 1&ndash;
+<TR><TH>Default<TD>2
+</TABLE>
+<P>
+To create a data link from your server to your web page, using <CODE>web_server</CODE>, <CODE>web_script</CODE>, <CODE>web_auth</CODE>, and <CODE>web_refresh</CODE>, see the separate <A HREF="http://koti.mbnet.fi/outgun/documentation/script.html">page of instructions</A> online.
+</P>
+
+<H2 ID="maprot">Map rotation</H2>
+
+<P>
+These settings choose which maps are played in which order, and control map voting.
+</P>
+
+<UL>
+ <LI><A HREF="#map"><CODE>map</CODE></A>
+ <LI><A HREF="#random_maprot"><CODE>random_maprot</CODE></A>
+ <LI><A HREF="#vote_block_time"><CODE>vote_block_time</CODE></A>
+ <LI><A HREF="#require_specific_map_vote"><CODE>require_specific_map_vote</CODE></A>
+</UL>
+
+<H3 ID="map"><CODE>map</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a map name without path or .txt
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+If you want your server to use only a subset of maps you have in the maps directory, or if your want to determine the rotation order exactly, you must use the map command. Add a map command for each map you want to use. For example, to use the maps <CODE>maps/hassakka.txt</CODE> and <CODE>maps/tutorial.txt</CODE>, add the lines:
+</P>
+
+<PRE><CODE>map hassakka
+map tutorial</CODE></PRE>
+
+<P>
+If you want the maps to appear in the exact order the map commands are given, remember to set <A HREF="#random_maprot"><CODE>random_maprot</CODE></A> either 0 or 2.
+</P>
+
+<P>
+If there aren&rsquo;t any <CODE>map</CODE> commands in the gamemod, Outgun will use all maps in the maps directory. Unless the order is randomized, they will be played in the file system order which often depends on the order in which the map files were created.
+</P>
+
+<H3 ID="random_maprot"><CODE>random_maprot</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>0 to disable, 1 to enable, 2 to randomize first map only
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If <CODE>random_maprot</CODE> is set 1, the server will randomize the order maps are played in, each time the server is started. If either 0 or 2, the maps always appear in the same order. The setting 2 randomizes the first map to be played when the server starts, but the map order is the same.
+</P>
+
+<H3 ID="vote_block_time"><CODE>vote_block_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>minutes, 0&ndash;
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This setting is useful if players are disturbing the game by constantly voting for mapchange. If this is set non-zero, the map can&rsquo;t be changed for that amount of minutes at the start of each round, except if all the players vote for that.
+</P>
+
+<H3 ID="require_specific_map_vote"><CODE>require_specific_map_vote</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, players must vote for a specific map to have their <EM>map exit</EM> votes effective.
+</P>
+
+<H2 ID="game">Game config</H2>
+
+<P>
+These are miscellaneous gameplay tweaking settings, that don&rsquo;t fall into the categories of <A HREF="#powerups">powerups</A> or <A HREF="#physics">physics</A>.
+</P>
+
+<UL>
+ <LI><A HREF="#capture_limit"><CODE>capture_limit</CODE></A>
+ <LI><A HREF="#win_score_difference"><CODE>win_score_difference</CODE></A>
+ <LI><A HREF="#time_limit"><CODE>time_limit</CODE></A>
+ <LI><A HREF="#extra_time"><CODE>extra_time</CODE></A>
+ <LI><A HREF="#sudden_death"><CODE>sudden_death</CODE></A>
+ <LI><A HREF="#game_end_delay"><CODE>game_end_delay</CODE></A>
+ <LI><A HREF="#flag_return_delay"><CODE>flag_return_delay</CODE></A>
+ <LI><A HREF="#lock_team_flags"><CODE>lock_team_flags</CODE></A>
+ <LI><A HREF="#lock_wild_flags"><CODE>lock_wild_flags</CODE></A>
+ <LI><A HREF="#capture_on_team_flag"><CODE>capture_on_team_flag</CODE></A>
+ <LI><A HREF="#capture_on_wild_flag"><CODE>capture_on_wild_flag</CODE></A>
+ <LI><A HREF="#balance_teams"><CODE>balance_teams</CODE></A>
+ <LI><A HREF="#friendly_fire"><CODE>friendly_fire</CODE></A>
+ <LI><A HREF="#friendly_deathbringer"><CODE>friendly_deathbringer</CODE></A>
+ <LI><A HREF="#respawn_time"><CODE>respawn_time</CODE></A>
+ <LI><A HREF="#waiting_time_deathbringer"><CODE>waiting_time_deathbringer</CODE></A>
+ <LI><A HREF="#respawn_balancing_time"><CODE>respawn_balancing_time</CODE></A>
+ <LI><A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A>
+</UL>
+
+<H3 ID="capture_limit"><CODE>capture_limit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of captures, 0 = no limit
+<TR><TH>Default<TD>8
+</TABLE>
+<P>
+This is the amount of captures needed to win the game. If it&rsquo;s set 0, the game only ends when the <A HREF="#time_limit"><CODE>time_limit</CODE></A> runs out.
+</P>
+
+<H3 ID="win_score_difference"><CODE>win_score_difference</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1&ndash;
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+This is the score difference needed to win the game after reaching the <CODE><A HREF="#capture_limit">capture_limit</A></CODE>. The game only ends when one team has reached <CODE>capture_limit</CODE> captures, if the other team has at most <CODE>capture_limit</CODE> - <CODE>win_score_difference</CODE> captures. Otherwise it&rsquo;s continued until there is a score difference of <CODE>win_score_difference</CODE>.
+</P>
+
+<H3 ID="time_limit"><CODE>time_limit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>minutes, 0 = no limit
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If <CODE>time_limit</CODE> is set to a non-zero value, the game will end after that amount of minutes. This behavior can be modified using the <A HREF="#extra_time"><CODE>extra_time</CODE></A> and <A HREF="#sudden_death"><CODE>sudden_death</CODE></A> options below.
+</P>
+
+<H3 ID="extra_time"><CODE>extra_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>minutes, 0&ndash;
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This setting only has effect when <A HREF="#time_limit"><CODE>time_limit</CODE></A> is non-zero. When the time runs out, and the game is tied (both teams have the same score), the time is extended by this amount of minutes. The effect is modified by the <A HREF="#sudden_death"><CODE>sudden_death</CODE></A> setting below.
+</P>
+
+<H3 ID="sudden_death"><CODE>sudden_death</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This setting modifies the behavior of <A HREF="#extra_time"><CODE>extra_time</CODE></A> above. If <CODE>sudden_death</CODE> is enabled, the extra time is terminated early if either team scores. If <CODE>extra_time</CODE> is set zero and sudden death is enabled, the extra time is infinite, to be terminated when a team scores.
+</P>
+
+<H3 ID="game_end_delay"><CODE>game_end_delay</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;
+<TR><TH>Default<TD>5
+</TABLE>
+<P>
+This sets the delay between game rounds. It offers players a chance to look at the previous round&rsquo;s scores, and (automatically) download the next map if they don&rsquo;t have it already.
+</P>
+
+<H3 ID="flag_return_delay"><CODE>flag_return_delay</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>1.0
+</TABLE>
+<P>
+When a flag is dropped, it can be returned only after this delay.
+</P>
+
+<H3 ID="lock_team_flags"><CODE>lock_team_flags</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, the red and blue flags can&rsquo;t be moved. If both the team and wild flags are locked, all the flags are removed. This setting has no effect unless the map has all three kinds of flags.
+</P>
+
+<H3 ID="lock_wild_flags"><CODE>lock_wild_flags</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, the wild flags can&rsquo;t be moved. If both the team and wild flags are locked, all the flags are removed. This setting has no effect unless the map has all three kinds of flags.
+</P>
+
+<H3 ID="capture_on_team_flag"><CODE>capture_on_team_flag</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+If enabled, players can capture the enemy and wild flags on their team flag that is in its original position. If the team flags are locked and can not be captured on, all the flags are removed. This setting has no effect unless the map has all three kinds of flags.
+</P>
+
+<H3 ID="capture_on_wild_flag"><CODE>capture_on_wild_flag</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, players can capture the enemy and wild flags on a wild flag that is in its original position. If the wild flags are locked and can not be captured on, they are removed. This setting has no effect unless the map has all three kinds of flags.
+</P>
+
+<H3 ID="balance_teams"><CODE>balance_teams</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD><CODE>no</CODE>, <CODE>balance</CODE> or <CODE>shuffle</CODE>
+<TR><TH>Default<TD><CODE>no</CODE>
+</TABLE>
+<P>
+This setting can be used to balance and optionally shuffle the teams when the round starts. If it&rsquo;s set to <CODE>balance</CODE>, some players from the larger team are moved to the smaller team. On <CODE>shuffle</CODE>, all players are randomly allocated a team, so that the teams are in balance. In the default setting of no balancing, teams are retained as they were at the end of last round.
+</P>
+
+<H3 ID="friendly_fire"><CODE>friendly_fire</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set non-zero, the players&rsquo; shots will damage and kill their teammates. The base damage done is the regular <A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
+</P>
+
+<H3 ID="friendly_deathbringer"><CODE>friendly_deathbringer</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set non-zero, the players&rsquo; deathbringer explosions will damage and kill their teammates. The deathbringer effect time is the regular <A HREF="#pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
+</P>
+
+<H3 ID="respawn_time"><CODE>respawn_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>2.0
+</TABLE>
+<P>
+When a player is killed, they will stay dead for this period.
+</P>
+
+<H3 ID="waiting_time_deathbringer"><CODE>waiting_time_deathbringer</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>4.0
+</TABLE>
+<P>
+When a player dies using a deathbringer, or commits suicide, they will have this time added to their normal <A HREF="#respawn_time"><CODE>respawn_time</CODE></A>.
+</P>
+
+<H3 ID="respawn_balancing_time"><CODE>respawn_balancing_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>0.0
+</TABLE>
+<P>
+When a player in the larger team dies, a time based on this number and the team size difference is added to their normal <A HREF="#respawn_time"><CODE>respawn_time</CODE></A>. The exact formula to determine the time added is <CODE>respawn_balancing_time * (larger team size - smaller team size) / smaller team size</CODE>. This means that if one team is twice the size of the smaller one, this number is used as is. Similarly, if a team is 50% larger (e.g. 3 vs. 2), half of this number is added to the waiting time of all the players in the larger team.
+</P>
+
+<H3 ID="rocket_damage"><CODE>rocket_damage</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, 0&ndash;
+<TR><TH>Default<TD>70
+</TABLE>
+<P>
+This sets how much health is lost by a normal rocket. Because of health regeneration, setting it to small values easily makes it impossible to kill others, but do experiment.
+</P>
+
+<H2 ID="powerups">Powerups</H2>
+
+<P>
+These settings affect how powerup items appear and their effect.
+</P>
+
+<UL>
+ <LI><A HREF="#pups_min"><CODE>pups_min</CODE></A>
+ <LI><A HREF="#pups_max"><CODE>pups_max</CODE></A>
+ <LI><A HREF="#pups_respawn_time"><CODE>pups_respawn_time</CODE></A>
+ <LI><A HREF="#pup_add_time"><CODE>pup_add_time</CODE></A>
+ <LI><A HREF="#pup_max_time"><CODE>pup_max_time</CODE></A>
+ <LI><A HREF="#pups_drop_at_death"><CODE>pups_drop_at_death</CODE></A>
+ <LI><A HREF="#pups_player_max"><CODE>pups_player_max</CODE></A>
+ <LI><A HREF="#pup_weapon_max"><CODE>pup_weapon_max</CODE></A>
+ <LI><A HREF="#pup_health_bonus"><CODE>pup_health_bonus</CODE></A>
+ <LI><A HREF="#pup_power_damage"><CODE>pup_power_damage</CODE></A>
+ <LI><A HREF="#pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></A>
+ <LI><A HREF="#pup_deathbringer_switch"><CODE>pup_deathbringer_switch</CODE></A>
+ <LI><A HREF="#pup_shadow_invisibility"><CODE>pup_shadow_invisibility</CODE></A>
+ <LI><A HREF="#pup_shield_one_hit"><CODE>pup_shield_one_hit</CODE></A>
+ <LI><A HREF="#pup_chance_shield"><CODE>pup_chance_shield</CODE></A>
+ <LI><A HREF="#pup_chance_turbo"><CODE>pup_chance_turbo</CODE></A>
+ <LI><A HREF="#pup_chance_shadow"><CODE>pup_chance_shadow</CODE></A>
+ <LI><A HREF="#pup_chance_power"><CODE>pup_chance_power</CODE></A>
+ <LI><A HREF="#pup_chance_weapon"><CODE>pup_chance_weapon</CODE></A>
+ <LI><A HREF="#pup_chance_megahealth"><CODE>pup_chance_megahealth</CODE></A>
+ <LI><A HREF="#pup_chance_deathbringer"><CODE>pup_chance_deathbringer</CODE></A>
+</UL>
+
+<H3 ID="pups_min"><CODE>pups_min</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>0 to 32, or 0% to any %
+<TR><TH>Default<TD>20%
+</TABLE>
+<P>
+The minimum number of powerups in the game. A percentage is interpreted as a fraction of map size in rooms. That is, 50% means 18 powerups in a 6×6 sized map (6×6×50%=18) and 2 powerups in a 2×2 sized map (2×2×50%=2). 200% would mean 72 and 8 powerups, respectively, but note that there is a hard maximum of 32 powerups.
+</P>
+
+<P>
+If there are more players in the game than there would be powerups according to this minimum, there will be as many powerups as there are players. If you want to disable this flexibility, set <A HREF="#pups_max"> <CODE>pups_max</CODE></A> to the same amount as <CODE>pups_min</CODE>. This setting is always limited by the <CODE>pups_max</CODE> setting: If <CODE>pups_max</CODE> calculated in a given map is smaller than <CODE>pups_min</CODE>, there will be <CODE>pups_max</CODE> powerups.
+</P>
+
+<H3 ID="pups_max"><CODE>pups_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>0 to 32, or 0% to any %
+<TR><TH>Default<TD>80%
+</TABLE>
+<P>
+The maximum number of powerups in the game. A percentage is interpreted as a fraction of map size in rooms. That is, 50% means 18 powerups in a 6×6 sized map (6×6×50%=18) and 2 powerups in a 2×2 sized map (2×2×50%=2). 200% would mean 72 and 8 powerups, respectively, but note that there is a hard maximum of 32 powerups.
+</P>
+
+<P>
+See the notes in <A HREF="#pups_min"><CODE>pups_min</CODE></A> above.
+</P>
+
+<H3 ID="pups_respawn_time"><CODE>pups_respawn_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;
+<TR><TH>Default<TD>25
+</TABLE>
+<P>
+This is the time that a powerup remains out of the game after being picked up by a player. If set to 0, it will instantly spawn somewhere when picked up.
+</P>
+
+<H3 ID="pup_add_time"><CODE>pup_add_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 1&ndash;
+<TR><TH>Default<TD>40
+</TABLE>
+<P>
+When a player picks up a turbo, power, or shadow powerup, they will have the powerup for the time set by this setting. If they had some time left already, this time is added to the old time. The <A HREF="#pup_max_time"><CODE>pup_max_time</CODE></A> setting below controls how much time can be accumulated this way.
+</P>
+
+<H3 ID="pup_max_time"><CODE>pup_max_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 1&ndash;
+<TR><TH>Default<TD>100
+</TABLE>
+<P>
+This is the limit to how much powerup time a player can collect from turbo, power or shadow powerups. If this is set to the same as or less than <A HREF="#pup_add_time"><CODE>pup_add_time</CODE></A>, no accumulation is possible and the player&rsquo;s powerup time just resets to this value whenever they pick up a powerup.
+</P>
+
+<H3 ID="pups_drop_at_death"><CODE>pups_drop_at_death</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If this is enabled, when a player with powerups dies, one of their powerups is dropped for other players to pick up. This only happens when the powerup has most of its time left.
+</P>
+
+<H3 ID="pups_player_max"><CODE>pups_player_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1&ndash;
+<TR><TH>Default<TD>no limit
+</TABLE>
+<P>
+This is the maximum number of distinct powerups a player can have at once. When an additional powerup is picked up, one of the player&rsquo;s powerups is removed to make room, in this order of priority:
+</P>
+<UL>
+ <LI>turbo, power or shadow, whichever has the shortest time left,
+ <LI>deathbringer,
+ <LI>shield and
+ <LI>weapon.
+</UL>
+
+<H3 ID="pup_weapon_max"><CODE>pup_weapon_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to 9
+<TR><TH>Default<TD>9
+</TABLE>
+<P>
+This is the maximum weapon level a player can have.
+</P>
+
+<H3 ID="pup_health_bonus"><CODE>pup_health_bonus</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health/energy, 1&ndash;
+<TR><TH>Default<TD>160
+</TABLE>
+<P>
+This sets how much health and energy combined a player gets when picking up a megahealth powerup.
+</P>
+
+<H3 ID="pup_power_damage"><CODE>pup_power_damage</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0&ndash;
+<TR><TH>Default<TD>2.0
+</TABLE>
+<P>
+The <A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A> value is multiplied by this value for rockets shot with the &lsquo;power&rsquo; powerup.
+</P>
+
+<H3 ID="pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>5.0
+</TABLE>
+<P>
+This is the time how long a player will be (on average) under the influence of a deathbringer explosion. During this time the player is paralyzed (can&rsquo;t move or shoot) and constantly loses health. Changing this time also affects the total health consumed by a deathbringer shot. Changing this to something like 20 seconds will make every deathbringer hit fatal.
+</P>
+
+<H3 ID="pup_deathbringer_switch"><CODE>pup_deathbringer_switch</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+If this is enabled, players can get rid of deathbringer powerups they picked up by picking up another one. If this is disabled, picking up more than one deathbringer makes no difference.
+</P>
+
+<H3 ID="pup_shadow_invisibility"><CODE>pup_shadow_invisibility</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If this is enabled, a player with the shadow powerup becomes completely invisible to enemies in a few seconds. The disabled setting makes all shadow players show a little. Having the invisibility enabled makes shadow a much more powerful powerup, so adjusting <A HREF="#pup_chance_shadow"><CODE>pup_chance_shadow</CODE></A> might be in order.
+</P>
+
+<H3 ID="pup_shield_one_hit"><CODE>pup_shield_one_hit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If this is enabled, a player with the shield powerup can only sustain one hit before the shield wears off. On the other hand, the hit doesn&rsquo;t take any energy from the player. This setting is a way to make the shield powerup considerably less powerful.
+</P>
+
+<H3 ID="pup_chance_shield"><CODE>pup_chance_shield</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>16
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a shield powerup is this number divided by the total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_turbo"><CODE>pup_chance_turbo</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>14
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a turbo powerup is this number divided by the total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_shadow"><CODE>pup_chance_shadow</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>14
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a shadow powerup is this number divided by the total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_power"><CODE>pup_chance_power</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>14
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a &lsquo;power&rsquo; powerup is this number divided by the total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_weapon"><CODE>pup_chance_weapon</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>18
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a weapon powerup is this number divided by the total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_megahealth"><CODE>pup_chance_megahealth</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>13
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a megahealth powerup is this number divided total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_chance_deathbringer"><CODE>pup_chance_deathbringer</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a number relative to other <CODE>pup_chance</CODE> settings, 0&ndash;
+<TR><TH>Default<TD>11
+</TABLE>
+<P>
+When a powerup is created in the game, its chance of being a deathbringer powerup is this number divided total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H2 ID="physics">Physics</H2>
+
+<P>
+Changing the physics generally requires guessing, and there are no guidelines to give. Just try different combinations if you want to change it.
+</P>
+
+<P>
+To control the maximum speed, you can use the following formula to determine the other values, or to calculate the maximum speed (in the same unit as in Outgun 0.5.0, where the default running speed is 22) from them:
+</P>
+
+<PRE>
+maximum speed = (<CODE>acceleration</CODE> - <CODE>friction</CODE>) / <CODE>drag</CODE>.
+</PRE>
+
+<UL>
+ <LI><A HREF="#friction"><CODE>friction</CODE></A>
+ <LI><A HREF="#drag"><CODE>drag</CODE></A>
+ <LI><A HREF="#acceleration"><CODE>acceleration</CODE></A>
+ <LI><A HREF="#brake_acceleration"><CODE>brake_acceleration</CODE></A>
+ <LI><A HREF="#turn_acceleration"><CODE>turn_acceleration</CODE></A>
+ <LI><A HREF="#run_acceleration"><CODE>run_acceleration</CODE></A>
+ <LI><A HREF="#turbo_acceleration"><CODE>turbo_acceleration</CODE></A>
+ <LI><A HREF="#flag_acceleration"><CODE>flag_acceleration</CODE></A>
+ <LI><A HREF="#player_collisions"><CODE>player_collisions</CODE></A>
+ <LI><A HREF="#rocket_speed"><CODE>rocket_speed</CODE></A>
+</UL>
+
+<H3 ID="friction"><CODE>friction</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number
+<TR><TH>Default<TD>0.20
+</TABLE>
+<P>
+Friction represents the constant component of speed loss. The meaningful range is between 0 and the maximum acceleration.
+</P>
+
+<H3 ID="drag"><CODE>drag</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number
+<TR><TH>Default<TD>0.16
+</TABLE>
+<P>
+Drag represents the component of speed loss that&rsquo;s proportional to current speed. The meaningful range is between 0 and 1.
+</P>
+
+<H3 ID="acceleration"><CODE>acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number
+<TR><TH>Default<TD>2.60
+</TABLE>
+<P>
+This is the basic amount of acceleration, which is used when walking without turbo.
+</P>
+
+<H3 ID="brake_acceleration"><CODE>brake_acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0.01&ndash;
+<TR><TH>Default<TD>0.10
+</TABLE>
+<P>
+Acceleration is multiplied by this value when accelerating opposite to the current movement, &lsquo;braking&rsquo;.
+</P>
+
+<H3 ID="turn_acceleration"><CODE>turn_acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0.01&ndash;
+<TR><TH>Default<TD>0.50
+</TABLE>
+<P>
+Acceleration is multiplied by this value when accelerating perpendicular to the current movement, &lsquo;turning&rsquo;.
+</P>
+
+<H3 ID="run_acceleration"><CODE>run_acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number
+<TR><TH>Default<TD>1.75
+</TABLE>
+<P>
+Acceleration is multiplied by this value when running.
+</P>
+
+<H3 ID="turbo_acceleration"><CODE>turbo_acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number
+<TR><TH>Default<TD>1.45
+</TABLE>
+<P>
+Acceleration is multiplied by this value when the player has the turbo powerup. When running with turbo, both this multiplier and <A HREF="#run_acceleration"><CODE>run_acceleration</CODE></A> are used.
+</P>
+
+<H3 ID="flag_acceleration"><CODE>flag_acceleration</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number
+<TR><TH>Default<TD>0.91
+</TABLE>
+<P>
+Acceleration is multiplied by this when the player is carrying a flag and running, in addition to the <A HREF="#run_acceleration"><CODE>run_acceleration</CODE></A> and possibly <A HREF="#turbo_acceleration"> <CODE>turbo_acceleration</CODE></A> multipliers.
+</P>
+
+<H3 ID="player_collisions"><CODE>player_collisions</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD><CODE>no</CODE>, <CODE>normal</CODE> or <CODE>special</CODE> (equivalent: 0, 1, or 2)
+<TR><TH>Default<TD><CODE>normal</CODE>
+</TABLE>
+<P>
+If this is enabled, players (regardless of whether they&rsquo;re in the same team or not) can collide with each other. The collision check is not applied when a player is spawned, or at room borders, so players can still end up overlapping. The <CODE>special</CODE> setting adds special effects to collisions when a player has certain powerups. It makes colliding to other players a weapon, too.
+</P>
+
+<H3 ID="rocket_speed"><CODE>rocket_speed</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number
+<TR><TH>Default<TD>50
+</TABLE>
+<P>
+This sets the speed of the players&rsquo; shots. The unit is the same as that of player speed in 0.5.0.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2006-02-13 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

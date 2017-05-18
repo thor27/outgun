@@ -1,0 +1,7 @@
+Outgun 1.0.3, copyright © 2002-2006 diversos autores.
+ 
+Outgun é um software livre sobre a GNU GPL, e você está bem-vindo a redistribuir sobre certas condições. Outgun vem com ABSOLUTAMENTE NENHUMA GARANTIA. Para mais detalhes, veja o arquivo acompanhante COPYING.
+ 
+Para ajudar-nos a remover qualquer bugs restantes, você poderá deixar o Outgun enviar-nos automaticamente uma notificação quando um erro inesperado acontecer. Você pode escolher entre não reportar, minimas informações ou reportagem completa. As informações mínimas incluem nada mais do que o nome do arquivo, o número da linha da falha de assertion e a versão do Outgun. A reportagem completa também inclui uma cópia do stack do Outgun. Essa informação é apenas usada para procurar a causa da falha. Nós não poderemos entrar em contato com você para maiores informações, então é recomendado que você também mande um e-mail com maiores detalhes.
+ 
+Escolha o modo preferido abaixo com as teclas esquerda e direita, e feche o menu com Enter ou Esc. Depois da primeira vez que você inicia o Outgun, você poderá encontrar essa tela no menu de Opções.

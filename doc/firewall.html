@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Firewall setup</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Firewall setup
+</DIV>
+
+<H1>Firewall setup</H1>
+
+<P>
+This document describes the ways in which Outgun uses the network. This information is mainly intended to help you set up your firewall to work with Outgun. Since Outgun 1.0, most home firewalls and NATs work with no adjustments, provided you aren&rsquo;t running a server. Stricter firewalls that restrict outgoing traffic will need more care.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#overview">Overview</A>
+ <LI><A HREF="#game">Game traffic</A> (UDP between client and server)
+ <LI><A HREF="#master">Master server traffic</A>
+</UL>
+
+<H2 ID="overview">Overview</H2>
+
+<P>
+This is an overview about how to set up your firewall or NAT, if it doesn&rsquo;t limit outbound traffic. If it does, please read the more detailed sections below.
+</P>
+
+<H3 ID="ovclient">Client</H3>
+
+<P>
+Running a client usually works without any special firewall settings when outbound traffic isn&rsquo;t limited. If you are having problems, and your firewall allows this, you could try allowing all incoming traffic (it is enough to allow only traffic from the Outgun servers you are going to play on, but don&rsquo;t put a limit on the remote port) to one or a few UDP ports, which you then specify Outgun to use with the <A HREF="commandline.html#cport"><CODE>-cport</CODE></A> argument. If you have a NAT, you will probably also need to set up these ports so that they always point to the same ports on the computer you use to play Outgun. If this doesn&rsquo;t help, you&rsquo;ll have to find another way to relax your firewall or NAT.
+</P>
+
+<H3 ID="ovserver">Server</H3>
+
+<P>
+Running a server is more complicated. You will need to open the primary server port for all incoming UDP traffic, and if you have a NAT, configure it to forward all traffic to that port to the same port on the Outgun server machine. On an application level software firewall, it is usually enough to give Outgun server rights, but at least some versions of Zone Alarm don&rsquo;t like the way Outgun opens connections and won&rsquo;t work unless you set the internet zone security level to medium.
+</P>
+
+<P>
+If the server is behind a NAT, and you don&rsquo;t want to shut out all clients who also have a NAT or a firewall, you should set up a range of secondary ports for use with the <A HREF="commandline.html#sport"><CODE>-sport</CODE></A> argument, and make your NAT forward each of those ports to the corresponding port on your Outgun server machine.
+</P>
+
+<H2 ID="game">Game traffic <SMALL>(UDP between client and server)</SMALL></H2>
+
+<P>
+When connecting to a server, the client knows the server primary port (set by <A HREF="commandline.html#port"><CODE>-port</CODE></A> on the server). It chooses a local port from its <A HREF="commandline.html#cport"><CODE>-cport</CODE></A> range, and starts sending UDP packets to the server&rsquo;s address and port.
+</P>
+
+<P>
+When the server gets the connection attempt, it chooses a port from its <A HREF="commandline.html#sport"><CODE>-sport</CODE></A> range for sending data to this client. The server however first replies from its primary port telling the client which other port it chose. The client opens its own firewall or NAT by sending a packet to that port first, so there are no problems if the server is not also behind a NAT.
+</P>
+
+<P>
+Once the connection is established, the client continues to send data to the server&rsquo;s primary port from its chosen cport, and the server sends data from its chosen sport to the same client cport.
+</P>
+
+<P>
+A variation to this is that if just after connecting the server receives client packets, but sees that its own packets aren&rsquo;t going through, it increases the client side port that it sends to by one every three seconds, five times. This helps if a client NAT assigns a nearby external port (instead of the same) to the <CODE>cport -> sport</CODE> probe. In this case, connecting to a server can take considerable time with the connection half-way established and the game showing, but after that delay everything works normally. This server behavior was added to Outgun 1.0.1, and therefore doesn&rsquo;t happen with servers running 1.0.0.
+</P>
+
+<OL>
+ <LI><CODE>client:cport -> server:port</CODE> &ndash; must get through on both ends
+ <LI><CODE>client:cport <- server:port</CODE> (telling <CODE>sport</CODE>) &ndash; this gets through any normal firewall or NAT, as a reply
+ <LI><CODE>client:cport -> server:sport</CODE> &ndash; this doesn&rsquo;t need to get through anything, but it is normally required on the client side in order to allow the reverse packets through
+ <LI><CODE>client:cport <- server:sport ...</CODE> &ndash; provided the previous reverse packet managed to clear the way, these get through as replies on the client end, but server side needs to explicitly let them through
+ <LI><CODE>client:cport -> server:port ...</CODE> &ndash; just like the first packet
+</OL>
+
+<P>
+This protocol doesn&rsquo;t cleanly match anything generally used in UDP applications, because the server sends and receives data through different ports with the same client. This might cause some problems, if the one way traffic doesn&rsquo;t keep a firewall&rsquo;s or NAT&rsquo;s &ldquo;channel&rdquo; open. This has always been the way Outgun works, but it will be changed to normal in a future version, removing the need for the <A HREF="commandline.html#sport"><CODE>-sport</CODE></A> switch and forwarding more than one port through a server side NAT.
+</P>
+
+<H2 ID="master">Master server traffic</H2>
+
+<P>
+The master server traffic takes three forms: communications with the server list master server, the tournament master server, and the bug reporting master server. These are all different servers. The first two use TCP, while bug reporting uses UDP. If your outbound traffic is not controlled by your firewall, all this traffic gets through without problems.
+</P>
+
+<H3 ID="serverlist">Server list master server</H3>
+
+<P>
+The server list master server is <STRONG>koti.mbnet.fi</STRONG>, TCP port 80 (HTTP). Outgun makes actual HTTP requests, but doesn&rsquo;t use any proxy regardless of how your system is configured. At the time of writing (Jan 2005), the server&rsquo;s IP address has long been <STRONG>194.100.161.5</STRONG>. Outgun servers need access to it in order to be on the server list, and clients to get the list of servers online.
+</P>
+
+<H3 ID="tournament">Tournament master server</H3>
+
+<P>
+The tournament master server is <STRONG>www.mycgiserver.com</STRONG>, TCP port 80 (HTTP). Outgun makes actual HTTP requests, but doesn&rsquo;t use any proxy regardless of how your system is configured. At the time of writing (Jan 2005), the server&rsquo;s IP address is <STRONG>64.69.35.205</STRONG>, but it uses to change. Outgun servers need access to it in order to allow players log in to the tournament, and clients to log in themselves.
+</P>
+
+<H3 ID="bugreport">Bug reporting master server</H3>
+
+<P>
+The bug reporting master server is currently Nix&rsquo;s home computer, <STRONG>130.233.18.23</STRONG>, UDP port 24900. The client and server only use this server to send reports about assertions, in case the automatic bug reporting is enabled. Lacking access to the server doesn&rsquo;t do any direct harm to you.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2005-02-07 &ndash; Niko Ritari
+</DIV>
+
+</HTML>

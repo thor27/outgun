@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun map format</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Map format</DIV>
+
+<H1>Outgun map format</H1>
+
+<P>
+This page explains the map file format in Outgun 1.0. The maps are in text format. The server&rsquo;s maps are located in the directory <CODE>maps</CODE>. Apart from empty lines and comments, which are lines that begin with a semicolon &rsquo;;&rsquo;, every line is a command. After a command there are several values, separated by whitespaces.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#map">Map specific commands</A>
+ <LI><A HREF="#flags-spawn-points">Flags and spawn points</A>
+ <LI><A HREF="#room-commands">Room commands</A>
+ <LI><A HREF="#wall-ground">Wall and ground commands</A>
+ <LI><A HREF="#textures">Textures</A>
+</UL>
+
+<H2 ID="map">Map specific commands</H2>
+
+<PRE ID="width-height"><CODE>P width  [x]
+P height [y]</CODE></PRE>
+<P>
+<STRONG>Width</STRONG> and <STRONG>height</STRONG> of the map. <CODE>P width 4</CODE> and <CODE>P height 3</CODE> mean that the map is four rooms wide and three rooms high. These commands are mandatory and they must be before any room, flag and spawn commands.
+</P>
+
+<PRE ID="title-author"><CODE>P title  [map title]
+P author [map author]</CODE></PRE>
+<P>
+<STRONG>Title</STRONG> and <STRONG>author</STRONG> of the map. These are shown in the map list menu. The title command is mandatory and neither of these can be empty.
+</P>
+
+<PRE ID="scale"><CODE>S [x] [y]</CODE></PRE>
+<P>
+<STRONG>Scaling</STRONG> factors. This command sets the coordinates so that (0, 0) is the top left corner of the room and (x, y) is the bottom right corner. (x/2, y/2) is the centre point of the room. The default values are 1 and 1.
+</P>
+<P>
+For example <CODE>S 16 12</CODE> makes room 16 units wide and 12 units high. After that the room coordinates are from (0, 0) to (16, 12).
+</P>
+
+<P>
+<SMALL>
+The <STRONG>V</STRONG> command is a useless version command that has never had any use in any version of Outgun. It should not be used in new maps. Outgun just discards any V line.
+</SMALL>
+</P>
+
+<H2 ID="flags-spawn-points">Flags and spawn points</H2>
+
+<PRE ID="flag"><CODE>flag [team] [roomx] [roomy] [x] [y]</CODE></PRE>
+<P>
+<STRONG>Flag</STRONG> command places a flag of the team in selected room at (x, y). Red flag is 0, blue 1 and wild flag 2. There is no limit of how many flags can be in a map. There doesn&rsquo;t even need to be any flags. Rememeber though that the wild flags are unusable without red or blue flags. Flags can&rsquo;t be on walls.
+</P>
+<PRE ID="spawn"><CODE>spawn [team] [roomx] [roomy] [x] [y]</CODE></PRE>
+<P>
+<STRONG>Spawn points</STRONG> are the players&rsquo; starting points at the start of the round. Spawn points are placed the same way as flags. A map can have any number of spawn points. If there is no spawn point for the team, the players spawn at random positions. Spawn points can&rsquo;t be on walls.
+</P>
+
+<H2 ID="room-commands">Room commands</H2>
+
+<PRE ID="room"><CODE>R [x] [y]</CODE></PRE>
+<P>
+<STRONG>Room</STRONG> command sets the active room as room (x, y). The top left room is (0, 0). After this command following walls and ground areas are made in the active room.
+</P>
+
+<PRE ID="label"><CODE>:[name]</CODE></PRE>
+<P>
+<STRONG>Label</STRONG> command starts a group. The following wall and ground commands belong to this group and they can be used by the X command. The group ends only by another label command or end of file. Therefore the groups are at the end of the map file.
+</P>
+
+<PRE ID="x"><CODE>X [name] [x1] [y1] [x2] [y2]</CODE></PRE>
+<P>
+X command puts the walls and ground areas in name group to the rooms in a rectangular area between the given coordinates for top left (x1, y1) and bottom right (x2, y2). If x2 and y2 are omitted, the command affects only one room.
+</P>
+
+<H2 ID="wall-ground">Wall and ground commands</H2>
+
+<P>
+With wall and ground commands you can make walls and ground areas of different shapes. W means wall and G ground. Texture is the ID number of the <A HREF="#textures">texture</A>. If omitted, the texture ID is 0.
+</P>
+
+<PRE ID="rectangle"><CODE>W [x1] [y1] [x2] [y2] [texture]
+G [x1] [y1] [x2] [y2] [texture]</CODE></PRE>
+<P>
+This command makes a <STRONG>rectangular area</STRONG> in the active room or group. The first coordinates give the top left corner and the second ones the bottom right.
+</P>
+
+<PRE ID="triangle"><CODE>T W [x1] [y1] [x2] [y2] [x3] [y3] [texture]
+T G [x1] [y1] [x2] [y2] [x3] [y3] [texture]</CODE></PRE>
+<P>
+This command makes a <STRONG>triangular area</STRONG> in the active room or group. The coordinates are the points of the triangle.
+</P>
+
+<PRE ID="circle"><CODE>C W [x] [y] [r1] [r2] [angle1] [angle2] [texture]
+C G [x] [y] [r1] [r2] [angle1] [angle2] [texture]</CODE></PRE>
+<P>
+This command makes a <STRONG>circular area</STRONG> in the active room or group. The centre point of the circle is at (x, y). The radius of the circle is r1. These commands are enough to make a simple circle. A ring can be made by setting r2 greater than zero. A part of a ring or a sector can be created by giving the limiting angles which are in degrees. 0 is top of the circle and the angles increase clockwise. If you want to make a full circle with a texture, set both angles to 0.
+</P>
+<P>
+<IMG ALT="[Circular wall]" SRC="pics/circwall.png">
+</P>
+
+<H2 ID="textures">Textures</H2>
+
+<P>
+Walls and ground areas may have different textures. At the moment the textures do not affect physics in any way.
+</P>
+
+<H3 ID="floor-textures">Floor textures</H3>
+
+<TABLE BORDER>
+ <TR><TH>ID<TH>Purpose<TH>File name
+ <TR><TD ALIGN=RIGHT>0<TD>default floor<TD>floor_normal1.pcx
+ <TR><TD ALIGN=RIGHT>1<TD>alternative floor<TD>floor_normal2.pcx
+ <TR><TD ALIGN=RIGHT>2<TD>alternative floor<TD>floor_normal3.pcx
+ <TR><TD ALIGN=RIGHT>3<TD>red team floor<TD>floor_red.pcx
+ <TR><TD ALIGN=RIGHT>4<TD>blue team floor<TD>floor_blue.pcx
+ <TR><TD ALIGN=RIGHT>5<TD>ice<TD>floor_ice.pcx
+ <TR><TD ALIGN=RIGHT>6<TD>sand<TD>floor_sand.pcx
+ <TR><TD ALIGN=RIGHT>7<TD>mud<TD>floor_mud.pcx
+</TABLE>
+
+<H3 ID="wall-textures">Wall textures</H3>
+
+<TABLE BORDER>
+ <TR><TH>ID<TH>Purpose<TH>File name
+ <TR><TD ALIGN=RIGHT>0<TD>default wall<TD>wall_normal1.pcx
+ <TR><TD ALIGN=RIGHT>1<TD>alternative wall<TD>wall_normal2.pcx
+ <TR><TD ALIGN=RIGHT>2<TD>alternative wall<TD>wall_normal3.pcx
+ <TR><TD ALIGN=RIGHT>3<TD>red team wall<TD>wall_red.pcx
+ <TR><TD ALIGN=RIGHT>4<TD>blue team wall<TD>wall_blue.pcx
+ <TR><TD ALIGN=RIGHT>5<TD>metal<TD>wall_metal.pcx
+ <TR><TD ALIGN=RIGHT>6<TD>wood<TD>wall_wood.pcx
+ <TR><TD ALIGN=RIGHT>7<TD>rubber<TD>wall_rubber.pcx
+</TABLE>
+
+<HR>
+
+<DIV>
+Updated 2005-05-21 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

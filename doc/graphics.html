@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun graphics themes</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV><A HREF="index.html">Outgun documentation</A> / Graphics themes</DIV>
+
+<H1>Outgun graphics themes</H1>
+
+<P>
+You can make your own Outgun graphics theme. A theme is a set of 
+pictures which are in the PCX format.
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#basic">Basic information</A>
+ <LI><A HREF="#textures">Textures</A>
+ <LI><A HREF="#players">Players</A>
+ <LI><A HREF="#rockets">Rockets</A>
+ <LI><A HREF="#powerups">Powerups</A>
+ <LI><A HREF="#flags">Flags</A>
+ <LI><A HREF="#background">Background image</A>
+</UL>
+
+<H2 ID="basic">Basic information</H2>
+
+<P>
+Textures are tiled on the floor and walls. Sprites are used for 
+players, rockets, powerups and flags. Outgun scales the sprites 
+depending on the resolution.
+</P>
+<P>
+Some sprites have an alpha channel for translucency and some for team 
+or personal colour. Due to restrictions of the PCX format, alpha 
+channels must be in separate files. Alpha channel pictures are 
+256-colour (8-bit) greyscale pictures. The lighter the alpha channel is 
+the more colour or opacity the sprite will have. In the sprites that do not 
+have an alpha channel, the transparent parts are purple (RGB 255, 0, 255).
+</P>
+<P>
+Create a directory with the name of your theme under the <CODE>graphics</CODE> directory, e.g. <SAMP>Mytheme</SAMP>. That is the name which is seen in the graphics setup menu in Outgun. Put the pictures of the theme there.
+</P>
+
+<H2 ID="textures">Textures</H2>
+
+<P>
+The size of the textures must be 2<SUP>n</SUP>×2<SUP>m</SUP>, e.g. 64×32 pixels. Notice that the texture files can and usually should be 8-bit images, which decreases the file size quite dramatically when compared to 24 bits.
+</P>
+
+<H3 ID="floor-textures">Floor textures</H3>
+
+<TABLE BORDER>
+ <TR><TH>ID<TH>Purpose<TH>File name
+ <TR><TD ALIGN=RIGHT>0<TD>default floor<TD>floor_normal1.pcx
+ <TR><TD ALIGN=RIGHT>1<TD>alternative floor<TD>floor_normal2.pcx
+ <TR><TD ALIGN=RIGHT>2<TD>alternative floor<TD>floor_normal3.pcx
+ <TR><TD ALIGN=RIGHT>3<TD>red team floor<TD>floor_red.pcx
+ <TR><TD ALIGN=RIGHT>4<TD>blue team floor<TD>floor_blue.pcx
+ <TR><TD ALIGN=RIGHT>5<TD>ice<TD>floor_ice.pcx
+ <TR><TD ALIGN=RIGHT>6<TD>sand<TD>floor_sand.pcx
+ <TR><TD ALIGN=RIGHT>7<TD>mud<TD>floor_mud.pcx
+</TABLE>
+
+<H3 ID="wall-textures">Wall textures</H3>
+
+<TABLE BORDER>
+ <TR><TH>ID<TH>Purpose<TH>File name
+ <TR><TD ALIGN=RIGHT>0<TD>default wall<TD>wall_normal1.pcx
+ <TR><TD ALIGN=RIGHT>1<TD>alternative wall<TD>wall_normal2.pcx
+ <TR><TD ALIGN=RIGHT>2<TD>alternative wall<TD>wall_normal3.pcx
+ <TR><TD ALIGN=RIGHT>3<TD>red team wall<TD>wall_red.pcx
+ <TR><TD ALIGN=RIGHT>4<TD>blue team wall<TD>wall_blue.pcx
+ <TR><TD ALIGN=RIGHT>5<TD>metal<TD>wall_metal.pcx
+ <TR><TD ALIGN=RIGHT>6<TD>wood<TD>wall_wood.pcx
+ <TR><TD ALIGN=RIGHT>7<TD>rubber<TD>wall_rubber.pcx
+</TABLE>
+
+<H2 ID="players">Players</H2>
+
+<P>
+The recommended size of the player sprites is 256×256 pixels.
+The collidable area is a circle with a diameter of half the picture.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>File name<TH>Purpose
+ <TR><TD>player.pcx<TD>The main player sprite.
+ <TR><TD>player_team.pcx<TD>Alpha channel for the team colour.
+ <TR><TD>player_personal.pcx<TD>Alpha channel for the player colour.
+ <TR><TD>player_shield.pcx<TD>Player&rsquo;s shield sprite.
+ <TR><TD>player_shield_team.pcx<TD>Alpha channel for the team colour.
+ <TR><TD>dead.pcx<TD>Sprite seen when the player dies.
+ <TR><TD>dead_team.pcx<TD>Alpha channel for the team colour.
+ <TR><TD>dead_alpha.pcx<TD>Alpha channel for the dead sprite.
+ <TR><TD>ice_cream.pcx<TD>Sprite seen instead of ice cream, &ldquo;virou sorvete&rdquo;.
+</TABLE>
+
+<H2 ID="rockets">Rockets</H2>
+
+<P>
+The recommended size of the rocket sprites is 32×32 pixels.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>File name<TH>Purpose
+ <TR><TD>rocket.pcx<TD>Normal rocket sprite.
+ <TR><TD>rocket_team.pcx<TD>Alpha channel for the team colour.
+ <TR><TD>rocket_pow.pcx<TD>Power rocket sprite.
+ <TR><TD>rocket_pow_team.pcx<TD>Alpha channel for the team colour.
+</TABLE>
+
+<H2 ID="powerups">Powerups</H2>
+
+<P>
+The recommended size of the powerup sprites is 128×128 pixels.
+</P>
+
+<UL>
+ <LI>deathbringer.pcx
+ <LI>health.pcx
+ <LI>power.pcx
+ <LI>shadow.pcx
+ <LI>shield.pcx
+ <LI>turbo.pcx
+ <LI>weapon.pcx
+</UL>
+
+<H2 ID="flags">Flags</H2>
+
+<P>
+The recommended size of the flag sprite is 256×256 pixels.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>File name<TH>Purpose
+ <TR><TD>flag.pcx<TD>Flag sprite.
+ <TR><TD>flag_team.pcx<TD>Alpha channel for the team colour.
+</TABLE>
+
+<H2 ID="background">Background image</H2>
+
+<P>
+Starting from Outgun 1.0.3, you can use a background image on the game screen. Name it as <CODE>background.pcx</CODE>. It is tiled on the screen background and has the same restrictions as the textures.
+</P>
+
+<HR>
+
+<DIV>
+Updated 2006-02-13 &ndash; Jani Rivinoja
+</DIV>
+
+</HTML>

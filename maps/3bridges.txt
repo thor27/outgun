@@ -1,0 +1,137 @@
+; 3bridges
+; my third map
+; by :(
+; 2005
+P width 3
+P height 3
+P title 3bridges
+P author :(
+S 16 12
+
+;red flag
+flag  0 0 0  4  3
+
+;blue flag
+flag  1 2 2  12  9
+
+;spawnpoints
+;red
+spawn 0 0 0  5  3
+spawn 0 0 0  5  5
+spawn 0 0 0  5  6
+spawn 0 0 0  5  8
+spawn 0 0 0  5  10
+;blue
+spawn 1 2 2  10  10
+spawn 1 2 2  10  9
+spawn 1 2 2  10  7
+spawn 1 2 2  10  5
+spawn 1 2 2  10  3
+
+X base 0 0
+X baseb 2 2
+
+R 0 0
+G    12  0 16 12 0
+W    5  11 6 12
+W  12 12 16  5 
+W  12  5 11  6
+W  11  0 12  5
+
+R 1 0
+W    0  5  1 12
+W    0  12 6 11
+W    10 11 16 12
+
+R 0 1
+W    1.2  -1 4.8 13 1
+W    5  0  6  4
+W    5  9  6 12
+W    6  11 16 12
+W   12  0 16  1
+
+R 0 2
+W    5  0 16  1
+
+R 1 2
+W    0  0  6  1
+W  10  0 16  1
+W  15  0 16  7
+
+R 2 2
+G    0  0  5 12 0
+W    0  0  5  7
+W    5  6  6 12
+W  11  0 10  1
+  
+R 1 1
+W    6.2  -1 9.8 13 1
+W    0 11  6 12
+W    10 5 11 12
+W    11 11 16 12
+W    0  0  6 1
+W    5  0  6 7
+W  10  0 16 1
+
+R 2 0
+W    0 11 11 12 
+
+R 2 1
+W    11.2 -1 14.8 13 1
+W    0  0 11  1
+W    10 12 11 5
+W    0 11  5 12 
+
+X wu 0 0 2 0
+X wd 0 2 2 2
+X wl 0 0
+X wl 0 1
+X wl 0 2
+X wr 2 0
+X wr 2 1
+X wr 2 2
+X balls 1 2
+X triangles 2 0
+X line 1 0
+X squares 0 2
+ 
+:wu
+W    0  0 16   1
+
+:wd
+W    0  11 16 12
+
+:wl
+W    0  0  1 12
+
+:wr
+W    15 0 16 12
+
+:base
+G  0 0  16  12  3
+T G  2 10 4 10 3 11 2  
+:baseb
+G  0 0  16  12  4
+T G  14 2 12 2 13 1 2
+
+:balls
+C W   1.5  6  3  2  30 -210
+C W  8 11  2.5  0  -90 90
+C W  15 1  2.5  0  180 -90
+
+:triangles
+T W  4.5  1  6.5 1 5.5 5
+T W  4.5  11 6.5 11 5.5 8
+T W  15 4 15 8 12 6
+
+:line
+W     4  5.5  12 6.5 
+W     7.5  1  8.5 3.5
+
+:squares
+W     7  3  8  9
+W     4  3  7  4
+W     4  8  7  9
+W     8  3  12  4
+W     8  8  12  9
+W     11 4 12  6
