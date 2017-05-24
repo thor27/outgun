@@ -44,7 +44,7 @@ public:
    * or better resolution.
    */
   //##ModelId=3B0753820036
-  static Time getCurrentTime();
+  static Time getCurrentTime() throw ();
 
   /**
    * Returns the current time from the system clock.
@@ -53,7 +53,7 @@ public:
    * Jan 1, 1970.
    */
   //##ModelId=3B0753820065
-  static Time getAbsoluteTime();
+  static Time getAbsoluteTime() throw ();
 };
 
 }

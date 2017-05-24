@@ -1,0 +1,7 @@
+Outgun @VERSION@, copyright © 2002-@YEAR@ Autori multipli.
+ 
+Outgun è un software gratuito protetto da licenza GNU GPL, e siete invitati a redistribuirlo con certe condizioni. Outgun è ASSOLUTAMENTE SENZA GARANZIE. Per ulteriori dettagli vedi il file allegato COPYING.
+ 
+Per aiutarci a risolvere tutti i rimanenti bug, con Outgun puoi automaticamente spedirci una nota con una descrizione dell'inaspettato fallimento. Puoi scegliere tra non segnalare, minima informazione, e completa segnalazione. La minima segnalazione include solo il nome del file non funzionante e il numero di linea del fallimento, e la versione di Outgun. La segnalazione completa include anche una copia di Outgun bacata. Queste informazioni servono solo per scoprire la causa del problema. Noi non potremo contattarti per maggiori informazioni, quindi ti racomandiamo di mandarci anche un'e-mail con maggiori dettagli.
+
+Scegli il modo preferito mediante i tasti "freccia destra" e "freccia sinistra", e chiudi il menù con Invio o esc. La prima volta che fai partire Outgun, potrai trovare questa schermata nel menù di opzioni.

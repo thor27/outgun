@@ -1,0 +1,62 @@
+P width  3
+P height 3
+P title Lola
+P author coiote
+S 16 12
+
+flag  1 1 0  8  6
+spawn 1 1 0  8  6
+
+flag  0 1 2  8  6
+spawn 0 1 2  8  6
+
+X cima 0 0 2 0
+X esq 0 0 0 2
+X dir 2 0 2 2
+X baixo 0 2 2 2
+X all 0 0 2 2
+X centro 1 1
+X esqcentro 0 1
+X dircentro 2 1
+
+:cima
+W 0 0 16 0.7
+
+:esq
+W 0 0 1 12
+
+:dir 
+W 15 0 16 12
+
+:baixo
+W 0 11.3 16 12
+
+:all
+W 0 0 4 0.7
+W 0 0 1 3
+W 12 0 16 0.7
+W 0 11.3 4 12
+W 12 11.3 16 12
+W 0 0 1 3
+W 0 9 1 12 
+W 15 0 16 3
+W 15 9 16 12
+
+:centro
+W 0 0 1 12
+W 15 0 16 12
+C W 1 6 0.5
+C W 3 6 0.5
+C W 5 6 0.5
+C W 7 6 0.5
+C W 9 6 0.5
+C W 11 6 0.5
+C W 13 6 0.5
+C W 15 6 0.5
+
+
+:esqcentro
+W 15 0 16 12
+
+:dircentro
+W 0 0 1 12 

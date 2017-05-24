@@ -1,0 +1,72 @@
+; 8-kulmio.txt
+; By Huntta 2004
+
+V 1
+P width  3
+P height 4
+P title 8-kulmio
+P author Huntta
+S 16 12
+
+; red flag and spawn points
+flag  0 2 0  8  6
+spawn 0 2 0  8  8
+spawn 0 2 0  6  8
+spawn 0 2 0 10  8
+spawn 0 2 0  4  8
+spawn 0 2 0 12  8
+
+; blue flag and spawn points
+flag  1 0 0  8  6
+spawn 1 0 0  8  8
+spawn 1 0 0 10  8
+spawn 1 0 0  6  8
+spawn 1 0 0 12  8
+spawn 1 0 0  4  8
+
+; wild flag
+flag  2 1 3  8  6
+
+X perus 0 0 2 3
+
+X yla   0 0 2 0
+X yla   0 2
+X yla   2 2
+X yla   1 3
+
+X ala   0 1
+X ala   2 1
+X ala   1 2
+X ala   0 3 2 3
+
+X vasen 0 0 0 3
+X vasen 1 0 2 0
+
+X oikea 0 0 1 0
+X oikea 2 0 2 3
+
+:perus
+W    0  0  4  1
+W    0  1  1  4
+T W  1  1  4  1  1  4
+W   16  0 12  1
+W   16  1 15  4
+T W 15  1 12  1 15  4
+W    0 12  4 11
+W    0 11  1  8
+T W  1 11  4 11  1  8
+W   16 12 12 11
+W   16 11 15  8
+T W 15 11 12 11 15  8
+
+:yla
+W    4  0 12  1
+
+:ala
+W    4 12 12 11
+
+:vasen
+W    0  4  1  8
+
+:oikea
+W   16  4 15  8

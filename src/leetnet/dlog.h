@@ -27,20 +27,20 @@
 
 class DLOG_Scope {
 public:
-    DLOG_Scope(const char*) { }
-    ~DLOG_Scope() { }
+    DLOG_Scope(const char*) throw () { }
+    ~DLOG_Scope() throw () { }
 };
 
 class DLOG_ScopeNeg {
 public:
-    DLOG_ScopeNeg(const char*) { }
-    ~DLOG_ScopeNeg() { }
+    DLOG_ScopeNeg(const char*) throw () { }
+    ~DLOG_ScopeNeg() throw () { }
 };
 
 class DLOG_ScopeNegStart {
 public:
-    DLOG_ScopeNegStart(const char*) { }
-    ~DLOG_ScopeNegStart() { }
+    DLOG_ScopeNegStart(const char*) throw () { }
+    ~DLOG_ScopeNegStart() throw () { }
 };
 
 class DLOG_Main { };
@@ -56,12 +56,12 @@ class DLOG_Main { };
 
 class DLOG_Main {
     FILE* fp;
-    MutexHolder writeMutex;
+    Mutex writeMutex;
 
 public:
-    DLOG_Main() { fp = fopen("lnetdlog.bin", "wb"); nAssert(fp); }
-    ~DLOG_Main() { fclose(fp); }
-    void operator()(const char* str, char mode) {
+    DLOG_Main() throw () { fp = fopen("lnetdlog.bin", "wb"); nAssert(fp); }
+    ~DLOG_Main() throw () { fclose(fp); }
+    void operator()(const char* str, char mode) throw () {
         int t = GNE::Timer::getCurrentTime().getTotaluSec();
         MutexLock ml(writeMutex);
         fwrite(&t, sizeof(int), 1, fp);
@@ -76,21 +76,21 @@ class DLOG_Scope {
     const char* n;
 
 public:
-    DLOG_Scope(const char* scopeName) : n(scopeName) { G_DLOG(n, '+'); }
-    ~DLOG_Scope() { G_DLOG(n, '-'); }
+    DLOG_Scope(const char* scopeName) throw () : n(scopeName) { G_DLOG(n, '+'); }
+    ~DLOG_Scope() throw () { G_DLOG(n, '-'); }
 };
 
 class DLOG_ScopeNeg {
     const char* n;
 
 public:
-    DLOG_ScopeNeg(const char* scopeName) : n(scopeName) { G_DLOG(n, '-'); }
-    ~DLOG_ScopeNeg() { G_DLOG(n, '+'); }
+    DLOG_ScopeNeg(const char* scopeName) throw () : n(scopeName) { G_DLOG(n, '-'); }
+    ~DLOG_ScopeNeg() throw () { G_DLOG(n, '+'); }
 };
 
 class DLOG_ScopeNegStart {
 public:
-    DLOG_ScopeNegStart(const char* n) { G_DLOG(n, '+'); }
+    DLOG_ScopeNegStart(const char* n) throw () { G_DLOG(n, '+'); }
 };
 
 #endif  // LEETNET_ACTIVITY_LOG

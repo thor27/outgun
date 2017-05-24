@@ -2,7 +2,7 @@
  *  menu.cpp
  *
  *  Copyright (C) 2004, 2006 - Niko Ritari
- *  Copyright (C) 2004, 2006 - Jani Rivinoja
+ *  Copyright (C) 2004, 2006, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -23,13 +23,14 @@
  */
 
 #include <algorithm>
+
 #include <cmath>
 
 #include "incalleg.h"
-#include "client.h"
+#include "graphics.h"
 #include "language.h" // needed by IPfield
-#include "nassert.h"
 #include "network.h"  // needed by IPfield
+#include "timer.h" // for blinking cursor
 
 #include "menu.h"
 
@@ -42,18 +43,15 @@ using std::vector;
 
 // character width and line height in pixels
 
-inline int char_w() {
+inline int char_w() throw () {
     return text_length(font, "M");
 }
 
-inline int line_h() {
+inline int line_h() throw () {
     return text_height(font) + 8;
 }
 
-int col_background, col_borderShadow, col_borderHighlight, col_menuCaption, col_menuCaptionBg, col_caption,
-    col_active, col_disabled, col_value, col_scrollbar, col_scrollbarBg, col_shortcutDisabled, col_shortcutEnabled;
-
-void scrollbar(BITMAP* buffer, int x, int y, int height, int bar_y, int bar_h, int col1, int col2) {
+void scrollbar(BITMAP* buffer, int x, int y, int height, int bar_y, int bar_h, int col1, int col2) throw () {
     const int width = 10;
     if (height > 0) {
         rectfill(buffer, x, y, x + width - 1, y + height - 1, col2);
@@ -62,7 +60,7 @@ void scrollbar(BITMAP* buffer, int x, int y, int height, int bar_y, int bar_h, i
     }
 }
 
-void drawKeySymbol(BITMAP* buffer, int x, int y, const string& text) {
+void drawKeySymbol(BITMAP* buffer, int x, int y, const string& text) throw () {
     const int width  = text_length(font, text);
     const int height = text_height(font);
     hline(buffer, x - 4, y - 1, x + width + 3, makecol(0xEE, 0xEE, 0xEE));
@@ -73,15 +71,21 @@ void drawKeySymbol(BITMAP* buffer, int x, int y, const string& text) {
     textout_ex(buffer, font, text.c_str(), x, y, 0, -1);
 }
 
-int Component::captionColor(bool active) const {
+int Component::captionColor(bool active, const Colour_manager& col) const throw () {
     if (!isEnabled())
-        return col_disabled;
+        return col[Colour::menu_disabled];
     if (active)
-        return col_active;
-    return col_caption;
+        return col[Colour::menu_active];
+    return col[Colour::menu_component_caption];
 }
 
-void Menu::home() {
+void Menu::ensure_valid_selection() throw () {
+    nAssert(!components.empty());
+    if (!components[selected_item]->isEnabled())
+        home();
+}
+
+void Menu::home() throw () {
     nAssert(!components.empty());
     start = 0;
     for (selected_item = 0; !components[selected_item]->isEnabled(); ++selected_item)
@@ -91,14 +95,14 @@ void Menu::home() {
         }
 }
 
-void Menu::end() {
+void Menu::end() throw () {
     nAssert(!components.empty());
     for (selected_item = static_cast<int>(components.size()) - 1; !components[selected_item]->isEnabled(); --selected_item)
         if (selected_item == 0)
             break;
 }
 
-bool Menu::prev() {
+bool Menu::prev() throw () {
     nAssert(!components.empty());
     const int original = selected_item;
     do {
@@ -112,7 +116,7 @@ bool Menu::prev() {
     return true;
 }
 
-bool Menu::next() {
+bool Menu::next() throw () {
     nAssert(!components.empty());
     const int original = selected_item;
     do {
@@ -126,7 +130,7 @@ bool Menu::next() {
     return true;
 }
 
-void Menu::setSelection(int selection) {
+void Menu::setSelection(int selection) throw () {
     nAssert(selection >= 0);
     if (selection >= (int)components.size())
         selected_item = components.size() - 1;
@@ -134,22 +138,18 @@ void Menu::setSelection(int selection) {
         selected_item = selection;
 }
 
-void Menu::draw(BITMAP* buffer) {
+void Menu::draw(BITMAP* buffer, const Colour_manager& col) throw () {
     //#fix: handle colors and other drawing details with a separate class connected with Graphics
     // colors are initialized in every draw because they must be initialized after every color depth change
-    col_background      = makecol(0x30, 0x40, 0x30);
-    col_borderShadow    = makecol(0x50, 0x60, 0x50);
-    col_borderHighlight = makecol(0xA0, 0xB0, 0xA0);
-    col_menuCaption     = makecol(0xFF, 0xFF, 0xFF);
-    col_menuCaptionBg   = makecol(0x00, 0x77, 0x00);
-    col_caption         = makecol(0x40, 0xFF, 0x40);
-    col_active          = makecol(0xFF, 0xFF, 0x00);
-    col_disabled        = makecol(0x00, 0xAA, 0x00);
-    col_value           = makecol(0xFF, 0xFF, 0xFF);
-    col_scrollbar       = makecol(0x00, 0xFF, 0x00);
-    col_scrollbarBg     = makecol(0x00, 0x77, 0x00);
-    col_shortcutDisabled= makecol(0x50, 0x60, 0x50);
-    col_shortcutEnabled = makecol(0xB0, 0xD0, 0xB0);
+    const int col_background       = col[Colour::menu_background];
+    const int col_borderShadow     = col[Colour::menu_border_shadow];
+    const int col_borderHighlight  = col[Colour::menu_border_highlight];
+    const int col_menuCaption      = col[Colour::menu_caption];
+    const int col_menuCaptionBg    = col[Colour::menu_caption_bg];
+    const int col_scrollbar        = col[Colour::scrollbar];
+    const int col_scrollbarBg      = col[Colour::scrollbar_bg];
+    const int col_shortcutDisabled = col[Colour::menu_shortcut_disabled];
+    const int col_shortcutEnabled  = col[Colour::menu_shortcut_enabled];
 
     drawHook.call(*this);
 
@@ -230,7 +230,7 @@ void Menu::draw(BITMAP* buffer) {
             // draw later
         }
         else
-            component->draw(buffer, x_start, y, h, compi == selected_item);
+            component->draw(buffer, x_start, y, h, compi == selected_item, col);
         y += component->height();
         visible_items++;
     }
@@ -246,10 +246,10 @@ void Menu::draw(BITMAP* buffer) {
     }
 
     // draw the active component
-    components[selected_item]->draw(buffer, active_x, active_y, active_h, true);
+    components[selected_item]->draw(buffer, active_x, active_y, active_h, true, col);
 }
 
-bool Menu::handleKeypress(char scan, unsigned char chr) {
+bool Menu::handleKeypress(char scan, unsigned char chr) throw () {
     nAssert(!components.empty());
     nAssert(selected_item >= 0 && selected_item < static_cast<int>(components.size()));
     if (components[selected_item]->isEnabled() && components[selected_item]->handleKey(scan, chr))
@@ -310,21 +310,21 @@ bool Menu::handleKeypress(char scan, unsigned char chr) {
     return handled;
 }
 
-int Menu::width() const {
+int Menu::width() const throw () {
     return text_length(font, caption);
 }
 
-int Menu::height() const {
+int Menu::height() const throw () {
     return line_h();
 }
 
-void Menu::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void Menu::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
 }
 
-bool Menu::handleKey(char scan, unsigned char chr) {
+bool Menu::handleKey(char scan, unsigned char chr) throw () {
     (void)chr;
     if (!(scan == KEY_ENTER || scan == KEY_ENTER_PAD || scan == KEY_SPACE))
         return false;
@@ -332,19 +332,19 @@ bool Menu::handleKey(char scan, unsigned char chr) {
     return true;
 }
 
-void Menu::shortcutActivated() {
+void Menu::shortcutActivated() throw () {
     nAssert(isEnabled());
     callHook(*this);
 }
 
-int Menu::total_width() const {
+int Menu::total_width() const throw () {
     int min_width = text_length(font, caption);
     for (vector<Component*>::const_iterator comp = components.begin(); comp != components.end(); ++comp)
         min_width = max(min_width, (*comp)->width());
     return min_width;
 }
 
-int Menu::total_height() const {
+int Menu::total_height() const throw () {
     int height = 2 * line_h();    // for caption
     for (vector<Component*>::const_iterator comp = components.begin(); comp != components.end(); ++comp)
         height += (*comp)->height();
@@ -352,8 +352,8 @@ int Menu::total_height() const {
 }
 
 
-bool MenuStack::close(Menu* menu) {
-    std::vector<Menu*>::iterator mi = find(st.begin(), st.end(), menu);
+bool MenuStack::close(Menu* menu) throw () {
+    vector<Menu*>::iterator mi = find(st.begin(), st.end(), menu);
     if (mi == st.end())
         return false;
     menu->close();
@@ -362,50 +362,68 @@ bool MenuStack::close(Menu* menu) {
 }
 
 
-int Spacer::height() const {
+int Spacer::height() const throw () {
     return space * line_h() / 10;
 }
 
 
-void TextfieldBase::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void TextfieldBase::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
     x += text_length(font, caption);
-    textout_ex(buffer, font, ":", x, y, captionColor(active), -1);
+    textout_ex(buffer, font, ":", x, y, captionColor(active, col), -1);
     x += text_length(font, ":") + char_w();
-    if (maskChar)
-        textout_ex(buffer, font, string(value.length(), maskChar).c_str(), x, y, col_value, -1);
-    else
-        textout_ex(buffer, font, value.c_str(), x, y, col_value, -1);
-    x += text_length(font, value);
-    if (active) {
-        textout_ex(buffer, font, "_", x, y, col_value, -1); // cursor
-        x += text_length(font, "_");
-    }
-    textout_ex(buffer, font, tail.c_str(), x, y, col_value, -1);
+    const string text = maskChar ? string(value.length(), maskChar) : value;
+    textout_ex(buffer, font, text.c_str(), x, y, col[Colour::menu_value], -1);
+    if (active)
+        if (int(2 * (get_time() - blinkTime)) % 2 == 0)
+            vline(buffer, x + text_length(font, text.substr(0, cursor_pos)), y - 1, y + text_height(font) + 2, col[Colour::menu_value]);
+    x += text_length(font, text);
+    textout_ex(buffer, font, tail.c_str(), x, y, col[Colour::menu_value], -1);
 }
 
-int TextfieldBase::width() const {
+int TextfieldBase::width() const throw () {
     return text_length(font, caption) + maxlen * char_w() + max(tailSpace * char_w(), text_length(font, tail)) +
-           text_length(font, ":_") + char_w(); // ":" and char_w space between caption and value, _ is cursor
+           text_length(font, ":") + char_w(); // space between caption and value
 }
 
-int TextfieldBase::height() const {
+int TextfieldBase::height() const throw () {
     return line_h();
 }
 
-bool TextfieldBase::handleKey(char scan, unsigned char chr) {
+bool TextfieldBase::handleKey(char scan, unsigned char chr) throw () {
+    unblink();
     bool stateChange = false;
     if (scan == KEY_BACKSPACE) {
-        if (!value.empty()) {
-            value.erase(value.end() - 1);
+        if (cursor_pos > 0) {
+            value.erase(cursor_pos - 1, 1);
+            cursor_pos--;
             stateChange = true;
         }
     }
+    else if (scan == KEY_DEL) {
+        if (cursor_pos < static_cast<int>(value.length())) {
+            value.erase(cursor_pos, 1);
+            stateChange = true;
+        }
+    }
+    else if (scan == KEY_LEFT) {
+        if (cursor_pos > 0)
+            cursor_pos--;
+    }
+    else if (scan == KEY_RIGHT) {
+        if (cursor_pos < static_cast<int>(value.length()))
+            cursor_pos++;
+    }
+    else if (scan == KEY_HOME && !key[KEY_LCONTROL] && !key[KEY_RCONTROL])
+        cursor_pos = 0;
+    else if (scan == KEY_END && !key[KEY_LCONTROL] && !key[KEY_RCONTROL])
+        cursor_pos = value.length();
     else if (!is_nonprintable_char(chr) && (charset.empty() || charset.find(chr) != string::npos)) {
         if ((int)value.length() < maxlen) {
-            value += chr;
+            value.insert(cursor_pos, 1, chr);
+            cursor_pos++;
             stateChange = true;
         }
     }
@@ -416,8 +434,12 @@ bool TextfieldBase::handleKey(char scan, unsigned char chr) {
     return true;
 }
 
-IPfield::IPfield(const std::string& caption_, bool acceptPort_, bool printUnknown_):
-    TextfieldBase(caption_, "", acceptPort ? 21 : 15, 0, acceptPort ? 14 : 20), // max. IP address 123.123.123.123 = 15 chars, :port 6 chars either in address or tail; reserve 14 extra characters in tail for comment
+void TextfieldBase::unblink() throw () {
+    blinkTime = get_time();
+}
+
+IPfield::IPfield(const string& caption_, bool acceptPort_, bool printUnknown_) throw () :
+    TextfieldBase(caption_, "", acceptPort_ ? 21 : 15, 0, acceptPort_ ? 14 : 20), // max. IP address 123.123.123.123 = 15 chars, :port 6 chars either in address or tail; reserve 14 extra characters in tail for comment
     acceptPort(acceptPort_),
     printUnknown(printUnknown_)
 {
@@ -428,14 +450,14 @@ IPfield::IPfield(const std::string& caption_, bool acceptPort_, bool printUnknow
     updateTail();
 }
 
-bool IPfield::handleKey(char scan, unsigned char chr) {
+bool IPfield::handleKey(char scan, unsigned char chr) throw () {
     const bool ret = TextfieldBase::handleKey(scan, chr);
     if (ret)
         updateTail();
     return ret;
 }
 
-void IPfield::updateTail() {
+void IPfield::updateTail() throw () {
     const string& address = operator()();
     if (address.empty())
         setTail(printUnknown ? _("unknown") : "");
@@ -449,12 +471,12 @@ void IPfield::updateTail() {
     }
 }
 
-void SelectBase::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void SelectBase::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
     x += text_length(font, caption);
-    textout_ex(buffer, font, ":", x, y, captionColor(active), -1);
+    textout_ex(buffer, font, ":", x, y, captionColor(active, col), -1);
     x += text_length(font, ":") + char_w();
     nAssert(!options.empty());
     nAssert(selected >= 0 && selected < static_cast<int>(options.size()));
@@ -462,7 +484,7 @@ void SelectBase::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
         drawKeySymbol(buffer, x, y, "<");
     x += text_length(font, "<") + char_w();
     const int list_x = x - char_w();
-    textout_ex(buffer, font, options[selected].c_str(), x, y, col_value, -1);
+    textout_ex(buffer, font, options[selected].c_str(), x, y, col[Colour::menu_value], -1);
     x += text_length(font, options[selected]) + char_w();
     if (active && selected + 1 < static_cast<int>(options.size()))
         drawKeySymbol(buffer, x, y, ">");
@@ -498,13 +520,13 @@ void SelectBase::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
     else
         list_y = y + h;
     const int sb_space = visible_items != static_cast<int>(options.size()) ? 9 : 0;
-    rect(buffer, list_x, list_y, list_x + list_w + 1 + sb_space, list_y + list_h + 1, col_borderHighlight);
-    rectfill(buffer, list_x + 1, list_y + 1, list_x + list_w + sb_space, list_y + list_h, col_background);
+    rect(buffer, list_x, list_y, list_x + list_w + 1 + sb_space, list_y + list_h + 1, col[Colour::menu_border_highlight]);
+    rectfill(buffer, list_x + 1, list_y + 1, list_x + list_w + sb_space, list_y + list_h, col[Colour::menu_background]);
     x = list_x + char_w();
     y = list_y + line_height / 2;
     for (int i = pendingStart; i < static_cast<int>(options.size()) && i < pendingStart + visible_items; ++i) {
         const string& option = options[i];
-        const int c = (pendingSelection == i ? col_active : col_value);
+        const int c = (pendingSelection == i ? col[Colour::menu_active] : col[Colour::menu_value]);
         textout_ex(buffer, font, option.c_str(), x, y, c, -1);
         y += line_height;
     }
@@ -516,11 +538,11 @@ void SelectBase::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
         const int height = list_h;
         const int bar_y = static_cast<int>(static_cast<double>(height * pendingStart) / options.size() + 0.5);
         const int bar_h = static_cast<int>(static_cast<double>(height * visible_items) / options.size() + 0.5);
-        scrollbar(buffer, x, y, height, bar_y, bar_h, col_scrollbar, col_scrollbarBg);
+        scrollbar(buffer, x, y, height, bar_y, bar_h, col[Colour::scrollbar], col[Colour::scrollbar_bg]);
     }
 }
 
-int SelectBase::maxSelLength() const {  //#todo: precache
+int SelectBase::maxSelLength() const throw () {  //#todo: precache
     int max_len = 0;
     for (vector<string>::const_iterator si = options.begin(); si != options.end(); ++si) {
         const int len = text_length(font, *si);
@@ -530,15 +552,15 @@ int SelectBase::maxSelLength() const {  //#todo: precache
     return max_len;
 }
 
-int SelectBase::width() const {
+int SelectBase::width() const throw () {
     return text_length(font, caption) + maxSelLength() + text_length(font, ":<>") + 3 * char_w();
 }
 
-int SelectBase::height() const {
+int SelectBase::height() const throw () {
     return line_h();
 }
 
-bool SelectBase::handleKey(char scan, unsigned char chr) {
+bool SelectBase::handleKey(char scan, unsigned char chr) throw () {
     (void)chr;
     bool changed = false;
     if (key[KEY_ALT] && (scan == KEY_UP || scan == KEY_DOWN)
@@ -607,12 +629,12 @@ bool SelectBase::handleKey(char scan, unsigned char chr) {
 }
 
 
-void Colorselect::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void Colorselect::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
     x += text_length(font, caption);
-    textout_ex(buffer, font, ":", x, y, captionColor(active), -1);
+    textout_ex(buffer, font, ":", x, y, captionColor(active, col), -1);
     x += text_length(font, ":") + char_w();
     if (active)
         drawKeySymbol(buffer, x, y, "+");
@@ -625,7 +647,7 @@ void Colorselect::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
         rectfill(buffer, x + (bw + 2) * i + 2, y - 2, x + (bw + 2) * i + bw - 2, y + bh - 6, graphics->player_color(options[i]));
     if (active) {   // mark selection
         const int i = selected;
-        rect    (buffer, x + (bw + 2) * i    , y - 4, x + (bw + 2) * i + bw    , y + bh - 4, captionColor(active));
+        rect    (buffer, x + (bw + 2) * i    , y - 4, x + (bw + 2) * i + bw    , y + bh - 4, captionColor(active, col));
     }
     if (active) {
         x += options.size() * (bw + 2) + bw - 2;
@@ -633,15 +655,15 @@ void Colorselect::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
     }
 }
 
-int Colorselect::width() const {
+int Colorselect::width() const throw () {
     return text_length(font, caption) + text_length(font, ":") + 2 * char_w() + options.size() * 12 + 2 * 2 * char_w();
 }
 
-int Colorselect::height() const {
+int Colorselect::height() const throw () {
     return line_h();
 }
 
-bool Colorselect::handleKey(char scan, unsigned char chr) {
+bool Colorselect::handleKey(char scan, unsigned char chr) throw () {
     if ((scan == KEY_LEFT || chr == '+') && selected > 0) {
         if (key[KEY_LCONTROL] || key[KEY_RCONTROL] || chr == '+')
             swap(options[selected], options[selected - 1]);
@@ -659,28 +681,28 @@ bool Colorselect::handleKey(char scan, unsigned char chr) {
 }
 
 
-void Checkbox::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void Checkbox::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, "[", x, y, col_value, -1);
+    textout_ex(buffer, font, "[", x, y, col[Colour::menu_value], -1);
     x += text_length(font, "[");
     if (checked)
-        textout_ex(buffer, font, "×", x, y, col_value, -1);
+        textout_ex(buffer, font, "×", x, y, col[Colour::menu_value], -1);
     x += text_length(font, "×");
-    textout_ex(buffer, font, "]", x, y, col_value, -1);
+    textout_ex(buffer, font, "]", x, y, col[Colour::menu_value], -1);
     x += text_length(font, "]") + char_w();
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
 }
 
-int Checkbox::width() const {
+int Checkbox::width() const throw () {
     return text_length(font, "[×]") + char_w() + text_length(font, caption);
 }
 
-int Checkbox::height() const {
+int Checkbox::height() const throw () {
     return line_h();
 }
 
-bool Checkbox::handleKey(char scan, unsigned char chr) {
+bool Checkbox::handleKey(char scan, unsigned char chr) throw () {
     (void)chr;
     if (scan == KEY_SPACE || scan == KEY_X)
         toggle();
@@ -690,18 +712,34 @@ bool Checkbox::handleKey(char scan, unsigned char chr) {
     return true;
 }
 
-void Checkbox::shortcutActivated() {
+void Checkbox::shortcutActivated() throw () {
     nAssert(isEnabled());
     toggle();
     callHook(*this);
 }
 
 
-void Slider::boundSet(int value) {
-    val = bound(value, vmin, vmax);
+Slider::Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_) throw () :
+    Component(caption_), vmin(vmin_), vmax(vmax_), val(vmin_),
+    step(1),
+    graphic(graphic_)
+{ }
+
+Slider::Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_, int init_value, int step_, bool lockToStep_) throw () :
+    Component(caption_), vmin(vmin_), vmax(vmax_), val(init_value), step(step_), graphic(graphic_), lockToStep(lockToStep_)
+{
+    nAssert(init_value >= vmin_ && init_value <= vmax_);
+    nAssert(step >= 0);
+    nAssert(!lockToStep || (step > 0 && (vmax - vmin) % step == 0));
 }
 
-int Slider::width() const {
+void Slider::boundSet(int value) throw () {
+    val = bound(value, vmin, vmax);
+    if (lockToStep)
+        val -= (val - vmin) % step;
+}
+
+int Slider::width() const throw () {
     int fieldWidth;
     if (graphic)
         fieldWidth = 20;    // arbitrary bar length
@@ -710,33 +748,32 @@ int Slider::width() const {
     return text_length(font, caption) + text_length(font, ":") + char_w() + fieldWidth * char_w();
 }
 
-int Slider::height() const {
+int Slider::height() const throw () {
     return line_h();
 }
 
-void Slider::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void Slider::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
     const string::size_type end = caption.find_last_not_of(' '); // used to bring the ':' next to the text if the text is padded to the right
     nAssert(end != string::npos);
-    textout_ex(buffer, font, (caption.substr(0, end + 1) + ':').c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, (caption.substr(0, end + 1) + ':').c_str(), x, y, captionColor(active, col), -1);
     const int x0 = x + text_length(font, caption) + text_length(font, ":") + char_w();
     if (graphic) {
         const int barLength = (x + width() - 2 - x0) * (val - vmin) / (vmax - vmin);
         const int yb = y - 4;
-        rect(buffer, x0, yb, x + width() - 1, yb + height() - 1, captionColor(active));
+        rect(buffer, x0, yb, x + width() - 1, yb + height() - 1, captionColor(active, col));
         if (barLength)
-            rectfill(buffer, x0 + 1, yb + 1, x0 + barLength, yb + height() - 2, col_value);
-        textprintf_centre_ex(buffer, font, (x0 + x + width() - 1) / 2, y, col_disabled, -1, "%.0f%%", 100 * static_cast<double>(val - vmin) / (vmax - vmin));
+            rectfill(buffer, x0 + 1, yb + 1, x0 + barLength, yb + height() - 2, col[Colour::menu_value]);
+        textprintf_centre_ex(buffer, font, (x0 + x + width() - 1) / 2, y, col[Colour::menu_disabled], -1, "%.0f%%", 100 * static_cast<double>(val - vmin) / (vmax - vmin));
     }
     else
-        textprintf_ex(buffer, font, x0, y, col_value, -1, "%d", val);
+        textprintf_ex(buffer, font, x0, y, col[Colour::menu_value], -1, "%d", val);
 }
 
-bool Slider::handleKey(char scan, unsigned char chr) {
-    (void)chr;
+bool Slider::handleKey(char scan, unsigned char chr) throw () {
     if ((scan == KEY_LEFT || chr == '-') && val > vmin) {
-        if (key[KEY_LCONTROL] || key[KEY_RCONTROL] || chr == '-')
+        if (!lockToStep && (key[KEY_LCONTROL] || key[KEY_RCONTROL] || chr == '-'))
             --val;
         else if (step == 0) // logarithmic
             val -= (val - vmin) / 11 + 1;   // /11 to have ++,-- or --,++ result in the original value; it's magic ;)
@@ -746,7 +783,7 @@ bool Slider::handleKey(char scan, unsigned char chr) {
             val = vmin;
     }
     else if ((scan == KEY_RIGHT || chr == '+') && val < vmax) {
-        if (key[KEY_LCONTROL] || key[KEY_RCONTROL] || chr == '+')
+        if (!lockToStep && (key[KEY_LCONTROL] || key[KEY_RCONTROL] || chr == '+'))
             ++val;
         else if (step == 0) // logarithmic
             val += (val - vmin) / 10 + 1;
@@ -762,11 +799,11 @@ bool Slider::handleKey(char scan, unsigned char chr) {
 }
 
 
-void NumberEntry::boundSet(int value) {
+void NumberEntry::boundSet(int value) throw () {
     entry = val = bound(value, vmin, vmax);
 }
 
-int NumberEntry::width() const {
+int NumberEntry::width() const throw () {
     int fieldWidth; // don't count the cursor to this
     // in basic case space for val_ is needed
     // for the case of entry < vmin = val, space is needed for "entry_ (val)" (this can't happen when vmin == 0)
@@ -779,24 +816,24 @@ int NumberEntry::width() const {
     return text_length(font, caption) + text_length(font, ":_") + char_w() + fieldWidth * char_w();
 }
 
-int NumberEntry::height() const {
+int NumberEntry::height() const throw () {
     return line_h();
 }
 
-void NumberEntry::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void NumberEntry::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
     x += text_length(font, caption);
-    textout_ex(buffer, font, ":", x, y, captionColor(active), -1);
+    textout_ex(buffer, font, ":", x, y, captionColor(active, col), -1);
     x += text_length(font, ":") + char_w();
     if (entry != val)
-        textprintf_ex(buffer, font, x, y, col_value, -1, "%d%s (%d)", entry, active ? "_" : "", val);
+        textprintf_ex(buffer, font, x, y, col[Colour::menu_value], -1, "%d%s (%d)", entry, active ? "_" : "", val);
     else
-        textprintf_ex(buffer, font, x, y, col_value, -1, "%d%s", val, active ? "_" : "");
+        textprintf_ex(buffer, font, x, y, col[Colour::menu_value], -1, "%d%s", val, active ? "_" : "");
 }
 
-bool NumberEntry::handleKey(char scan, unsigned char chr) {
+bool NumberEntry::handleKey(char scan, unsigned char chr) throw () {
     if ((scan == KEY_LEFT || chr == '-') && entry > vmin)
         --entry;
     else if ((scan == KEY_RIGHT || chr == '+') && entry < vmax)
@@ -823,21 +860,21 @@ bool NumberEntry::handleKey(char scan, unsigned char chr) {
 }
 
 
-int Textarea::width() const {
+int Textarea::width() const throw () {
     return text_length(font, caption);
 }
 
-int Textarea::height() const {
+int Textarea::height() const throw () {
     return line_h();
 }
 
-void Textarea::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void Textarea::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
 }
 
-bool Textarea::handleKey(char scan, unsigned char chr) {
+bool Textarea::handleKey(char scan, unsigned char chr) throw () {
     (void)chr;
     if (scan == KEY_ENTER || scan == KEY_ENTER_PAD || scan == KEY_SPACE) {
         callHook(*this);
@@ -848,38 +885,38 @@ bool Textarea::handleKey(char scan, unsigned char chr) {
     return false;
 }
 
-void Textarea::shortcutActivated() {
+void Textarea::shortcutActivated() throw () {
     nAssert(isEnabled());
     callHook(*this);
 }
 
 
-int StaticText::width() const {
+int StaticText::width() const throw () {
     int len = text_length(font, caption) + text_length(font, text);
     if (!caption.empty() && !text.empty())
         len += text_length(font, ":") + char_w();
     return len;
 }
 
-int StaticText::height() const {
+int StaticText::height() const throw () {
     return line_h();
 }
 
-void StaticText::draw(BITMAP* buffer, int x, int y, int h, bool active) const {
+void StaticText::draw(BITMAP* buffer, int x, int y, int h, bool active, const Colour_manager& col) const throw () {
     active = false; // don't draw as active even if caller thinks this should be active
     if (h < minHeight())
         return;
-    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active), -1);
+    textout_ex(buffer, font, caption.c_str(), x, y, captionColor(active, col), -1);
     if (!caption.empty() && !text.empty()) {
         x += text_length(font, caption);
-        textout_ex(buffer, font, ":", x, y, captionColor(active), -1);
+        textout_ex(buffer, font, ":", x, y, captionColor(active, col), -1);
         x += text_length(font, ":") + char_w();
     }
-    textout_ex(buffer, font, text.c_str(), x, y, col_value, -1);
+    textout_ex(buffer, font, text.c_str(), x, y, col[Colour::menu_value], -1);
 }
 
 
-int Textobject::width() const {
+int Textobject::width() const throw () {
     int len = 0;
     for (vector<string>::const_iterator li = lines.begin(); li != lines.end(); ++li) {
         len = max(len, min(text_length(font, *li), 70 * char_w()));
@@ -889,7 +926,7 @@ int Textobject::width() const {
     return len;
 }
 
-int Textobject::height() const {
+int Textobject::height() const throw () {
     // leave some space for hack purpose
     // 2 paddings, 2 lines for caption, 1 line for Textobject itself, spacer, 2 pixels for menu borders
     const int padding = 4 * char_w() - 2;
@@ -911,14 +948,14 @@ int Textobject::height() const {
         }
     }
 
-    return min(splitted.size() * objLineHeight(), max_h);
+    return min<unsigned>(splitted.size() * objLineHeight(), max_h);
 }
 
-int Textobject::objLineHeight() const {
+int Textobject::objLineHeight() const throw () {
     return text_height(font) + 4;
 }
 
-void Textobject::draw(BITMAP* buffer, int x, int y0, int h, bool active) const {
+void Textobject::draw(BITMAP* buffer, int x, int y0, int h, bool active, const Colour_manager& col) const throw () {
     (void)active;
     if (start > static_cast<int>(splitted.size()) - h / objLineHeight())
         start = splitted.size() - h / objLineHeight();
@@ -928,7 +965,7 @@ void Textobject::draw(BITMAP* buffer, int x, int y0, int h, bool active) const {
     for (int i = start, y = y0; i < static_cast<int>(splitted.size()); ++i) {
         if (y + objLineHeight() > y0 + h)
             break;
-        textout_ex(buffer, font, splitted[i].c_str(), x, y, col_value, -1);
+        textout_ex(buffer, font, splitted[i].c_str(), x, y, col[Colour::menu_value], -1);
         ++visible_lines;
         y += objLineHeight();
     }
@@ -938,11 +975,11 @@ void Textobject::draw(BITMAP* buffer, int x, int y0, int h, bool active) const {
         const int sbx = min(x + width() + char_w(), buffer->w - 12);
         const int bar_y = static_cast<int>(static_cast<double>(h * start) / splitted.size() + 0.5);
         const int bar_h = static_cast<int>(static_cast<double>(h * visible_lines) / splitted.size() + 0.5);
-        scrollbar(buffer, sbx, y0, h, bar_y, bar_h, col_scrollbar, col_scrollbarBg);
+        scrollbar(buffer, sbx, y0, h, bar_y, bar_h, col[Colour::scrollbar], col[Colour::scrollbar_bg]);
     }
 }
 
-bool Textobject::handleKey(char scan, unsigned char chr) {
+bool Textobject::handleKey(char scan, unsigned char chr) throw () {
     (void)chr;
     // If start goes out of range, draw method fixes it.
     if (scan == KEY_UP)

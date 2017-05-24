@@ -3,6 +3,7 @@
  *
  *  Copyright (C) 2002 - Fabio Reis Cecin
  *  Copyright (C) 2004 - Jani Rivinoja
+ *  Copyright (C) 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -25,6 +26,8 @@
 #ifndef EFFECTS_H_INC
 #define EFFECTS_H_INC
 
+#include "world.h"
+
 // client side effects
 
 enum FX_TYPE {
@@ -32,23 +35,22 @@ enum FX_TYPE {
     FX_TURBO,
     FX_WALL_EXPLOSION,
     FX_POWER_WALL_EXPLOSION,
-    FX_DEATHBRINGER_EXPLOSION,
     FX_DEATHCARRIER_SMOKE
 };
 
 struct GraphicsEffect {
     FX_TYPE type;       // type of fx
-    int px, py;         // screen where it spawned. if changed when time to redraw, delete it
+    WorldCoords pos;
     double time;        // start time
-
-    //fx specific vars
-    int x;  // screen x  of fx
-    int y;  // screen y  of fx
 
     int team;
     float alpha;  // [0, 1]
     // for turbo effect
-    int col1, col2, gundir;
+    int col1, col2;
+    GunDirection gundir;
+
+    GraphicsEffect(FX_TYPE type_, const WorldCoords& pos_, double time_, int team_, float alpha_ = 0, int col1_ = 0, int col2_ = 0, GunDirection gundir_ = GunDirection()) throw ()
+        : type(type_), pos(pos_), time(time_), team(team_), alpha(alpha_), col1(col1_), col2(col2_), gundir(gundir_) { }
 };
 
 #endif // EFFECTS_H_INC

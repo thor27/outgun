@@ -22,6 +22,7 @@ pictures which are in the PCX format.
  <LI><A HREF="#powerups">Powerups</A>
  <LI><A HREF="#flags">Flags</A>
  <LI><A HREF="#background">Background image</A>
+ <LI><A HREF="#colours">Colours</A>
 </UL>
 
 <H2 ID="basic">Basic information</H2>
@@ -145,10 +146,23 @@ The recommended size of the flag sprite is 256×256 pixels.
 Starting from Outgun 1.0.3, you can use a background image on the game screen. Name it as <CODE>background.pcx</CODE>. It is tiled on the screen background and has the same restrictions as the textures.
 </P>
 
+<H2 ID="colours">Colours</H2>
+
+<P>
+Starting from Outgun 1.0.4, a graphic theme can include a custom colour set. This works by placing a <CODE>colours.txt</CODE> file in the theme directory. If you run Outgun with the <CODE>-colour-file</CODE> command line parameter, the default colours are saved in the <CODE>graphics/colours.txt</CODE> file. Copy that to your theme directory and modify it.
+</P>
+<P>
+The format of the colour file that Outgun 1.0 understands is very simple. Every non-empty line that is not a comment (those start with a semicolon, &lsquo;;&rsquo;), is a colour command line. It has a keyname and colour value in hexadecimal RGB format, separated by whitespace. The RGB hex can have three or six digits: F93 is same as FF9933. For example:
+</P>
+
+<PRE><CODE>team_red_basic FF0000
+map_wall       070
+</CODE></PRE>
+
 <HR>
 
 <DIV>
-Updated 2006-02-13 &ndash; Jani Rivinoja
+Updated 2008-03-18 &ndash; Jani Rivinoja
 </DIV>
 
 </HTML>

@@ -1,7 +1,7 @@
 /*
  *  debugconfig.h
  *
- *  Copyright (C) 2004 - Niko Ritari
+ *  Copyright (C) 2004, 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -24,41 +24,52 @@
 #ifndef DEBUGCONFIG_H_INC
 #define DEBUGCONFIG_H_INC
 
-// General settings:
+// Make Thread log its use in ./threadlog.bin.
+static const bool LOG_THREAD_ACTIONS = false;
 
-// make all thread functions log their start and exit to the context's regular log file; helps reading any dumps that contain thread IDs (e.g. mutex log)
-static const bool LOG_THREAD_IDS = false;
+// Enable extra runtime checks on synchronization primives (also required for their LOG_*_ACTIONS to work).
+#ifdef EXTRA_DEBUG
+ #define DEBUG_SYNCHRONIZATION 1
+#else
+ #define DEBUG_SYNCHRONIZATION 0
+#endif
 
-// create ./mutexlog.bin containing information on every lock and unlock operation on a MutexHolder, including thread ID
-static const bool LOG_MUTEX_LOCKUNLOCK = false;
+#if DEBUG_SYNCHRONIZATION == 1
 
-// report on missing or wrongly ordered packets (both client and server)
+// Make synchronization primitives log their use in ./threadlog.bin. Generally you will also want LOG_THREAD_ACTIONS, to be able to identify the threads.
+static const bool LOG_MUTEX_ACTIONS = false;
+static const bool LOG_CONDVAR_ACTIONS = false;
+
+#endif
+
+// Flush ./threadlog.bin on every write to ensure everything is written in the event of a crash.
+static const bool FLUSH_THREAD_LOG = false;
+
+// Report on missing or wrongly ordered packets (both client and server).
 static const bool WATCH_CONNECTION = false;
 
-// briefly log message types when receiving (both client and server; LEETNET_DATA_LOG does the same much better but the logs aren't as easy to read)
+// Briefly log message types when receiving (both client and server; LEETNET_DATA_LOG does the same much better but the logs aren't as easy to read).
 static const bool LOG_MESSAGE_TRAFFIC = false;
 
-// what to report over the net in the event of an assertion
+// What to report over the net in the event of an assertion.
 enum AutoBugReporting { ABR_disabled, ABR_minimal, ABR_withDump };
 extern AutoBugReporting g_autoBugReporting;
 
 
-// Leetnet specific settings:
+// If the LEETNET_* define is disabled, the feature can't be turned on; otherwise the activation depends on initialization in globals.cpp, and commandline args.
 
-// if the LEETNET_* define is disabled, the feature can't be turned on; otherwise the activation depends on initialization in globals.cpp, and commandline args
-
-// create leetclientlog.txt and leetserverlog.txt (useful mostly just for debugging Leetnet)
+// Create leetclientlog.txt and leetserverlog.txt (useful mostly just for debugging Leetnet).
 #define LEETNET_LOG
 extern bool g_leetnetLog;
 
-// create leetclientdata.bin and leetserverdata.bin containing all network traffic of established connections (useful for any network debugging but the files may grow large)
+// Create leetclientdata.bin and leetserverdata.bin containing all network traffic of established connections (useful for any network debugging but the files may grow large).
 #define LEETNET_DATA_LOG
 extern bool g_leetnetDataLog;
 
-// create ./lnetdlog.bin containing timing information of Leetnet internals (not very useful and will quickly grow large)
+// Create ./lnetdlog.bin containing timing information of Leetnet internals (not very useful and will quickly grow large).
 //#define LEETNET_ACTIVITY_LOG
 
-// a percentage of packets to lose on purpose; use this for simulating very poor network conditions
+// A percentage of packets to lose on purpose; use this for simulating very poor network conditions.
 #define LEETNET_SIMULATED_PACKET_LOSS 0
 
 #endif

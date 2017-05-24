@@ -1,0 +1,110 @@
+;
+; ristikko.txt
+;
+; By Huntta (aka JR Oja) 2003 - 2004
+; version 2
+
+V 1
+P width 3
+P height 3
+P title Ristikko
+P author Huntta
+
+; punainen lippu ja syntymäpaikat
+flag  0 1 1 0.25 0.25
+spawn 0 1 1 0.30 0.30
+spawn 0 1 1 0.70 0.30
+spawn 0 1 1 0.15 0.30
+spawn 0 1 1 0.85 0.30
+spawn 0 1 1 0.30 0.15
+spawn 0 1 1 0.70 0.15
+spawn 0 1 1 0.15 0.15
+spawn 0 1 1 0.85 0.15
+
+; sininen lippu ja syntymäpaikat
+flag  1 1 1 0.75 0.75
+spawn 1 1 1 0.70 0.70
+spawn 1 1 1 0.85 0.85
+spawn 1 1 1 0.85 0.70
+spawn 1 1 1 0.30 0.85
+spawn 1 1 1 0.70 0.85
+spawn 1 1 1 0.15 0.70
+spawn 1 1 1 0.30 0.70
+spawn 1 1 1 0.15 0.85
+
+X perus 0 0 2 2
+
+X pysty 1 1
+X vaaka 1 1
+
+X alapysty 1 0
+X ylapysty 1 2
+X vaakavasen 2 1
+X vaakaoikea 0 1
+
+X yla 1 0
+X ala 1 2
+X vasen 0 1
+X oikea 2 1
+
+X poterovy 0 0
+X poterova 0 2
+X poterooy 2 0
+X poterooa 2 2
+
+; perushuone, jossa on neljä kulkuaukkoa
+:perus
+W 0      0      0.25   0.05
+W 0      0      0.05   0.25
+W 0.75   0      1      0.05
+W 0.95   0      1      0.25
+W 0      0.95   0.25   1
+W 0      0.75   0.05   1
+W 0.75   0.95   1      1
+W 0.95   0.75   1      1
+
+; huoneen vasen seinä
+:vasen
+W 0      0      0.05   1
+
+; huoneen oikea seinä
+:oikea
+W 0.95   0      1      1
+
+; huoneen yläseinä
+:yla
+W 0      0      1      0.05
+
+; huoneen alaseinä
+:ala
+W 0      0.95   1      1
+
+:pysty
+W 0.45   0      0.55   1
+
+:ylapysty
+W 0.45   0      0.55   0.75
+
+:alapysty
+W 0.45   0.25   0.55   1
+
+:vaaka
+W 0      0.45   1      0.55
+
+:vaakavasen
+W 0      0.45   0.75   0.55
+
+:vaakaoikea
+W 0.25   0.45   1      0.55
+
+:poterovy
+C W 0.5  0.5    0.25   0.2   -45 225
+
+:poterooy
+C W 0.5  0.5    0.25   0.2  -135 135
+
+:poterova
+C W 0.5  0.5    0.25   0.2    45 315
+
+:poterooa
+C W 0.5  0.5    0.25   0.2   135  45

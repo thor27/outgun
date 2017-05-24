@@ -1,0 +1,89 @@
+; Mini
+; new version
+; by :(
+; 2005
+P width  1
+P height 1
+P title Mini
+P author :(
+S 16 12
+
+;red flag
+flag  0 0 0  14  3
+
+;blue flag
+flag  1 0 0  14  9
+
+;spawnpoints
+;red
+spawn 0 0 0  11  3
+spawn 0 0 0  13  3
+
+;blue
+spawn 1 0 0  11  9
+spawn 1 0 0  13  9
+
+X basic 0 0
+X base 0 0
+
+:basic
+;middlepart
+W    7.5 3 8 9 7
+;uppermiddletriangle
+T W  8 3 8 5.2 12.5 5.2 7
+;middlewall
+W   8 5.2 13 6.8 7
+W   14 5.2 17 6.8 6
+;lowermiddletriangle
+T W 8 9 8 6.8 12.5 6.8 7
+;half circle
+C W 7.5 6 3 0 180 0 7
+;basewalls
+C W 13 3 3.5 2.2 0 180 6
+C W 13 9 3.5 2.2 0 180 6
+;why are you reading this?! >:(
+;little half ball
+C W 13 6 0.8 0 0 180 7
+;minitriangles
+T W 13 0.5 13 0.8 11 0.5 6
+T W 13 11.5 13 11.2 11 11.5 6
+;little blocks
+W 15 0 16 1 6
+W 15 12 16 11 6
+;left stuff
+;why are you still reading? >:(
+;bugi, noitten seinien yli p‰‰see! :O ...pakko j‰tt‰‰ kaikki sein‰t tuolta pois :( ...
+;W 0.5 2 3 2.5 1
+;W 0.5 10 3 9.5 1
+
+;up
+W    -1 -1 17 0.5 2
+;left
+W    -1 -1 0.5 13 2
+;right
+W    15.5 -1 17 13 2
+;down
+W    -1 11.5 17 13 2
+;metalthingie
+W 0.25 4 0.5 8 5
+
+:base
+;-----base grounds
+G  8 0  16  6  3
+G  8 6  16 12 4
+;-----mud
+G  0 0  6 4 7
+;-----mud
+G  0 12 6 8 7 
+;-----sand
+G  6 0  8 12  6
+;rside
+T G  8 0.5 8.5 0.5 8 3 6
+T G  8 11.5 8.5 11.5 8 9 6 
+;lside
+T G 6 0.5 5.5 0.5 6 3 6
+T G 6 11.5 5.5 11.5 6 9 6
+;-----ice
+G  0 4 6 8 5
+C G 3 6 3 0 0 0 5
+

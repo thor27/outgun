@@ -1,0 +1,44 @@
+P width  2
+P height 2
+P title  2 versus 2 (Duel)
+P author coiote
+S 16 12
+
+flag  0 0 0  8  6
+spawn  0 0 0  8  6
+
+flag  1 1 1  8  6
+spawn 1 1 1 8 6
+
+
+X cima 0 0 1 0
+X baixo 0 1 
+X baixo 1 1
+X esq  0 0
+X esq  0 1
+X dir  1 0
+X dir  1 1
+X all 0 0 1 1
+
+:cima
+W 0 0 16 0.3
+W 0 0 4 0.3
+
+:baixo
+W 0 11.7 16 12 
+
+:dir
+W 15.7 0 16 12
+
+:esq
+W 0 0 0.3 16
+
+:all
+W 0 0 4 0.3
+W 0 0 0.3 3
+W 12 0 16 0.3
+W 15.7 0 16 3
+W 0 9 0.3 12
+W 0 11.7 4 12
+W 12 11.7 16 12
+W 15.7 9 16 12 

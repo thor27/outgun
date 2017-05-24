@@ -1,0 +1,10 @@
+; This file overrides default master server settings.
+; It is updated by the master, therefore any changes will be overwritten.
+outgun.mbnet.fi
+77.240.20.102
+/servers/
+/servers/submit.php
+nix.dnsalias.net
+127.0.0.1:65535
+outgun.com.br
+216.12.206.117

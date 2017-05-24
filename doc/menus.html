@@ -21,7 +21,7 @@ This document describes the menus of Outgun. The focus is in the options hierarc
  <LI><A HREF="#serverlist">Server list</A>
  <LI><A HREF="#options">Options</A>
   <UL>
-   <LI><A HREF="#namepwd">Name and passwords</A>
+   <LI><A HREF="#player">Player</A>
    <LI><A HREF="#game">Game options</A>
    <LI><A HREF="#controls">Controls</A>
    <LI><A HREF="#screenmode">Screen mode</A>
@@ -113,7 +113,7 @@ The options menu contains submenus for different types of options.
 </P>
 
 <TABLE BORDER>
- <TR><TH><A HREF="#namepwd">Name and passwords</A><TD>Go to the name and passwords menu. Choose your identity and log in to the tournament.
+ <TR><TH><A HREF="#player">Player</A><TD>Go to the player options menu. Choose your identity and log in to the tournament.
  <TR><TH><A HREF="#game">Game options</A><TD>Go to the game options menu.
  <TR><TH><A HREF="#controls">Controls</A><TD>Go to the controls menu. Change how the player is controlled, and the keyboard layout.
  <TR><TH><A HREF="#screenmode">Screen mode</A><TD>Go to the screen mode menu.
@@ -123,10 +123,10 @@ The options menu contains submenus for different types of options.
  <TR><TH>Bug report policy<TD>Go to a dialog where you can enable or disable levels of automatic bug reporting.
 </TABLE>
 
-<H2 ID="namepwd">Name and passwords</H2>
+<H2 ID="player">Player</H2>
 
 <P>
-The name and passwords menu allows you to choose a player name and to log in if you&rsquo;re registered in the tournament. The tournament system allows you to both verify your identity to others, and optionally participate in the <A HREF="http://www.mycgiserver.com/~fcecin/dayrank.html">player ranking list</A>.
+The player menu allows you to choose a player name and to log in if you&rsquo;re registered in the tournament. The tournament system allows you to both verify your identity to others, and optionally participate in the <A HREF="http://www.mycgiserver.com/~fcecin/dayrank.html">player ranking list</A>.
 </P>
 
 <P>
@@ -136,6 +136,7 @@ You can register to the tournament <A HREF="http://outgun.sourceforge.net/en/tor
 <TABLE BORDER>
  <TR><TH>Name<TD>Fill in your player name. If you change it while connected to a server, it will be updated when you close the menu. Names starting or ending with a space are not allowed, and 15 characters is the maximum length.
  <TR><TH>Get random name<TD>Let Outgun choose you a random name, like it did when you first started it.
+ <TR><TH>Favorite colors<TD>Set your preference for a player color. Arrange the colors you like the most to the left (&lsquo;+&rsquo;) side. Use <STRONG>left</STRONG> and <STRONG>right</STRONG> to select a color to move, and <STRONG>+</STRONG> and <STRONG>-</STRONG> to move the selected color left (wanted more) or right (wanted less). The server will select you a color according to these preferences, taking into account what colors the other players have already taken.
  <TR><TH>Tournament password<TD>Enter here the password you chose when registering to the tournament, if you wish to log in. This verifies your identity to other people and is required if you wish to enable your ranking. Note that when you change your password here, Outgun will not update your registration status until you close the menu.
  <TR><TH>Registration status<TD>Shows the registration status. When you have a password entered, the login process is completed and everything is OK, it shows &ldquo;<SAMP>Logged in</SAMP>&rdquo;, which is appended with server communication information whenever you are connected to a server.
  <TR><TH>Take part in the tournament<TD>When not set, your ranking is not affected. When set, the ranking scores are updated as you play, with some preconditions. First, there must be at least four distinct players on the server, and second, the server must have the <A HREF="gamemod.html#tournament"><CODE>tournament</CODE></A> option enabled. Note that when you are successfully logged in, and this option is set, and the server has tournament enabled, you have the letter <SAMP>T</SAMP> in the player statistics screen (accessible by pressing <STRONG>F4</STRONG> while in the game). However, that still doesn&rsquo;t mean your scores are necessarily counted for the ranking, because it only happens with at least four distinct players. Also note that if you change this option while playing on a server, the change will only apply at the start of next round. Alternatively, you may disconnect and re-connect to apply it immediately.
@@ -149,12 +150,12 @@ The game options menu has many different settings of secondary importance.
 </P>
 
 <TABLE BORDER>
- <TR><TH>Show player names<TD>If set, each player encountered in the game screen is tagged with their name for a quick identification of who is who. This setting can be toggled without entering the menu by pressing <STRONG>control</STRONG>+<STRONG>F3</STRONG> at any time.
- <TR><TH>Favorite colors<TD>Set your preference for a player color. Arrange the colors you like the most to the left (&lsquo;+&rsquo;) side. Use <STRONG>left</STRONG> and <STRONG>right</STRONG> to select a color to move, and <STRONG>+</STRONG> and <STRONG>-</STRONG> to move the selected color left (wanted more) or right (wanted less). The server will select you a color according to these preferences, taking into account what colors the other players have already taken.
  <TR><TH>Lag prediction<TD>The lag prediction scheme is a simple way to decrease the amount of time between pressing a movement button and seeing its effect. It has the side effect of the other players jumping around a bit, because you still can&rsquo;t get information on their movement any quicker. On servers where the lag is naturally low (you have a small ping) you might want to disable lag prediction, and many players prefer lag (you get used to it) over the prediction&rsquo;s adverse effects in any case.
  <TR><TH>Lag prediction amount<TD>Set the maximum amount of time the lag prediction scheme (see above) tries to predict the future. Experiment to find a value that works best with you; it depends on personal preference as well as your ping to the server.
  <TR><TH>Save game messages<TD>If set to &lsquo;chat only&rsquo;, the messages typed by players are recorded to the file <CODE>log/message.log</CODE> for future reference. If set to &lsquo;all messages&rsquo;, all kinds of messages that appear in the message area are recorded. Saving can also be disabled altogether.
  <TR><TH>Save game statistics<TD>At the end of each round, save a html file with team and player statistics to the <CODE>client_stats</CODE> directory.
+ <TR><TH>Show flag messages<TD>Flag take, drop and return messages are shown.
+ <TR><TH>Show kill messages<TD>Killing and dying messages are shown.
  <TR><TH>Show stats after the round<TD>At the end of each round, automatically show team (<STRONG>F3</STRONG>) or player (<STRONG>F4</STRONG>) statistics screen.
  <TR><TH>Show server info when connected<TD>When connected to a server, automatically show the server info screen (<STRONG>F5</STRONG>). You don&rsquo;t want this if you mostly use servers you know that don&rsquo;t change their configuration often.
  <TR><TH>Stay dead when in a menu at round start<TD>When a new round starts or you connect to a server, choose not to spawn in the game until you have no menus open, including the statistics screens. This is most useful if you use the automatic server info screen (previous setting), or want to vote for the next map while the round is starting. Note that this only works reliably with server versions 1.0.2 and above.
@@ -173,12 +174,21 @@ In the controls menu you can configure how Outgun reads your keyboard and joysti
  <TR><TH>Keyboard layout<TD>Choose the layout your keyboard has or that you want to use.
  <TR><TH>Use keypad for moving<TD>If set, you can use the keypad number keys (including 1, 3, 7 and 9) to move in the game. Otherwise they are instead interpreted as typing numbers.
  <TR><TH>Arrow keys in statistics<TD>Choose what arrow keys are used for, when a statistics (or map list) screen is open. Either use them to change the view of statistics, or move the player as if the screen wasn&rsquo;t open. Regardless of this setting, you can always use <STRONG>page up</STRONG> and <STRONG>page down</STRONG> to change the view of statistics.
+ <TR><TH>Use arrow keys to edit message input<TD>Enable if you want to use arrow keys to help editing chat messages.
+ <TR><TH>Preferrably aim with<TD>Choose whether you want to aim with mouse or keyboard in servers allowing free turning.
+ <TR><TH>With mouse aim move relative to<TD>Choose how to move with keyboard.
+ <TR><TH>Keyboard turning speed<TD>Choose how quickly the gun turns when keyboard aiming is selected.
  <TR><TH>Enable joystick control<TD>Enable if you want to use a joystick to play.
  <TR><TH>Moving stick<TD>If moving doesn&rsquo;t work correctly by default, adjust this number to find the setting that works.
- <TR><TH>Shoot<TD>Choose the joystick button you want to use for shooting. Set to 0 if you only want to use keyboard for that.
- <TR><TH>Run<TD>Choose the joystick button you want to use for running. Set to 0 if you only want to use keyboard for that.
- <TR><TH>Strafe<TD>Choose the joystick button you want to use for strafe mode (that&rsquo;s when your aim is locked but you can still move in any direction). Set to 0 if you only want to use keyboard for that.
- <TR><TH>Active controls<TD>Shows which buttons are currently pressed. Use this to find out the button numbering and to test your choices.
+ <TR><TH>Joystick shoot<TD>Choose the joystick button you want to use for shooting. Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Joystick run<TD>Choose the joystick button you want to use for running. Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Joystick strafe<TD>Choose the joystick button you want to use for strafe mode (that&rsquo;s when your aim is locked but you can still move in any direction). Set to 0 if you only want to use keyboard for that.
+ <TR><TH>Mouse sensitivity<TD>Choose how sensitive the mouse turning is.
+ <TR><TH>Mouse shoot<TD>Choose the mouse button for shooting.
+ <TR><TH>Mouse run<TD>Choose the mouse button for running.
+ <TR><TH>Active controls<TD>Shows which buttons are currently pressed. Use this to test your choices.
+ <TR><TH>Active joystick buttons<TD>Shows which joystick buttons are currently pressed. Use this to find out the button numbering.
+ <TR><TH>Active mouse buttons<TD>Shows which buttons are currently pressed.
 </TABLE>
 
 <H2 ID="screenmode">Screen mode</H2>
@@ -223,10 +233,23 @@ Some items that were previously in the graphic options menu, have been moved to 
  <TR><TH>Background theme<TD>Select the background image from the themes that have a background.
  <TR><TH>Prefer theme background image<TD>Use the background image from the main theme if it exists. If not, use it from the selected background theme.
  <TR><TH>Font<TD>Select the font among those in the <CODE>fonts</CODE> directory.
+ <TR><TH>Show player names<TD>If set, each player encountered in the game screen is tagged with their name for a quick identification of who is who. This setting can be toggled without entering the menu by pressing <STRONG>control</STRONG>+<STRONG>N</STRONG> at any time.
+ <TR><TH>Rooms on screen in each direction in game<TD>Select how many rooms are visible at once when playing on server.
+ <TR><TH>Rooms on screen in each direction in replay<TD>Select how many rooms are visible at once when watching a replay.
+ <TR><TH>Scrolling<TD>With scrolling, the view moves with the player instead of changing only at room changes.
  <TR><TH>Antialiasing<TD>Make triangular and round walls&rsquo; edges look smoother by drawing pixels in correct shades. Contrary to 3D games, antialiasing requires calculations only when you move from one room to another, so you have no need to disable it unless you notice the room changes not happening instantly. That should only happen if you have a low end computer, even so that the regular FPS you get out of Outgun probably isn&rsquo;t very playable either.
  <TR><TH>Less transparency effects<TD>Disable all nonessential transparency effects in the game to gain more FPS. The removed effects are minimap room graying fade, deathbringer smoke transparency, the darkened circle around a deathbringer carrier, and the turbo effect. This setting has more performance benefits when page flipping is enabled.
- <TR><TH>Continuous textures between rooms<TD>Make the next room&rsquo;s textures continue where they ended in the previous room. This adds more feeling of the room actually being another one, but can also be annoying. It has no impact on performance, so toggle at your pleasure.
+ <TR><TH>Continuous textures between rooms<TD>Make the next room&rsquo;s textures continue where they ended in the previous room. This adds more feeling of the room actually being another one. With the scrolling, this is very useful. It has no impact on performance, so toggle at your pleasure.
  <TR><TH>Disappeared players on minimap<TD>Choose how players whose position is no longer known are removed from the minimap. You can choose between a sooner and a later instant removal, and a slower fade. A too long delay might be confusing while a too short one hides useful information. This is entirely a matter of taste.
+ <TR><TH>Highlight returned and dropped flags<TD>Flash the flag when it has been dropped or returned.
+ <TR><TH>Make flags extra-visible<TD>Choose when to enchance the visibility of the flags.
+ <TR><TH>Show flag disappearance positions<TD>Show flag where it was seen last time.
+ <TR><TH>Highlight self after spawn<TD>This helps you to find yourself after a spawn.
+ <TR><TH>Markers for nearby players and flags in game<TD>
+ <TR><TH>Markers for nearby players and flags in replay<TD>
+ <TR><TH>Box visible area on map in game<TD>Draw a rectangle around the visible area on the map.
+ <TR><TH>Let view follow over map border<TD>
+ <TR><TH>Allow parts of map to repeat on screen<TD>
  <TR><TH>Stats screen alpha<TD>Set the background opacity of the stats screens (<STRONG>F3</STRONG>, <STRONG>F4</STRONG>) and the map list screen (<STRONG>F2</STRONG>). If set to 0%, there&rsquo;s no background and the texts are just drawn over the game view; at 100%, there&rsquo;s a gray background that fully blocks the game view. Calculating the transparency is slow, so set it exactly at either 0 or 100% for better performance. 0% is the fastest option.
  <TR><TH>FPS limit<TD>Limit the number of frames Outgun tries to draw per second. Setting this slightly below what the system can do when not restricted, may make it look more smooth. If you want to leave more CPU power to other processes, you should lower the limit more. There should be no reason to set the limit higher than your screen refresh rate, other than just testing how high your system can do. Just notice that it isn&rsquo;t a good measure of anything much.
  <TR><TH>Map info mode<TD>Draw a 16×12 grid on top of the game view, and mark the otherwise invisible player spawn spots. This is useful when editing a map.
@@ -263,7 +286,7 @@ The settings are disabled while your server is running. To change them you must 
 <HR>
 
 <DIV>
-Updated 2006-02-13 &ndash; Niko Ritari
+Updated 2008-03-18 &ndash; Niko Ritari
 </DIV>
 
 </HTML>

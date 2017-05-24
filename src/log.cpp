@@ -21,48 +21,48 @@
  *
  */
 
-#include <cstdio>
-#include <cstdarg>
-#include <string>
 #include "platform.h"
 #include "timer.h"
-#include "utility.h"
 
 #include "log.h"
 
 using std::string;
 
-void Log::put(const string& str) {
-    lock();
+Log::Log() throw () :
+    m(Mutex::NoLogging),
+    nLines(0)
+{ }
+
+void Log::put(const string& str) throw () {
+    Lock l(*this);
     add(str);
     ++nLines;
-    unlock();
 }
 
-void Log::operator()(const char* fmt, ...) {
+void Log::operator()(const char* fmt, ...) throw () {
     va_list args;
     va_start(args, fmt);
     operator()(fmt, args);
     va_end(args);
 }
 
-void Log::operator()(const char* fmt, va_list args) {
+void Log::operator()(const char* fmt, va_list args) throw () {
     char buf[4000];
     platVsnprintf(buf, 4000, fmt, args);
     put(buf);
 }
 
-int Log::numLines() const {
+int Log::numLines() const throw () {
     return nLines;
 }
 
-FileLog::FileLog(const string& filename, bool truncate) {
+FileLog::FileLog(const string& filename, bool truncate) throw () {
     fileName = filename;
     printDate = !truncate;
     fp = fopen(fileName.c_str(), (truncate ? "wt" : "at"));
 }
 
-FileLog::~FileLog() {
+FileLog::~FileLog() throw () {
     if (!fp)
         return;
     const bool emptyFile = (ftell(fp) == 0);
@@ -71,7 +71,7 @@ FileLog::~FileLog() {
         remove(fileName.c_str());
 }
 
-void FileLog::add(const string& str) {
+void FileLog::add(const string& str) throw () {
     if (!fp)
         return;
     if (printDate) {
@@ -86,28 +86,25 @@ void FileLog::add(const string& str) {
     fflush(fp);
 }
 
-void MemoryLog::add(const string& str) {
+void MemoryLog::add(const string& str) throw () {
     data.push_back(str);
 }
 
-string MemoryLog::pop() {
-    lock();
-    if (data.empty()) {
-        unlock();
+string MemoryLog::pop() throw () {
+    Lock l(*this);
+    if (data.empty())
         return string();
-    }
     const string s = data.front();
     data.pop_front();
-    unlock();
     return s;
 }
 
-void FileMemLog::add(const string& str) {
+void FileMemLog::add(const string& str) throw () {
     FileLog::add(str);
     MemoryLog::add(str);
 }
 
-void DualLog::add(const std::string& str) {
+void DualLog::add(const string& str) throw () {
     log1.put(prefix1 + str);
     log2.put(prefix2 + str);
 }

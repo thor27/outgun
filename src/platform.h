@@ -1,7 +1,7 @@
 /*
  *  platform.h
  *
- *  Copyright (C) 2004, 2006 - Niko Ritari
+ *  Copyright (C) 2004, 2006, 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -29,13 +29,13 @@
 
 #include "utility.h"
 
-int platStricmp(const char* s1, const char* s2);
-int platVsnprintf(char* buf, size_t count, const char* fmt, va_list arg) PRINTF_FORMAT(3, 0);
-void platMessageBox(const std::string& caption, const std::string& text, bool blocking); // blocking may not be controllable
+int platStricmp(const char* s1, const char* s2) throw ();
+int platVsnprintf(char* buf, size_t count, const char* fmt, va_list arg) throw () PRINTF_FORMAT(3, 0);
+void platMessageBox(const std::string& caption, const std::string& text, bool blocking) throw (); // blocking may not be controllable
 
-inline int platSnprintf(char* buf, size_t count, const char* fmt, ...) PRINTF_FORMAT(3, 4);
+inline int platSnprintf(char* buf, size_t count, const char* fmt, ...) throw () PRINTF_FORMAT(3, 4);
 
-inline int platSnprintf(char* buf, size_t count, const char* fmt, ...) {
+inline int platSnprintf(char* buf, size_t count, const char* fmt, ...) throw () {
     va_list args;
     va_start(args, fmt);
     int ret = platVsnprintf(buf, count, fmt, args);
@@ -45,20 +45,26 @@ inline int platSnprintf(char* buf, size_t count, const char* fmt, ...) {
 
 class FileFinder {
 public:
-    virtual ~FileFinder() { }
-    virtual bool hasNext() const = 0;
-    virtual std::string next() = 0; // only call after hasNext() returning true
+    virtual ~FileFinder() throw () { }
+    virtual bool hasNext() const throw () = 0;
+    virtual std::string next() throw () = 0; // only call after hasNext() returning true
 };
 
-FileFinder* platMakeFileFinder(const std::string& path, const std::string& extension, bool directories);
+/** Create a FileFinder object to list matching files in a directory.
+ * @param path         the directory to search in (can't include wildcards)
+ * @param extension    a string of characters to be found at the end of a filename for it to be matched (can't include wildcards or '/' or '\'): include . if you want to limit to a strict extension
+ * @param directories  if true, matched files are directories; if false, regular files
+ */
+ControlledPtr<FileFinder> platMakeFileFinder(const std::string& path, const std::string& extension, bool directories) throw ();
 
-int platMkdir(const std::string& path);
+int platMkdir(const std::string& path) throw ();
 
-bool platIsFile(const std::string& name); // returns true if name exists and is not a directory
-bool platIsDirectory(const std::string& name);
+bool platIsFile(const std::string& name) throw (); // returns true if name exists and is not a directory
+bool platIsDirectory(const std::string& name) throw ();
 
-void platInit(); // perform platform specific initializations; called very early in the program
+void platInit() throw (); // perform platform specific initializations; called very early in the program
+void platInitAfterAllegro() throw (); // second stage initializations, when Allegro is running (or won't be at all)
 
-void platUninit(); // clean up; called before exiting
+void platUninit() throw (); // clean up; called before exiting
 
 #endif

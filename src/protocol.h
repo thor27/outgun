@@ -1,8 +1,8 @@
 /*
  *  protocol.h
  *
- *  Copyright (C) 2004 - Niko Ritari
- *  Copyright (C) 2004 - Jani Rivinoja
+ *  Copyright (C) 2004, 2008 - Niko Ritari
+ *  Copyright (C) 2004, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -25,9 +25,18 @@
 #ifndef PROTOCOL_H_INC
 #define PROTOCOL_H_INC
 
+#include <string>
+
 #include "leetnet/server.h"
 
-#define SEND_FRAMEOFFSET    // effects some structures -> must be a define
+extern const std::string GAME_STRING;
+extern const std::string GAME_PROTOCOL;
+static const int PROTOCOL_EXTENSIONS_VERSION = 0;
+
+extern const std::string REPLAY_IDENTIFICATION;
+static const unsigned REPLAY_VERSION = 0; // increase when the replay structure changes
+static const unsigned RELAY_PROTOCOL = 0;
+static const unsigned RELAY_PROTOCOL_EXTENSIONS_VERSION = 0;
 
 enum Network_data_code {
     data_name_update,
@@ -107,9 +116,17 @@ enum Network_data_code {
     data_broken_map,
     data_reserved_range_first,  // reserve some codes for extensions that are otherwise protocol compatible
     data_reserved_range_last = data_reserved_range_first + 20,  // make sure you don't use more!
-    data_return_to_reserved_range_start_hack = data_reserved_range_first - 1,
-    data_current_map
-    // insert extensions here
+    data_current_map = data_reserved_range_first,
+    data_bot,
+    data_negotiate_third_party_extensions, // this message is reserved for unofficial extensions; it's guaranteed to be ignored by official versions, but to gain compatibility across different 3rd party extensions, the extension to be negotiated should be identified, and unrecognized messages ignored
+    data_negotiated_extensions_first = data_reserved_range_last + 1, // from here on, messages are only sent when an extension level has been negotiated and it is therefore known that the remote will understand the message
+    // available from negotiated extensions level 0:
+    data_acceleration_modes = data_negotiated_extensions_first,
+    data_set_minimap_player_bandwidth,
+    data_extension_advantage,
+    data_waiting_time,
+    data_flag_modes,
+    data_negotiated_third_party_extensions_first = 200 // from here on, codes are guaranteed to not be used by official versions present or future, and can be used after successful negotiation with data_negotiate_third_party_extensions
 };
 
 enum Disconnect_reason {
@@ -126,6 +143,11 @@ enum Connect_rejection_reason {
     reject_server_password_needed,
     reject_wrong_server_password,
     reject_last = reject_wrong_server_password
+};
+
+enum Relay_data_code {
+    relay_data_frame,
+    relay_data_game_start
 };
 
 #endif

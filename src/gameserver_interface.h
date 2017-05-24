@@ -28,6 +28,7 @@
 
 #include <string>
 #include "commont.h"
+#include "function_utility.h"
 #include "utility.h"
 
 class Server;
@@ -39,7 +40,7 @@ public:
     bool dedserver;     // dedicated server? only affects what's told to master and asking players
     int port;           // the server port
     int minLocalPort, maxLocalPort; // secondary ports
-    bool privateserver; // private server?
+    bool privateserver;
     std::string ipAddress;
     // forced means set from the outside so that the server should not change them according to lesser priority requests
     bool portForced;
@@ -49,12 +50,12 @@ public:
     int lowerPriority, priority, networkPriority;   // lower is used for non-timecritical background threads; all must be set properly when used
     bool threadLock;    // disable all concurrency?
 
-    typedef void StatusOutputFnT(const std::string& str);
-    StatusOutputFnT* statusOutput;  // must be set properly (non-null) when used
+    typedef HookFunctionHolder1<void, const std::string&> StatusOutputFnT;
+    StatusOutputFnT statusOutput;  // must be set properly (non-null) when used
     bool showErrorCount;
     bool ownScreen;
 
-    ServerExternalSettings() : dedserver(false), port(DEFAULT_UDP_PORT), minLocalPort(0), maxLocalPort(0), privateserver(false),
+    ServerExternalSettings() throw () : dedserver(false), port(DEFAULT_UDP_PORT), minLocalPort(0), maxLocalPort(0), privateserver(false),
         portForced(false), privSettingForced(false), ipForced(false), server_maxplayers(16), threadLock(true), statusOutput(0), showErrorCount(true), ownScreen(false) { }
 };
 
@@ -62,11 +63,11 @@ class GameserverInterface {
     Server* host;
 
 public:
-    GameserverInterface(LogSet& hostLog, const ServerExternalSettings& settings, Log& externalErrorLog, const std::string& errorPrefix);  // externalErrorLog must outlive the Server object
-    ~GameserverInterface();
-    bool start(int maxplayers);
-    void loop(volatile bool *quitFlag, bool quitOnEsc);
-    void stop();
+    GameserverInterface(LogSet& hostLog, const ServerExternalSettings& settings, Log& externalErrorLog, const std::string& errorPrefix) throw ();  // externalErrorLog must outlive the Server object
+    ~GameserverInterface() throw ();
+    bool start(int maxplayers) throw ();
+    void loop(volatile bool *quitFlag, bool quitOnEsc) throw ();
+    void stop() throw ();
 };
 
 // implementation is in server.cpp

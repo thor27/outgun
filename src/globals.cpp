@@ -1,7 +1,7 @@
 /*
  *  globals.cpp
  *
- *  Copyright (C) 2003, 2004, 2006 - Niko Ritari
+ *  Copyright (C) 2003, 2004, 2006, 2008 - Niko Ritari
  *  Copyright (C) 2003, 2004 - Jani Rivinoja
  *
  *  This file is part of Outgun.
@@ -23,24 +23,31 @@
  */
 
 #include "commont.h"
+#include "debug.h"
 #include "debugconfig.h"
 #include "mutex.h"
-#include "timer.h"
+#include "protocol.h"
 
 // put here only those globals that don't have a module they naturally belong to; also keep globals to be eliminated in commont.cpp
 
 // from commont.h
 char directory_separator;
 std::string wheregamedir;
-
-// from timer.h
-SystemTimer* g_systemTimer = 0;
-TimeCounter g_timeCounter;
-
-// from mutex.h
-MutexHolder nlOpenMutex;
+volatile bool g_exitFlag;
 
 // from debugconfig.h
 AutoBugReporting g_autoBugReporting = ABR_disabled;
 bool g_leetnetLog = false;
 bool g_leetnetDataLog = false;
+
+// from protocol.h
+const std::string GAME_STRING = "Outgun";
+const std::string GAME_PROTOCOL = "1.0";
+const std::string REPLAY_IDENTIFICATION = "OUTGUNREPLAY";
+
+// global objects whose construction/destruction relies on each other, and therefore need to be in one compilation unit to be constructed in the correct order
+BareMutex g_threadLogMutex(BareMutex::NoLogging); // from debug.h
+ThreadLog g_threadLog; // from debug.h
+// Mutexes and ConditionVariables depend on the above
+Mutex g_threadRandomSeedMutex("g_threadRandomSeedMutex"); // from thread.cpp
+Mutex nlOpenMutex("network.cpp:nlOpenMutex"); // from network.cpp

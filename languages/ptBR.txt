@@ -1,5 +1,5 @@
 ; This is an Outgun translation file.
-; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+; Original copyright © 2004, 2005, 2006, 2008 Jani Rivinoja, Niko Ritari
 ; Translation copyright © 2004, 2005, 2006 Thomaz de Oliveira dos Reis
 ; Contato: E-Mails: thommy@globo.com, thor27@ibest.com.br (serve como MSNM)
 ;	   ICQ: 117089308 - YIM: thommybill - Jabber: thor27@jabber.org
@@ -10,6 +10,9 @@
 
 ; Language of the translation, in the target language.
 Português (Brasil)
+
+; Locale to decide the correct decimal separator (e.g. fi_FI or pt_BR).
+pt_BR
 
 
 ; You should not modify en.txt, it is the English reference file. Outgun uses
@@ -33,14 +36,16 @@ Outgun - Cliente
 
 ; Used in the window title bar, like: Connected to Server name (127.0.0.1)
 Connectado à $1 ($2)
+@MISSING@Replay on $1
+@MISSING@Spectating on $1
 
 ; Used in the window title bar when server is running, like:
-; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 Esc:quit
 ; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
 ; version. First and/or last part are added conditionally.
 ERROS:$1
 $1/$2j $3k/s v$4 porta:$5
-ESC: Sair
+Esc:Sair
 
 ; Time units. These should be formed so that "duration: # <unit>" makes sense.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -62,13 +67,20 @@ anos
 $1 s
 $1 min
 
+; Expressing percentages. Most likely you might want to add a space depending
+; on the language conventions. Two characters maximum in addition to the $1,
+; since this is used in the tightly packed player statistics screen.
+@MISSING@$1%
+
 ; Generic terms. Currently, 'unknown' is used in the graphics menu for a
 ; refresh rate and in the local server menu for IP address; 'private' and
 ; 'invalid' are also for IP address; 'default' is used in font selection;
 ; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
 ; (F5), as well as 'special' which is used for the player collisions setting.
 ; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
-; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; bug reporting policy setting. 'Never', 'always', 'in same room',
+; 'single-roomed' and 'multi-roomed' are currently used in multiple settings
+; in the graphics menu. OK and Cancel are used in the menus, in their
 ; usual UI meaning. All may be used elsewhere in a similar context in the
 ; future.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -85,6 +97,11 @@ especial
 desabilitado
 mínimo
 completo
+@MISSING@never
+@MISSING@always
+@MISSING@in same room
+@MISSING@single-roomed
+@MISSING@multi-roomed
 
 
 ; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
@@ -128,20 +145,22 @@ Insert = Adicionar aos favoritos    Delete = Remover servidor
 Endereço de IP        Ping D Jgdrs Versão  Nome do Host
 ;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
 
-Nome e senha
+@MISSING@Player options
 Nome
 Pegar um nome aleatório
+Cores favoritas
 Senha do campeonato
 Estado do registo
 Faça parte do campeonato
 Remover senha específica de servidor para o jogador 
 
 Opções do jogo
-Mostrar nome dos jogadores
-Cores favoritas
 Prevenção de lag
 Quantidade da prevenção de lag
+@MISSING@Bandwidth for out-of-room players (cps)
 Salvar as mensagens do chat
+Mostrar as mensagens sobre bandeiras
+Mostrar as mensagens sobre mortes
 Salvar estatísticas do jogo
 Mostrar estatísticas depois do round
 Mostrar info do servidor quando conectado
@@ -154,6 +173,10 @@ Controles
 Layout do teclado
 Usar keypad para se movimentar
 Setas do teclado nas estatísticas
+@MISSING@Use arrow keys to edit message input
+@MISSING@Preferrably aim with
+@MISSING@With mouse aim move relative to
+@MISSING@Keyboard turning speed
 Abilitar controle por joystick
 Stick de movimento
 Botões do joystick (0 = disabilitado)
@@ -164,11 +187,16 @@ Atirar
 Correr
 Esquivar
 
+@MISSING@Mouse control (buttons: 0 = disabled)
+@MISSING@Sensitivity
+
 Controles ativos
+@MISSING@Active joystick buttons
+@MISSING@Active mouse buttons
 
 Modos de tela
 Profundidade de cores
- desktop
+@MISSING@ desktop
 $1-bit
 Tamanho da tela
 Modo janela
@@ -178,25 +206,41 @@ Taxa de atualização atual
 $1 Hz
 Aplicar alterações
 
-Opções gráficas
+@MISSING@Theme and font
 Tema
 Tema de fundo
 Preferir fundo do tema principal
+@MISSING@Colour theme
+@MISSING@Prefer main theme colours
 Fonte
-Antialiasing
+
+Opções gráficas
+Mostrar nome dos jogadores
+@MISSING@Rooms on screen in each direction in game
+@MISSING@Rooms on screen in each direction in replay
+@MISSING@Scrolling
+@MISSING@Antialiasing
 Menos efeitos de transparência
 Textura continua entre salas
 Jogadores desaparecidos no mini mapa
+Destacar bandeiras retornadas e largadas
+@MISSING@Make flags extra-visible
+@MISSING@Show flag disappearance positions
+@MISSING@Highlight self after spawn
+@MISSING@Markers for nearby players and flags in game
+@MISSING@Markers for nearby players and flags in replay
+@MISSING@Box visible area on map in game
+@MISSING@Let view follow over map border
+@MISSING@Allow parts of map to repeat on screen
 Estado alfa da tela
 Limite do FPS
 Modo de informação do mapa
 
 Opções sonoras
 Habilitar som
-Volume
+@MISSING@Volume
 
-Alterar idiona
-Idioma
+@MISSING@Choose language
 
 Política da reportagem de bugs
 Reportagem automática de bugs
@@ -210,7 +254,10 @@ Iniciar servidor
 Jogar no servidor
 Parar servidor
 
-; Used in name and passwords menu as registration status.
+@MISSING@Replays
+@MISSING@Date - Server - Map
+
+; Used in player options menu as registration status.
 Nenhuma senha colocada
 Inicializando...
 Erro de soquete
@@ -231,6 +278,7 @@ Erro: servidor rejeitou
 Limite de captura
 Limite de tempo
 Tempo extra
+@MISSING@Flag return delay
 Colisão de jogadores
 Tiro do parceiro
 Times balanceados
@@ -252,6 +300,7 @@ $1% das salas
 
 ; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
 Tentando conectar...
+@MISSING@Waiting for the game to start.
 Sem resposta do servidor.
 Conexão rejeitada.
 Nenhuma reação dada.
@@ -314,6 +363,15 @@ times
 mudar a visão das estatísticas
 mover o jogador
 
+; Used as values for 'preferrably aim with' in the controls menu.
+@MISSING@keyboard (8-directional)
+@MISSING@keyboard (smooth turning)
+@MISSING@mouse
+
+; Used as values for 'with mouse aim move relative to' in the controls menu.
+@MISSING@room (up = up)
+@MISSING@aim (up = forward)
+
 ; Used in the controls menu 'active controls' display.
 cima
 baixo
@@ -327,6 +385,11 @@ esquivar
 desbotamento
 esconder cedo
 esconder tarde
+
+; Used as values for 'Let view follow over map border" in the graphics menu,
+; along with 'never' and 'always'.
+@MISSING@when all rooms aren't shown
+@MISSING@if the border has doorways
 
 ; Used in the error collection dialogs. The last two are only used in the main
 ; program error dialog which is shown for example when invalid command line
@@ -345,7 +408,7 @@ Isso é resultado de um bug no outgun. Para ajudar a concertar, por-favor, envie 
 ; Used in an external dialog as title. No length restriction.
 Erro crítico
 
-; Used in a simple dialog, started from the name and passwords menu.
+; Used in a simple dialog, started from the player options menu.
 1 senha removida.
 $1 senha removida.
 Nenhuma senha encontrada.
@@ -437,6 +500,7 @@ Seu voto não tem nenhum efeito até você votar por um mapa específico.
 
 ; Used like: This map is mapname (5 of 13)
 Esse é o mapa $1 ($2 de $3).
+Esse é o mapa $1.
 
 CTF ACABOU O JOGO - PONTUAÇÃO FINAL: VERMELHO $1 - AZUL $2
 CAPTURE $1 BANDEIRAS PARA GANHAR O JOGO.
@@ -465,6 +529,7 @@ Muita conversa. Shhhhh...
 Desconectando em $1...
 Esse mapa está quebrado. Tem uma bandeira e captura instantânea. Evite-a.
 A atualização de sua pontuação no torneio falhou!
+@MISSING@Warning: This server has extensions enabled that give an advantage over you to players with a supporting Outgun client.
 
 Salvou captura de tela para $1.
 Não foi possivel salvar captura de tela para $1.
@@ -533,6 +598,10 @@ Sombra
 ; The shorter the better; test it.
 Arma $1
 
+; Extra-time abbreviation prepending the game clock. Try to use only one or
+; two letters.
+@MISSING@ET
+
 ; No limit really, but small and discreet is good.
 FPS:$1
 
@@ -584,7 +653,7 @@ Força do time
 ; the 2nd line, the first field extends over the comment mark ';'. '|' marks
 ; position 41; the title text should end before that.
 
-     Frags    total/in-row/most
+@MISSING@     Frags    total/in-row/most
 Ping     Capt Matou     Morreu  Suicidios
 ;000  000 00 000/00/00  000/00/00   00  |
 
@@ -593,8 +662,8 @@ pegou  largou  retornou   Mortos Carrega.
 ; 00      00      00       00     00:00 |
 
     Precisão
-Tiros   | Pegos Movimentos Velocidade
-;0000 100% 0000  000000 u  00.00 u/s    |
+Tiros   |  Pegos Movimentos Velocidade
+;0000  100% 0000  000000 u  00.00 u/s   |
 
           Melhor        Campeonato
 T. jogo    T.vida  posição força  pontos
@@ -609,6 +678,20 @@ Lista de mapas do servidor
  N° Votos Título             Tamanho Autor
 ;00 00 * <--------20--------> 00×00 <-----------26----------->|
 
+; Used in the map list dialog (F2), replacing map name. Maximum length 20
+; characters.
+@MISSING@<Random>
+
+; Used in the map list dialog (F2). Can be quite long but needs to fit with any
+; of the given replacements for $1.
+@MISSING@Sort order (space to cycle): $1
+@MISSING@Map number
+@MISSING@Votes
+@MISSING@Title
+@MISSING@Size
+@MISSING@Author
+@MISSING@Favorites
+
 ; Used as a prompt in the map list dialog (F2). Can be quite long.
 Votar no número do mapa
 
@@ -616,10 +699,10 @@ Votar no número do mapa
 $1 jogadores estão no torneio.
 
 ; Used in the debug panel (F9).
-Joystick axes
-Joystick buttons
-Traffic: $1 B/s
-in $1 B/s, out $2 B/s
+@MISSING@Joystick axes
+@MISSING@Joystick buttons
+@MISSING@Traffic: $1 B/s
+@MISSING@in $1 B/s, out $2 B/s
 
 
 ; - - - - - - - - - - - - -  special mode messages  - - - - - - - - - - - - -
@@ -640,6 +723,7 @@ Outgun - Salvando figuras do mapa
 
 ; Used in an external dialog message.
 Figuras do mapa salvas no diretório 'mappic'.
+@MISSING@Default colours generated to $1.
 
 
 ; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
@@ -649,6 +733,7 @@ Figuras do mapa salvas no diretório 'mappic'.
 ; No length restrictions.
 
 ; Command line errors.
+$1 não pode ser combinado com outras opções de linha de comando.
 -cport precisa ser seguido de um espaço e o número da porta ou porta mínima:porta máxima.
 -cport X ou -cport X:Y: X e Y precisa estar entre 1 e 65535.
 -cport X:Y: Y precisa ser maior que X.
@@ -658,11 +743,13 @@ Figuras do mapa salvas no diretório 'mappic'.
 -fps X: X precisa estar entre 1 e 1000.
 -ip  precisa ser seguido de um espaço e um endereço de IP.
 -ip X: X precisa ser um endereço de IP válido sem :port.
--mappic não pode ser combinado com outras opções de linha de comando.
 -maxp precisa ser seguido de um espaço e o número de jogadores.
 -maxp X: X precisa ser um número impar entre 2 e $1.
+@MISSING@-play must be followed by a hostname and optionally port.
 -port precisa ser seguido de espaço e um número de porta.
 -port X: X precisa estar entre 1 e 65535.
+@MISSING@-replay must be followed by a filename.
+@MISSING@-spectate must be followed by a hostname and port.
 -sport precisa ser seguido de um espaço e porta mínima:porta máxima.
 -sport X:Y: X e Y precisa estar entre 1 e 65535.
 -sport X:Y: Y precisa ser maior que X.
@@ -676,6 +763,7 @@ Não foi possível iniciar o servidor de escuta.
 Não foi possível inciar o cliente.
 Não foi possível iniciar o servidor.
 Não foi possível salvar as figuras do mapa para o diretório 'mappic'.
+@MISSING@Could not start spectating.
 
 ; Graphic mode errors.
 Não foi possível iniciar a resolução $1×$2×$3 em qualquer modo.
@@ -689,6 +777,7 @@ janela
 ; Missing files.
 Não foi possivel abrir o arquivo gamemod: '$1'.
 Não foi possível ler '$1'.
+@MISSING@Could not open replay file $1.
 
 ; Gamemod format errors.
 Configuração do gamemod desconhecida: '$1'.
@@ -711,6 +800,8 @@ um número real, menor que $1
 um número real, entre $1 e $2, inclusive
 um número real ou 'x %' onde x 0 ou superior
 endereço de ip sem :port
+@MISSING@non-empty string
+@MISSING@two positive integers and optionally a real number between 0 and 1, separated by spaces
 
 ; Added to some of the above, where outside the normal range, 0 is allowed.
 , ou 0
@@ -727,6 +818,7 @@ Largura do mapa redefinida.
 Room line não é permitido no label block: $1
 Time $1, bandeira $2 na parede.
 Time $1, ponto de nascimento $2 na parede.
+@MISSING@Team $1, respawn area $2 does not have enough free space.
 Dois label names indênticos não é permitido: $1
 Linha do mapa irreconhecível: $1
 
@@ -734,15 +826,22 @@ Linha do mapa irreconhecível: $1
 O mapa não é válido: Captura estantânea da bandeira é possível.
 
 ; Other file format errors.
+@MISSING@$1 is not an Outgun replay.
 '$1', do master.txt não é um endereço de IP válido.
 Admin shell: caracteres não imprimiveis, mensagem ignorada.
 Alpha bitmaps precisa ser imagens na escala de cinza de 8-bit; $1 is $2-bit.
+@MISSING@Class command without class name in auth.txt.
+@MISSING@Format error in replay file.
+@MISSING@Invalid authorization class entry in auth.txt: "$1"
 Comando de ban inválido (Endereço de IP) no auth.txt: "$1"
 Linha inválida (sem nome) no auth.txt: "$1"
 Sintaxe inválida no client.cfg ("$1").
 Comando de usuário inválido (sem senha) no auth.txt: "$1"
 Salvador de figuras do mapa: Mapa '$1' não é um arquivo válido de mapa.
-Erro de sintaxe no gfxmodes.txt, linha '$1'.
+@MISSING@Replay $1 is a newer version ($2).
+Erro de sintaxe no $1, linha '$2'.
+@MISSING@This is a newer replay version ($1).
+@MISSING@This is not an Outgun replay.
 Tradução $1 não pode ser lida.
 Dado desconhecido em client.cfg ("$1").
 Comando desconhecido "$1" no auth.txt
@@ -750,37 +849,57 @@ Modo não utilizável no gfxmodes.txt: $1×$2×$3 (precisa ser no mínimo 320×200 com
 Altura e largura das texturas precisam ser potência de 2; a textura do chão $1 é $2×$3.
 Altura e largura das texturas precisam ser potência de 2; a textura da parede $1 é $2×$3.
 
+; Generic data format errors. Usually occur when the user has entered something
+; invalid one way or another.
+@MISSING@"$1" is not a valid IP address.
+@MISSING@Port is missing from $1.
+
 ; Miscellaneous errors.
 Não é possível alterar max_players enquanto os jogadores estão conectados.
 Não é possível criar um thread. Recursos do sistema insuficie.
 Não foi possível colocar o servidor para rodar em segundo plano.
-Comunicador mestre:Você possuí uma versão inválida do Outgun. O servidor não o aceitará na lista mestre. Por-favor, atualize.
 Sem mapas para rotação.
+@MISSING@Out of memory.
+
+; Generic subsystem error messages. $1 is a more detailed error error message,
+; often from the list of network errors, and normally includes the ending '.'.
+@MISSING@Admin shell: $1
+@MISSING@Admin shell connection: $1
+@MISSING@Admin shell connection: Not all written.
+@MISSING@Connecting to relay: $1
+@MISSING@Getting server list: $1
+Comunicador mestre: $1
+Comunicador mestre:Você possuí uma versão inválida do Outgun. O servidor não o aceitará na lista mestre. Por-favor, atualize.
+Comunicador mestre: (Sair) $1
+@MISSING@Network error: $1
+@MISSING@Website thread: $1
+@MISSING@Website thread: (Quit) $1
 
 ; Network errors. Most of these can occur in normal operation when there's
 ; something wrong with the network or a remote server. Where it's not clear
-; what $1 is, it is a message in English, telling what went wrong within the
-; network subsystem.
-Não foi possível iniciar HawkNL. $1
-Sem rede de IP.
-Admin shell: Não foi possível abrir o soquete na porta $1.
-Admin shell: Não foi possível alterar o soquete para o modo de escuta...
-Admin shell: Não foi possível aceitar a conexão.
-Admin shell: leitura falhou. Motivo: $1
-Admin shell: Falhou enviando resposta. Motivo: $1
-Não foi possível conectar no servidor mestre. $1
+; what $1 (or $2) is, it is a message either in English or one of the
+; translated ones, telling what went wrong within the network subsystem,
+; and normally includes the ending '.'.
 Não foi possível abrir o soquete.
 Não foi possível abrir o soquete para atualizar os servidores. $1
-Não foi possível abrir o soquete para conectar no servidor mestre. $1
 Não foi possível iniciar a rede do servidor na porta $1.
-Comunicador mestre: Não foi possível abrir o soquete para conectar no servidor mestre.
-Comunicador mestre: (Sair) Não foi possível conectar ao servidor mestre.
-Comunicador mestre: (Sair) C Não foi possível abrir o soquete para conectar no servidor mestre.
-Comunicador mestre: (Sair) Erro enviando info: $1
-Comunicador mestre: (Sair) Erro enquanto esperando por resposta: $1
-Website thread: Não foi possível abrir o soquete para conectar ao servidor do website.
-Website thread: (Sair) Não foi possível conectar ao servidor do website.
-Website thread: (Sair) Não foi possível abrir o soquete para o servidor do website.
+@MISSING@Connection to the server closed.
+@MISSING@Connection to the server closed: $1
+@MISSING@Error connecting to "$1": $2
+@MISSING@Error initializing network subsystem: $1
+@MISSING@Error opening a broadcast socket on any UDP port: $1
+@MISSING@Error opening a broadcast socket on UDP port $1: $2
+@MISSING@Error opening a socket on any TCP port: $1
+@MISSING@Error opening a socket on any UDP port: $1
+@MISSING@Error opening a socket on TCP port $1: $2
+@MISSING@Error opening a socket on UDP port $1: $2
+@MISSING@Error reading from socket: $1
+@MISSING@Error reading from socket: Operation timed out.
+@MISSING@Error resolving hostname "$1": $2
+@MISSING@Error setting socket to listen mode: $1
+@MISSING@Error writing to socket: $1
+@MISSING@Error writing to socket: Operation timed out.
+@MISSING@Format error in data received from the server.
 
 ; Rare external network errors. These may happen but there's rarely anything
 ; the user can do to fix them.
@@ -807,17 +926,19 @@ O diretório '$1' não foi encontrado e não pode ser criado.
 ; the server is shutting down. In rare cases they take longer to disappear.
 Desligando: ABORTANDO $1 atualizações do torneio
 Desligando: threads do admin shell
+Desligando: thread dos bots
 Desligando: thread principal
 Desligando: thread do comunicador mestre
 Desligando: servidor da net
+@MISSING@Shutdown: relay thread
 Desligando: esperando por $1 atualizações do torneio
 Desligando: thread do website
 
 ; Comment written to auth.txt. It may be sensible to translate this in case
 ; you're translating the entire Outgun distribution with other configuration
 ; files too.
-This file is automatically rewritten whenever the ban list changes.
-To reserve a name add a row:
-user <name> <tab> <password>  or  admin <name> [<tab> <password>]
-where <tab> is a tabulator character.
-Passwordless admins need to authenticate by logging in to the tournament.
+@MISSING@This file is automatically rewritten whenever the ban list changes.
+@MISSING@To reserve a name add a row:
+@MISSING@user <name> <tab> <password>  or  admin <name> [<tab> <password>]
+@MISSING@where <tab> is a tabulator character.
+@MISSING@Passwordless admins need to authenticate by logging in to the tournament.

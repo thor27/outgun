@@ -101,27 +101,61 @@ For authorized admins, these admin commands will be shown on the &lsquo;console&
 </P>
 
 <TABLE BORDER>
- <TR><TH><CODE>/list</CODE><TD>list the player IDs
- <TR><TH><CODE>/kick </CODE><EM>ID</EM><TD>remove the player <EM>ID</EM> from the server
- <TR><TH><CODE>/ban </CODE><EM>ID</EM><CODE> </CODE><EM>time</EM><TD>ban the player <EM>ID</EM> from the server for <EM>time</EM> minutes
- <TR><TH><CODE>/mute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM>
- <TR><TH><CODE>/smute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM> without telling them that they&rsquo;re muted
- <TR><TH><CODE>/unmute </CODE><EM>ID</EM><TD>unmute the player <EM>ID</EM>
- <TR><TH><CODE>/forcemap</CODE><TD>force map change or restart the round
+ <TR><TH>Command<TH>Function
+ <TR><TD><CODE>/list</CODE><TD>list the player IDs
+ <TR><TD><CODE>/kick </CODE><EM>ID</EM><TD>remove the player <EM>ID</EM> from the server
+ <TR><TD><CODE>/ban </CODE><EM>ID</EM><CODE> </CODE><EM>time</EM><TD>ban the player <EM>ID</EM> from the server for <EM>time</EM> minutes
+ <TR><TD><CODE>/mute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM>
+ <TR><TD><CODE>/smute </CODE><EM>ID</EM><TD>mute the player <EM>ID</EM> without telling them that they&rsquo;re muted
+ <TR><TD><CODE>/unmute </CODE><EM>ID</EM><TD>unmute the player <EM>ID</EM>
+ <TR><TD><CODE>/forcemap</CODE><TD>force map change or restart the round
+ <TR><TD><CODE><A HREF="#set">/set</A></CODE><TD>manage server settings
+ <TR><TD><CODE><A HREF="#bot">/bot</A></CODE><TD>manage bots
 </TABLE>
 
+<H3 ID="list"><CODE>/list</CODE></H3>
 <P>
 The <CODE>/list</CODE> command must be used to get the player ID of a player that can then be kicked, banned or muted via the respective commands. Silent muting with the <CODE>/smute</CODE> command means that the muted player will not know they&rsquo;re muted; it&rsquo;s pretty crude so use with care (or not at all). Banning made with the <CODE>/ban</CODE> command isn&rsquo;t permanent: the maximum time is 10 000 minutes (almost exactly one week). That&rsquo;s because the IP address of the banned player can change and we don&rsquo;t want to have banned someone else who gets their IP after them. If you don&rsquo;t give a time, it defaults to 60 minutes.
 </P>
 
+<H3 ID="forcemap"><CODE>/forcemap</CODE></H3>
 <P>
 The <CODE>/forcemap</CODE> command is a bit complicated: it can be used to either change the map or just restart the round. To change the map, the player issuing the command must first vote for that map (press <STRONG>F2</STRONG> to open the vote dialog). If they&rsquo;ve voted for no map, only a restart is issued. Having pressed <STRONG>F8</STRONG> or not has no effect.
 </P>
 
+<H3 ID="set"><CODE>/set</CODE></H3>
+<P>
+The <CODE>/set</CODE> command is used to view or change server settings.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Command<TH>Function
+ <TR><TD><CODE>/set list</CODE><TD>list all settings that you can manipulate
+ <TR><TD><CODE>/set s</CODE><TD>show the current value of setting s
+ <TR><TD><CODE>/set s v</CODE><TD>change the value of setting s to v
+ <TR><TD><CODE>/set reset</CODE><TD>reload all settings from gamemod
+</TABLE>
+
+<H3 ID="bot"><CODE>/bot</CODE></H3>
+<P>
+The <CODE>/bot</CODE> command is used to manage bots, including adding and removing them.
+</P>
+
+<TABLE BORDER>
+ <TR><TH>Command<TH>Function
+ <TR><TD><CODE>/bot</CODE><TD>Display the bot commands and current settings.
+ <TR><TD><CODE>/bot add n</CODE><TD>Add n bots.
+ <TR><TD><CODE>/bot remove n</CODE><TD>Remove n bots.
+ <TR><TD><CODE>/bot fill n</CODE><TD>Set the <CODE>bots_fill</CODE> setting to n.
+ <TR><TD><CODE>/bot balance s</CODE><TD>Set the balance bot <CODE>on</CODE> or <CODE>off</CODE>.
+ <TR><TD><CODE>/bot ping p [all]</CODE><TD>Show or set the bot ping. Type <CODE>all</CODE> parameter to set the pings of all the playing bots.
+ <TR><TD><CODE>/bot rename n s</CODE><TD>Set the name of bot with ID n to s.
+</TABLE>
+
 <HR>
 
 <DIV>
-Updated 2004-12-08 &ndash; Niko Ritari
+Updated 2008-03-18 &ndash; Niko Ritari
 </DIV>
 
 </HTML>

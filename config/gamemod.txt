@@ -1,0 +1,287 @@
+; Outgun server configuration file ("gamemod")
+;
+; Each line is either a comment (starting with ';') or a command and its
+; argument separated by a space or a tab. See doc/gamemod.html for
+; information on the effect of different commands.
+
+; ------------------
+;  GENERAL SETTINGS
+; ------------------
+
+; server_name: default: Anonymous host
+; max_players: an even number between 2 and 32, default: 16 or from arguments
+; welcome_message, info_message, sayadmin_comment: default: none
+; sayadmin_enabled: 1 to enable, 0 to disable, default: 0
+; server_password: max 15 characters, default: none
+; tournament: 1 to enable, 0 to disable, default: 1
+; save_stats: 1 to 32, or 0 to disable, default: 0
+; idlekick_time: seconds, 10 or more, or 0 to disable, default: 120
+; idlekick_playerlimit: 1 to 32, default: 4
+; server_port: 1 to 65535, default: 25000
+; server_ip: default: autodetected
+; private_server: 1 to enable, 0 to disable, default: 0
+; join_start, join_end: seconds, 0 to 86399, equal to disable, default: 0 0
+; join_limit_message: default: none
+; srvmonit_port: 1-65535, default: server_port - 500
+; recording: 1 to 32, or 0 to disable, default: 0
+recording 1
+; relay_server: server's host name or IP with port, default: none
+relay_server 127.0.0.1:9090
+; spectating_delay: seconds, default: 120
+spectating_delay: 5
+; log_player_chat: 1 to enable, 0 to disable, default: 0
+
+server_name Anonymous host
+;max_players 16
+;welcome_message Uncomment this line and replace with a message, or add lines.
+;info_message Uncomment this line and replace with your info, or add lines.
+sayadmin_enabled 0
+;sayadmin_comment insert comment here
+;server_password password
+tournament 1
+save_stats 0
+idlekick_time 120
+idlekick_playerlimit 4
+server_port 25000
+;server_ip ip
+private_server 0
+join_start 0
+join_end 0
+;join_limit_message insert message here
+;srvmonit_port 24500
+recording 0
+;relay_server host.example.net:12345
+spectating_delay 120
+log_player_chat 0
+
+; ------
+;  BOTS
+; ------
+
+; min_bots: 0 to 32, default: 0
+; bots_fill: 0 to 32, default: 0
+; balance_bot: 1 to enable, 0 to disable, default: 0
+; bot_ping: 0 to 500, default: 300
+; bot_name_lang: classic or fi, default: classic
+
+min_bots 0
+bots_fill 0
+balance_bot 0
+bot_ping 300
+bot_name_lang classic
+
+; -----------------
+;  SERVER WEB SITE
+; -----------------
+
+; See http://koti.mbnet.fi/outgun/documentation/script.html for instructions to
+; configuring your website and these settings to work together.
+
+; server_website: a valid URL, default: none 
+; web_server: server's host name or IP, default: none
+; web_script: path of the script on the server, default: none
+; web_auth: username, ':', password, default: none
+; web_refresh: minutes, at least 1, default: 2
+
+;server_website http://www.example.net/foo/
+;web_server www.example.net
+;web_script /path/script.php
+;web_auth user:pass
+web_refresh 2
+
+; --------------
+;  MAP ROTATION
+; --------------
+
+; map: one map name per line without path or .txt, default: none (all maps)
+; random_map: width height edge-passage-prob (rooms, rooms, float 0 to 1),
+;   default: none (edge-passage-prob 0.2 if not given)
+; random_maprot: 1 to enable, 0 to disable, 2 for random first map, default: 0
+; vote_block_time: minutes, default: 0
+; require_specific_map_vote: 1 to enable, 0 to disable, default: 0
+
+;map tutorial
+;random_map 3 2 0.2
+random_maprot 0
+vote_block_time 0
+require_specific_map_vote 0
+
+; -------------
+;  GAME CONFIG
+; -------------
+
+; capture_limit: number of captures (0 = no limit), default: 8
+; win_score_difference: number of captures, default: 1
+; time_limit: minutes (0 = no limit), default: 0
+; extra_time: minutes (allows 0), default: 0
+; sudden_death: 1 to enable, 0 to disable, default: 0
+; game_end_delay: seconds (allows 0), default: 5
+; flag_return_delay: (float) seconds (allows 0), default: 1.0
+; carrying_score_time: seconds, or 0 to disable, default: 0
+; random_wild_flag: 1 to enable, 0 to disable, default: 0
+; lock_team_flags, lock_wild_flags, capture_on_team_flag, capture_on_wild_flag:
+;   1 to enable, 0 to disable, defaults: 0, 0, 1, 0
+; balance_teams: no, balance, or shuffle, default: no
+; respawn_time: (float) seconds, default: 2.0
+; extra_respawn_time_alone: (float) seconds, default: 0.0
+; waiting_time_deathbringer: (float) seconds, default: 4.0
+; respawn_balancing_time: (float) seconds, default: 0.0
+; spawn_safe_time: (float) seconds, default: 0.0
+; respawn_on_capture: 1 to enable, 0 to disable, default: 0
+; free_turning: 1 to enable, 0 to disable, default: 0
+; minimap_send_limit: 0 to 32, default: 32
+; see_rockets_distance: rooms, default: 0
+
+capture_limit 8
+win_score_difference 1
+time_limit 0
+extra_time 0
+sudden_death 0
+game_end_delay 5
+flag_return_delay 1.0
+carrying_score_time 0
+random_wild_flag 0
+lock_team_flags 0
+lock_wild_flags 0
+capture_on_team_flag 1
+capture_on_wild_flag 0
+balance_teams no
+respawn_time 2.0
+extra_respawn_time_alone 0.0
+waiting_time_deathbringer 4.0
+respawn_balancing_time 0.0
+spawn_safe_time 0.0
+respawn_on_capture 0
+free_turning 0
+minimap_send_limit 32
+see_rockets_distance 0
+
+; -----------------------------
+;  HEALTH, ENERGY and SHOOTING
+; -----------------------------
+
+; friendly_fire, friendly_deathbringer: (float or %) multiplier, default: 0
+; rocket_damage: amount of energy, default: 70
+; start_health: default: 100
+; start_energy: default: 100
+; health_max: 1 to 500, default: 300
+; energy_max: 0 to 500, default: 300
+; health_regeneration_0_to_100, 100_to_200, 200_to_max:
+;   (float) health per second, defaults: 10.0, 1.0, 0.0
+; energy_regeneration_0_to_100, 100_to_200, 200_to_max:
+;   (float) energy per second, defaults: 10.0, 5.0, 0.0
+; min_health_for_run_penalty: amount of health, 1 to 500, default: 40
+; run_health_degradation: (float) health per second, default: 15.0
+; run_energy_degradation: (float) energy per second, default: 15.0
+; shooting_energy_base: (float) amount of energy, default: 7.0
+; shooting_energy_per_extra_rocket: (float) amount of energy, default: 1.0
+; hit_stun_time: (float) seconds, default: 1.0
+; shoot_interval: (float) seconds, default: 0.5
+; shoot_interval_with_energy: (float) seconds, default: 0.5
+
+friendly_fire 0
+friendly_deathbringer 0
+rocket_damage 70
+start_health 100
+start_energy 100
+health_max 300
+energy_max 300
+health_regeneration_0_to_100 10.0
+health_regeneration_100_to_200 1.0
+health_regeneration_200_to_max 0.0
+energy_regeneration_0_to_100 10.0
+energy_regeneration_100_to_200 5.0
+energy_regeneration_200_to_max 0.0
+min_health_for_run_penalty 40
+run_health_degradation 15.0
+run_energy_degradation 15.0
+shooting_energy_base 7.0
+shooting_energy_per_extra_rocket 1.0
+hit_stun_time 1.0
+shoot_interval 0.5
+shoot_interval_with_energy 0.5
+
+; ----------
+;  POWERUPS
+; ----------
+
+; pups_min, pups_max: 0 to 32, or 0% to any %, defaults: 20%, 80%
+; pups_respawn_time: seconds (accepts 0), default: 25
+; pup_add_time, pup_max_time: seconds, defaults: 40, 100
+; pups_drop_at_death: 1 to enable, 0 to disable, default: 0
+; pups_player_max: 0 to 6, default: 6
+; pup_weapon_max: 1 to 9, default: 9
+; pup_health_bonus: amount of energy, default: 160
+; pup_power_damage: (float) multiplier to rocket_damage, default: 2.0
+; pup_deathbringer_time: (float) seconds, default: 5.0
+; pup_deathbringer_switch: 1 to enable, 0 to disable, default: 1
+; pup_deathbringer_health_limit: amount of health, 1 to 500, default: 100
+; pup_deathbringer_energy_limit: amount of energy, 0 to 500, default: 100
+; pup_deathbringer_health_degradation: (float) health per second, default: 2.5
+; pup_deathbringer_energy_degradation: (float) energy per second, default: 2.5
+; pup_shadow_invisibility: 1 to enable, 0 to disable, default: 0
+; pup_shield_one_hit: number of hits, or 0 for unlimited, default: 0
+; pup_chance_shield, turbo, shadow, power, weapon, megahealth, deathbringer:
+;   a number relative to the others, defaults: 16, 14, 14, 14, 18, 13, 11
+; pup_start_shield: 1 to enable, 0 to disable, default: 0
+; pup_start_turbo, shadow, power: seconds, 0 to 999, defaults: 0, 0, 0
+; pup_start_weapon: 1 to 9, default: 1
+; pup_start_deathbringer: 1 to enable, 0 to disable, default: 0
+
+pups_min 20%
+pups_max 80%
+pups_respawn_time 25
+pup_add_time  40
+pup_max_time 100
+pups_drop_at_death 0
+pups_player_max 6
+pup_weapon_max 9
+pup_health_bonus 160
+pup_power_damage 2.0
+pup_deathbringer_time 5.0
+pup_deathbringer_switch 1
+pup_deathbringer_health_limit 100
+pup_deathbringer_energy_limit 100
+pup_deathbringer_health_degradation 2.5
+pup_deathbringer_energy_degradation 2.5
+pup_shadow_invisibility 0
+pup_shield_one_hit 0
+
+pup_chance_shield       16
+pup_chance_turbo        14
+pup_chance_shadow       14
+pup_chance_power        14
+pup_chance_weapon       18
+pup_chance_megahealth   13
+pup_chance_deathbringer 11
+
+pup_start_shield 0
+pup_start_turbo 0
+pup_start_shadow 0
+pup_start_power 0
+pup_start_weapon 1
+pup_start_deathbringer 0
+
+; ---------
+;  PHYSICS
+; ---------
+
+; friction, drag, acceleration: (float) defaults: 0.20, 0.16, 2.60
+; brake_acceleration, turn_acceleration: (float)
+;   multipliers to acceleration, defaults: 0.10, 0.50
+; run_acceleration, turbo_acceleration, flag_acceleration: (float)
+;   multipliers to acceleration, defaults: 1.75, 1.45, 0.91
+; player_collisions: no, normal, or special, default: normal
+; rocket_speed: (float) default: 50
+
+friction     0.20
+drag         0.16
+acceleration 2.60
+brake_acceleration 0.10
+turn_acceleration  0.50
+run_acceleration   1.75
+turbo_acceleration 1.45
+flag_acceleration  0.91
+
+player_collisions normal
+rocket_speed 50

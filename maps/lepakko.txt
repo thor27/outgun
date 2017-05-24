@@ -1,0 +1,98 @@
+P width 3
+P height 4
+P title Lepakko
+P author Joonas
+S 16 12
+
+; punainen lippu ja syntymäpaikat
+flag  0 1 0 8 10
+spawn 0 1 0 6 6
+spawn 0 1 0 10 6
+spawn 0 1 0 8 2
+spawn 0 1 0 8 4
+spawn 0 1 0 8 6
+spawn 0 1 0 8 8
+
+; sininen lippu ja syntymäpaikat
+flag  1 1 3 8 2
+spawn 1 1 3 6 6
+spawn 1 1 3 10 6
+spawn 1 1 3 8 4
+spawn 1 1 3 8 6
+spawn 1 1 3 8 8
+spawn 1 1 3 8 10
+
+X vasenseina 0 0 0 3
+X oikeaseina 2 0 2 3
+X ylaseina 0 0 2 0
+X alaseina 0 3 2 3
+
+X ylaseina 0 2
+X ylaseina 1 1
+X ylaseina 2 2
+X ylaseina 1 3
+
+X alaseina 0 1
+X alaseina 1 2
+X alaseina 2 1
+X alaseina 1 0
+
+X vasenalakulma 1 0 2 0
+X vasenalakulma 0 1
+X vasenalakulma 2 2
+X vasenalakulma 0 3
+
+X oikeaalakulma 0 0 1 0
+X oikeaalakulma 0 2
+X oikeaalakulma 2 1
+X oikeaalakulma 2 3
+
+X vasenylakulma 1 3 2 3
+X vasenylakulma 0 2
+X vasenylakulma 2 1
+X vasenylakulma 0 0
+
+X oikeaylakulma 0 3 1 3
+X oikeaylakulma 2 2
+X oikeaylakulma 0 1
+X oikeaylakulma 2 0
+
+R 1 1
+C W  6  6 10  5 270   0
+C W 10  6 10  5   0  90
+C W 8 8 1
+W 7 8 9 12
+W 0 11 1 12
+W 15 11 16 12
+
+R 1 2
+C W 6 6 10 5 180 270
+C W 10  6 10  5  90 180
+C W 8 4 1
+W 7 4 9 0
+W 0 0 1 1
+W 15 0 16 1
+
+:vasenseina
+W 0 0 1 12
+
+:oikeaseina
+W 16  0 15 12
+
+:ylaseina
+W 0 0 16 1
+
+:alaseina
+W  0 12 16 11
+
+:vasenalakulma
+T W 0 6 6 12 0 12
+
+:oikeaalakulma
+T W 16  6  10 12 16 12
+
+:vasenylakulma
+T W  0  6  6  0  0  0
+
+:oikeaylakulma
+T W 16  6  10  0 16  0

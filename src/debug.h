@@ -1,7 +1,7 @@
 /*
  *  debug.h
  *
- *  Copyright (C) 2004 - Niko Ritari
+ *  Copyright (C) 2004, 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -24,22 +24,56 @@
 #ifndef DEBUG_H_INC
 #define DEBUG_H_INC
 
-class Log;
-class LogSet;
+#include <cstring>
+#include <cstdio>
+#include "mutex.h"
 
-// thread ID logging; this is controlled by LOG_THREAD_IDS in debugconfig.h
-void logThreadEvent(bool exit, const char* function, Log& log);
-void logThreadEvent(bool exit, const char* function, LogSet& log);  // simply dumps to the normal log of the LogSet
-inline void logThreadStart(const char* function, Log& log) { logThreadEvent(false, function, log); }
-inline void logThreadExit (const char* function, Log& log) { logThreadEvent(true , function, log); }
-inline void logThreadStart(const char* function, LogSet& log) { logThreadEvent(false, function, log); }
-inline void logThreadExit (const char* function, LogSet& log) { logThreadEvent(true , function, log); }
+class ThreadLog {
+    FILE* file;
+
+    void beginEntry() throw ();
+    void endEntry() throw ();
+
+    typedef uint32_t ThreadId;
+    typedef uint64_t ObjectId;
+    static ThreadId idThread(pthread_t t) throw () {
+        ThreadId id = 0;
+        memcpy(&id, &t, std::min(sizeof(ThreadId), sizeof(pthread_t))); // since we have no idea what type pthread_t actually is on each system
+        return id;
+    }
+    static ObjectId idObject(void* p)     throw () { return static_cast<ObjectId>(reinterpret_cast<intptr_t>(p)); }
+
+    friend class ThreadLogWriter;
+
+public:
+    ThreadLog() throw () : file(0) { }
+    ~ThreadLog() throw () { if (file) fclose(file); }
+};
+
+class ThreadLogWriter : private NoCopying {
+    ThreadLog& host;
+
+public:
+    ThreadLogWriter(ThreadLog& host_) throw () : host(host_) {
+        host.beginEntry();
+        putThreadId(pthread_self());
+    }
+    ~ThreadLogWriter() throw () { host.endEntry(); }
+
+    template<class Type> void put(Type t) throw () { fwrite(&t, sizeof(t), 1, host.file); }
+    void put(const char* str) throw () { fputs(str, host.file); fputc('\0', host.file); }
+    void putThreadId(pthread_t t) throw () { put(ThreadLog::idThread(t)); }
+    void putObjectId(void* p) throw () { put(ThreadLog::idObject(p)); }
+};
+
+extern ThreadLog g_threadLog;
+extern BareMutex g_threadLogMutex;
 
 #ifdef NDEBUG
 
 class ValidityChecker {
 public:
-    void checkValidity() const { }
+    void checkValidity() const throw () { }
 };
 
 typedef ValidityChecker PointerLeakBuffer;
@@ -55,10 +89,9 @@ class ValidityChecker {
     int check;
 
   public:
-    ValidityChecker() : check(0xC044EC7) { }
-    void checkValidity() const
-        { numAssert((unsigned)this>0x10000 && (unsigned)this<0xFFFF0000, (int)this); nAssert(check!=0xDE7E7ED); nAssert(check==0xC044EC7); }
-    ~ValidityChecker() { checkValidity(); check=0xDE7E7ED; }
+    ValidityChecker() throw () : check(0xC044EC7) { }
+    void checkValidity() const throw () { nAssert(this != 0); nAssert(check!=0xDE7E7ED); nAssert(check==0xC044EC7); }
+    ~ValidityChecker() throw () { checkValidity(); check=0xDE7E7ED; }
 };
 
 #pragma pack(push, 1)
@@ -66,11 +99,11 @@ template<int size> class PointerLeakBuffer : private ValidityChecker {
     unsigned char buffer[size];
 
   public:
-    PointerLeakBuffer() {
+    PointerLeakBuffer() throw () {
         for (int i=0; i<size; i++)
             buffer[i]=0x11;
     }
-    void checkValidity() const {
+    void checkValidity() const throw () {
         for (int i=0; i<size; i++)
             if (buffer[i]!=0x11) {
                 printf("Leak buffer (@%p-%p) changed at %d (%p), data: ", &buffer[0], &buffer[size-1], i, &buffer[i]);
@@ -83,7 +116,7 @@ template<int size> class PointerLeakBuffer : private ValidityChecker {
             }
         ValidityChecker::checkValidity();
     }
-    ~PointerLeakBuffer() {
+    ~PointerLeakBuffer() throw () {
         checkValidity();
     }
 };

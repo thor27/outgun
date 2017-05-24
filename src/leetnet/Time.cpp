@@ -22,79 +22,80 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cstdlib>
 
-std::ostream& operator << (std::ostream& o, const GNE::Time& time) {
+std::ostream& operator << (std::ostream& o, const GNE::Time& time) throw () {
   return o << time.toString();
 }
 
 namespace GNE {
 
 //##ModelId=3B07538103AF
-Time::Time() : sec(0), microsec(0) {
+Time::Time() throw () : sec(0), microsec(0) {
 }
 
 //##ModelId=3B07538103B0
-Time::Time(int seconds, int microseconds)
+Time::Time(int seconds, int microseconds) throw ()
 : sec(seconds), microsec(microseconds) {
   normalize();
 }
 
 //##ModelId=3B07538103B3
-Time::~Time() {
+Time::~Time() throw () {
 }
 
 //##ModelId=3B07538103B5
-int Time::getSec() const {
+int Time::getSec() const throw () {
   return sec;
 }
 
 //##ModelId=3B07538103B7
-int Time::getuSec() const {
+int Time::getuSec() const throw () {
   return microsec;
 }
 
 //##ModelId=3B07538103DE
-int Time::getTotaluSec() const {
+int Time::getTotaluSec() const throw () {
   return (sec * 1000000 + microsec);
 }
 
 //##ModelId=3B07538103E0
-void Time::setSec(int seconds) {
+void Time::setSec(int seconds) throw () {
   sec = seconds;
 }
 
 //##ModelId=3B07538103E2
-void Time::setuSec(int microseconds) {
+void Time::setuSec(int microseconds) throw () {
   microsec = microseconds;
   normalize();
 }
 
 //##ModelId=3B07538103E4
-Time Time::diff(const Time& rhs) const {
+Time Time::diff(const Time& rhs) const throw () {
   Time ret = operator-(rhs);
   ret.sec = labs(ret.sec);
   return ret;
 }
 
 //##ModelId=3C6729280041
-std::string Time::toString() const {
+std::string Time::toString() const throw () {
   std::stringstream ret;
   ret << sec << '.' << std::setfill('0') << std::setw(6) << microsec;
   return ret.str();
 }
 
 //##ModelId=3B07538103E7
-bool Time::operator<(const Time& rhs) const {
+bool Time::operator<(const Time& rhs) const throw () {
   return (sec < rhs.sec || ((sec == rhs.sec) && (microsec < rhs.microsec)));
 }
 
 //##ModelId=3AEBA4E003A2
-bool Time::operator>(const Time& rhs) const {
+bool Time::operator>(const Time& rhs) const throw () {
   return (sec > rhs.sec || ((sec == rhs.sec) && (microsec > rhs.microsec)));
 }
 
 //##ModelId=3B07538103ED
-Time Time::operator+(int rhs) const {
+Time Time::operator+(int rhs) const throw () {
   Time ret(*this);
   ret.microsec += rhs;
   ret.normalize();
@@ -102,14 +103,14 @@ Time Time::operator+(int rhs) const {
 }
 
 //##ModelId=3B07538103F0
-Time& Time::operator+=(int rhs) {
+Time& Time::operator+=(int rhs) throw () {
   microsec += rhs;
   normalize();
   return *this;
 }
 
 //##ModelId=3C885B380142
-Time& Time::operator+=(const Time& rhs) {
+Time& Time::operator+=(const Time& rhs) throw () {
   microsec += rhs.microsec;
   sec += rhs.sec;
   normalize();
@@ -117,20 +118,20 @@ Time& Time::operator+=(const Time& rhs) {
 }
 
 //##ModelId=3B07538103F2
-Time Time::operator+(const Time& rhs) const {
+Time Time::operator+(const Time& rhs) const throw () {
   Time t(sec + rhs.sec, microsec + rhs.microsec);
   t.normalize();
   return t;
 }
 
-Time Time::operator -(const Time& rhs) const {
+Time Time::operator -(const Time& rhs) const throw () {
   Time t(sec - rhs.sec, microsec - rhs.microsec);
   t.normalize();
   return t;
 }
 
 //##ModelId=3B07538103F8
-void Time::normalize() {
+void Time::normalize() throw () {
   if (microsec > 999999) {
     sec += (microsec / 1000000);
     microsec = microsec % 1000000;
@@ -141,9 +142,3 @@ void Time::normalize() {
 }
 
 }
-
-
-
-
-
-

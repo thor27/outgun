@@ -2,7 +2,7 @@
 #
 # Compile script for Outgun 1.0.0, and may work in later versions.
 # by ThOR27 - Thomaz de Oliveira dos Reis - thommy@globo.com
-# modified for Outgun 1.0.3 by Nix - Niko Ritari - npr1@suomi24.fi
+# modified for Outgun 1.0.3+ by Nix - Niko Ritari - npr1@suomi24.fi
 #
 
 # This function was taken from the wineinstall script.
@@ -259,7 +259,8 @@ echo "Compiling Outgun. . ."
 
 rm -f outgun
 
-make -B -C src LINUX=1
+make -C src LINUX=1 clean
+make -C src LINUX=1
 
 if [ -f "outgun" ]; then {
 	echo

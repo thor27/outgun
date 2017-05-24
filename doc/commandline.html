@@ -51,7 +51,11 @@ is a valid command line.
    <LI><A HREF="#suppressmessages"><CODE>-suppressmessages</CODE></A>
    <LI><A HREF="#debug"><CODE>-debug</CODE></A>
    <LI><A HREF="#cport"><CODE>-cport</CODE></A>
+   <LI><A HREF="#play"><CODE>-play</CODE></A>
+   <LI><A HREF="#spectate"><CODE>-spectate</CODE></A>
+   <LI><A HREF="#replay"><CODE>-replay</CODE></A>
    <LI><A HREF="#mappic"><CODE>-mappic</CODE></A>
+   <LI><A HREF="#colour-file"><CODE>-colour-file</CODE></A>
   </UL>
 </UL>
 
@@ -221,16 +225,52 @@ Set the level of detail for the log files Outgun creates. If the level is set to
 Select a range of UDP ports for the client to use. It may be useful to limit the ports to one or a few so that those ports can be let through a firewall or forwarded over a NAT, although most firewalls and NATs work fine without this setting. In order for the setting to help, you need to alter the firewall/NAT configuration too. To choose more than one port to enable running many instances of Outgun, use as value the first port and the last port separated by a colon (&lsquo;:&rsquo;).
 </P>
 
+<H3 ID="play"><CODE>-play</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid IP address, optionally with a port
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+Automatically connect to play on the server with the IP and port (default 25000).
+</P>
+
+<H3 ID="spectate"><CODE>-spectate</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid IP address with port
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+Automatically connect to the relay server on the IP and port to spectate a game.
+</P>
+
+<H3 ID="replay"><CODE>-replay</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>file name
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+Automatically replay a game from the given file.
+</P>
+
 <H3 ID="mappic"><CODE>-mappic</CODE></H3>
 
 <P>
 Activate the special map picture saving mode. Outgun will create a directory &lsquo;<CODE>mappic</CODE>&rsquo; and store there a map picture (in PCX format) for each map in the <CODE>maps</CODE> directory. The pictures are named after the map files, with the extension <CODE>.pcx</CODE>. Their size depends on the map size: every room is assigned 60×45 pixels. <CODE>-mappic</CODE> can not be combined with any other options.
 </P>
 
+<H3 ID="colour-file"><CODE>-colour-file</CODE></H3>
+
+<P>
+Outgun will save the default colours in the <CODE>graphics/colours.txt</CODE> file. <CODE>-colour-file</CODE> can not be combined with any other options.
+</P>
+
 <HR>
 
 <DIV>
-Updated 2005-01-25 &ndash; Niko Ritari
+Updated 2008-03-18 &ndash; Niko Ritari
 </DIV>
 
 </HTML>

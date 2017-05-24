@@ -41,7 +41,7 @@ public:
    * Initalizes this class with a time of 0.
    */
   //##ModelId=3B07538103AF
-  Time();
+  Time() throw ();
 
   /**
    * Initalizes this class with the time specified.  The given time need not
@@ -50,22 +50,22 @@ public:
    * be normalized to 2 seconds.
    */
   //##ModelId=3B07538103B0
-  Time(int seconds, int microseconds);
+  Time(int seconds, int microseconds) throw ();
 
   //##ModelId=3B07538103B3
-  virtual ~Time();
+  virtual ~Time() throw ();
 
   /**
    * Returns seconds.
    */
   //##ModelId=3B07538103B5
-  int getSec() const;
+  int getSec() const throw ();
 
   /**
    * Returns microseconds.
    */
   //##ModelId=3B07538103B7
-  int getuSec() const;
+  int getuSec() const throw ();
 
   /**
    * Returns the total time in microseconds.  This function can be useful
@@ -75,13 +75,13 @@ public:
    * can be represented in a 32-bit integer in microseconds.
    */
   //##ModelId=3B07538103DE
-  int getTotaluSec() const;
+  int getTotaluSec() const throw ();
 
   /**
    * Sets seconds.
    */
   //##ModelId=3B07538103E0
-  void setSec(int seconds);
+  void setSec(int seconds) throw ();
 
   /**
    * Sets microseconds.
@@ -90,56 +90,56 @@ public:
    *                     value of seconds will increase.
    */
   //##ModelId=3B07538103E2
-  void setuSec(int microseconds);
+  void setuSec(int microseconds) throw ();
 
   /**
    * Returns the absolute value of the difference between these two times.
    */
   //##ModelId=3B07538103E4
-  Time diff(const Time& rhs) const;
+  Time diff(const Time& rhs) const throw ();
 
   /**
    * Returns a string representation of this time in seconds, for example
    * this might return 5.002052 if there was 5 seconds and 2052 microseconds.
    */
   //##ModelId=3C6729280041
-  std::string toString() const;
+  std::string toString() const throw ();
 
   /**
    * Less-than operator that works as expected.
    */
   //##ModelId=3B07538103E7
-  bool operator<(const Time& rhs) const;
+  bool operator<(const Time& rhs) const throw ();
 
   /**
    * Greater-than operator that works as expected.
    */
   //##ModelId=3B07538103EA
-  bool operator>(const Time& rhs) const;
+  bool operator>(const Time& rhs) const throw ();
 
   /**
    * Time addition, adding microseconds of time.
    */
   //##ModelId=3B07538103ED
-  Time operator+(int rhs) const;
+  Time operator+(int rhs) const throw ();
 
   /**
    * Time addition, adding microseconds of time to this object.
    */
   //##ModelId=3B07538103F0
-  Time& operator+=(int rhs);
+  Time& operator+=(int rhs) throw ();
 
   /**
    * Time addition that works as expected to add two times.
    */
   //##ModelId=3C885B380142
-  Time& operator+=(const Time& rhs);
+  Time& operator+=(const Time& rhs) throw ();
 
   /**
    * Time addition that works as expected.
    */
   //##ModelId=3B07538103F2
-  Time operator+(const Time& rhs) const;
+  Time operator+(const Time& rhs) const throw ();
 
   /**
    * Time subtraction that works as expected.  You might get negative values
@@ -147,14 +147,14 @@ public:
    * @see diff
    */
   //##ModelId=3B07538103F5
-  Time operator-(const Time& rhs) const;
+  Time operator-(const Time& rhs) const throw ();
 
 protected:
   /**
    * make sure that microsec stays under a second, adding to sec if needed.
    */
   //##ModelId=3B07538103F8
-  void normalize();
+  void normalize() throw ();
 
 private:
   //##ModelId=3B07538103AD

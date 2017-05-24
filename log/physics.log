@@ -1,0 +1,10 @@
+CEPE EH UM PAU NO CU // Com Itens 16p
+friction     0.45
+drag         0.1
+acceleration 2
+brake_acceleration 1
+turn_acceleration  1
+run_acceleration   1.7
+turbo_acceleration 1.45
+flag_acceleration  0.9
+rocket_speed 50

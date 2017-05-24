@@ -1,10 +1,13 @@
 ; This is an Outgun translation file.
-; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
-; Translation copyright © 2006 <no one>
+; Original copyright © 2004, 2005, 2006, 2008 Jani Rivinoja, Niko Ritari
+; Translation copyright © 2008 <no one>
 
 
 ; Language of the translation, in the target language.
 English
+
+; Locale to decide the correct decimal separator (e.g. fi_FI or pt_BR).
+locale
 
 
 ; You should not modify en.txt, it is the English reference file. Outgun uses
@@ -28,14 +31,16 @@ Outgun client
 
 ; Used in the window title bar, like: Connected to Server name (127.0.0.1)
 Connected to $1 ($2)
+Replay on $1
+Spectating on $1
 
 ; Used in the window title bar when server is running, like:
-; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 Esc:quit
 ; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
 ; version. First and/or last part are added conditionally.
 ERRORS:$1
 $1/$2p $3k/s v$4 port:$5
-ESC:quit
+Esc:quit
 
 ; Time units. These should be formed so that "duration: # <unit>" makes sense.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -57,13 +62,20 @@ years
 $1 s
 $1 min
 
+; Expressing percentages. Most likely you might want to add a space depending
+; on the language conventions. Two characters maximum in addition to the $1,
+; since this is used in the tightly packed player statistics screen.
+$1%
+
 ; Generic terms. Currently, 'unknown' is used in the graphics menu for a
 ; refresh rate and in the local server menu for IP address; 'private' and
 ; 'invalid' are also for IP address; 'default' is used in font selection;
 ; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
 ; (F5), as well as 'special' which is used for the player collisions setting.
 ; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
-; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; bug reporting policy setting. 'Never', 'always', 'in same room',
+; 'single-roomed' and 'multi-roomed' are currently used in multiple settings
+; in the graphics menu. OK and Cancel are used in the menus, in their
 ; usual UI meaning. All may be used elsewhere in a similar context in the
 ; future.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -80,6 +92,11 @@ special
 disabled
 minimal
 complete
+never
+always
+in same room
+single-roomed
+multi-roomed
 
 
 ; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
@@ -123,20 +140,22 @@ Insert = add to favorites    Delete = remove server
 IP address            Ping D Players Vers. Host name
 ;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
 
-Name and passwords
+Player options
 Name
 Get random name
+Favorite colors
 Tournament password
 Registration status
 Take part in the tournament
 Remove server-specific player passwords
 
 Game options
-Show player names
-Favorite colors
 Lag prediction
 Lag prediction amount
+Bandwidth for out-of-room players (cps)
 Save game messages
+Show flag messages
+Show killing messages
 Save game statistics
 Show stats after the round
 Show server info when connected
@@ -149,6 +168,10 @@ Controls
 Keyboard layout
 Use keypad for moving
 Arrow keys in statistics
+Use arrow keys to edit message input
+Preferrably aim with
+With mouse aim move relative to
+Keyboard turning speed
 Enable joystick control
 Moving stick
 Joystick buttons (0 = disabled)
@@ -159,7 +182,12 @@ Shoot
 Run   
 Strafe
 
+Mouse control (buttons: 0 = disabled)
+Sensitivity
+
 Active controls
+Active joystick buttons
+Active mouse buttons
 
 Screen mode
 Color depth
@@ -173,15 +201,32 @@ Current refresh rate
 $1 Hz
 Apply changes
 
-Graphic options
+Theme and font
 Theme
 Background theme
 Prefer main theme background
+Colour theme
+Prefer main theme colours
 Font
+
+Graphic options
+Show player names
+Rooms on screen in each direction in game
+Rooms on screen in each direction in replay
+Scrolling
 Antialiasing
 Less transparency effects
 Continuous textures between rooms
 Disappeared players on minimap
+Highlight returned and dropped flags
+Make flags extra-visible
+Show flag disappearance positions
+Highlight self after spawn
+Markers for nearby players and flags in game
+Markers for nearby players and flags in replay
+Box visible area on map in game
+Let view follow over map border
+Allow parts of map to repeat on screen
 Stats screen alpha
 FPS limit
 Map info mode
@@ -190,8 +235,7 @@ Sound options
 Sounds enabled
 Volume
 
-Change language
-Language
+Choose language
 
 Bug report policy
 Automatic bug reporting
@@ -205,7 +249,10 @@ Start server
 Play on the server
 Stop server
 
-; Used in name and passwords menu as registration status.
+Replays
+Date - Server - Map
+
+; Used in player options menu as registration status.
 No password set
 Initializing...
 Socket error
@@ -226,6 +273,7 @@ Error: server rejected
 Capture limit
 Time limit
 Extra-time
+Flag return delay
 Player collisions
 Friendly fire
 Balance teams
@@ -247,6 +295,7 @@ $1% of rooms
 
 ; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
 Trying to connect...
+Waiting for the game to start.
 No response from server.
 Connection refused.
 No reason given.
@@ -309,6 +358,15 @@ teams
 change stats view
 move player
 
+; Used as values for 'preferrably aim with' in the controls menu.
+keyboard (8-directional)
+keyboard (smooth turning)
+mouse
+
+; Used as values for 'with mouse aim move relative to' in the controls menu.
+room (up = up)
+aim (up = forward)
+
 ; Used in the controls menu 'active controls' display.
 up
 down
@@ -322,6 +380,11 @@ strafe
 fade out
 hide early
 hide late
+
+; Used as values for 'Let view follow over map border" in the graphics menu,
+; along with 'never' and 'always'.
+when all rooms aren't shown
+if the border has doorways
 
 ; Used in the error collection dialogs. The last two are only used in the main
 ; program error dialog which is shown for example when invalid command line
@@ -340,7 +403,7 @@ This results from a bug in Outgun. To help us fix it, please send assert.log and
 ; Used in an external dialog as title. No length restriction.
 Critical error
 
-; Used in a simple dialog, started from the name and passwords menu.
+; Used in a simple dialog, started from the player options menu.
 1 password removed.
 $1 passwords removed.
 No passwords found.
@@ -432,6 +495,7 @@ Your vote has no effect until you vote for a specific map.
 
 ; Used like: This map is mapname (5 of 13)
 This map is $1 ($2 of $3).
+This map is $1.
 
 CTF GAME OVER - FINAL SCORE: RED $1 - BLUE $2
 CAPTURE $1 FLAGS TO WIN THE GAME.
@@ -460,6 +524,7 @@ Too much talk. Chill...
 Disconnecting in $1...
 This map is broken. There is an instantly capturable flag. Avoid it.
 Updating your tournament score failed!
+Warning: This server has extensions enabled that give an advantage over you to players with a supporting Outgun client.
 
 Saved screenshot to $1.
 Could not save screenshot to $1.
@@ -528,6 +593,10 @@ Shadow
 ; The shorter the better; test it.
 Weapon $1
 
+; Extra-time abbreviation prepending the game clock. Try to use only one or
+; two letters.
+ET
+
 ; No limit really, but small and discreet is good.
 FPS:$1
 
@@ -588,8 +657,8 @@ taken dropped returned   killed    time
 ; 00      00      00       00     00:00 |
 
    Accuracy
-Shots   | Taken  Movement     Speed
-;0000 100% 0000  000000 u  00.00 u/s    |
+Shots   |  Taken  Movement     Speed
+;0000  100% 0000  000000 u  00.00 u/s   |
 
           Average        Tournament
 Playtime lifetime    rank  power  score
@@ -603,6 +672,20 @@ Server map list
 ; over the comment mark ';'. The title text should end before the '|'.
  Nr Vote Title                Size  Author
 ;00 00 * <--------20--------> 00×00 <-----------26----------->|
+
+; Used in the map list dialog (F2), replacing map name. Maximum length 20
+; characters.
+<Random>
+
+; Used in the map list dialog (F2). Can be quite long but needs to fit with any
+; of the given replacements for $1.
+Sort order (space to cycle): $1
+Map number
+Votes
+Title
+Size
+Author
+Favorites
 
 ; Used as a prompt in the map list dialog (F2). Can be quite long.
 Vote map number
@@ -634,7 +717,8 @@ IP addresses:
 Outgun - Saving map pictures
 
 ; Used in an external dialog message.
-Saved map pictures to the directory 'mappic'.
+Map pictures saved to the directory 'mappic'.
+Default colours generated to $1.
 
 
 ; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
@@ -644,6 +728,7 @@ Saved map pictures to the directory 'mappic'.
 ; No length restrictions.
 
 ; Command line errors.
+$1 can't be combined with other command line options.
 -cport must be followed by a space and either a port number or minport:maxport.
 -cport X or -cport X:Y: X and Y must be in the range of 1 to 65535.
 -cport X:Y: Y must be greater than X.
@@ -653,11 +738,13 @@ Saved map pictures to the directory 'mappic'.
 -fps X: X must be in the range of 1 to 1000.
 -ip must be followed by a space and an IP address.
 -ip X: X must be a valid IP address without :port.
--mappic can't be combined with other command line options.
 -maxp must be followed by a space and a player count.
 -maxp X: X must be an even number in the range of 2 to $1.
+-play must be followed by a hostname and optionally port.
 -port must be followed by a space and a port number.
 -port X: X must be in the range of 1 to 65535.
+-replay must be followed by a filename.
+-spectate must be followed by a hostname and port.
 -sport must be followed by a space and minport:maxport.
 -sport X:Y: X and Y must be in the range of 1 to 65535.
 -sport X:Y: Y must be greater than X.
@@ -671,6 +758,7 @@ Can't start listen server.
 Can't start the client.
 Can't start the server.
 Could not save map pictures to the directory 'mappic'.
+Could not start spectating.
 
 ; Graphic mode errors.
 Couldn't initialize resolution $1×$2×$3 in any mode.
@@ -684,6 +772,7 @@ windowed
 ; Missing files.
 Can't open game mod file '$1'.
 Can't read '$1'.
+Could not open replay file $1.
 
 ; Gamemod format errors.
 Unrecognized gamemod setting: '$1'.
@@ -706,6 +795,8 @@ a real number, at most $1
 a real number, between $1 and $2, inclusive
 a real number or 'x %' with x 0 or greater
 IP address without :port
+non-empty string
+two positive integers and optionally a real number between 0 and 1, separated by spaces
 
 ; Added to some of the above, where outside the normal range, 0 is allowed.
 , or 0
@@ -722,6 +813,7 @@ Redefined map width.
 Room line not allowed in label block: $1
 Team $1, flag $2 on the wall.
 Team $1, spawn point $2 on the wall.
+Team $1, respawn area $2 does not have enough free space.
 Two identical label names not allowed: $1
 Unrecognized map line: $1
 
@@ -729,15 +821,22 @@ Unrecognized map line: $1
 This map is invalid: instant flag capture is possible.
 
 ; Other file format errors.
+$1 is not an Outgun replay.
 '$1', given in master.txt is not a valid IP address.
 Admin shell: unprintable characters, message ignored.
 Alpha bitmaps must be 8-bit grayscale images; $1 is $2-bit.
+Class command without class name in auth.txt.
+Format error in replay file.
+Invalid authorization class entry in auth.txt: "$1"
 Invalid ban command (IP address) in auth.txt: "$1"
 Invalid line (no name) in auth.txt: "$1"
 Invalid syntax in client.cfg ("$1").
 Invalid user command (no password) in auth.txt: "$1"
 Map picture saver: Map '$1' is not a valid map file.
-Syntax error in gfxmodes.txt, line '$1'.
+Replay $1 is a newer version ($2).
+Syntax error in $1, line '$2'.
+This is a newer replay version ($1).
+This is not an Outgun replay.
 Translation $1 can't be read.
 Unknown data in client.cfg ("$1").
 Unrecognized command "$1" in auth.txt
@@ -745,37 +844,57 @@ Unusable mode in gfxmodes.txt: $1×$2×$3 (should be at least 320×200 with bits 16
 Width and height of textures must be powers of 2; floor texture $1 is $2×$3.
 Width and height of textures must be powers of 2; wall texture $1 is $2×$3.
 
+; Generic data format errors. Usually occur when the user has entered something
+; invalid one way or another.
+"$1" is not a valid IP address.
+Port is missing from $1.
+
 ; Miscellaneous errors.
 Can't change max_players while players are connected.
 Can't create new thread. Insufficient system resources.
 Can't set server to run in the background.
-Master talker: You have a deprecated Outgun version. The server is not accepted on the master list. Please update.
 No maps for rotation.
+Out of memory.
+
+; Generic subsystem error messages. $1 is a more detailed error error message,
+; often from the list of network errors, and normally includes the ending '.'.
+Admin shell: $1
+Admin shell connection: $1
+Admin shell connection: Not all written.
+Connecting to relay: $1
+Getting server list: $1
+Master talker: $1
+Master talker: You have a deprecated Outgun version. The server is not accepted on the master list. Please update.
+Master talker: (Quit) $1
+Network error: $1
+Website thread: $1
+Website thread: (Quit) $1
 
 ; Network errors. Most of these can occur in normal operation when there's
 ; something wrong with the network or a remote server. Where it's not clear
-; what $1 is, it is a message in English, telling what went wrong within the
-; network subsystem.
-Can't init HawkNL. $1
-No IP network.
-Admin shell: Can't open socket on port $1.
-Admin shell: Can't set socket to listen mode.
-Admin shell: Can't accept connection.
-Admin shell: read failed. Reason: $1
-Admin shell: sending response failed. Reason: $1
-Can't connect to master server. $1
+; what $1 (or $2) is, it is a message either in English or one of the
+; translated ones, telling what went wrong within the network subsystem,
+; and normally includes the ending '.'.
 Can't open socket.
 Can't open socket for refreshing servers. $1
-Can't open socket to connect to master server. $1
 Can't start network server on port $1.
-Master talker: Can't open socket to connect to master server.
-Master talker: (Quit) Can't connect to master server.
-Master talker: (Quit) Can't open socket to connect to master server.
-Master talker: (Quit) Error sending info: $1
-Master talker: (Quit) Error while waiting for a response: $1
-Website thread: Can't open socket to connect to server website.
-Website thread: (Quit) Can't connect to server website.
-Website thread: (Quit) Can't open socket to connect to server website.
+Connection to the server closed.
+Connection to the server closed: $1
+Error connecting to "$1": $2
+Error initializing network subsystem: $1
+Error opening a broadcast socket on any UDP port: $1
+Error opening a broadcast socket on UDP port $1: $2
+Error opening a socket on any TCP port: $1
+Error opening a socket on any UDP port: $1
+Error opening a socket on TCP port $1: $2
+Error opening a socket on UDP port $1: $2
+Error reading from socket: $1
+Error reading from socket: Operation timed out.
+Error resolving hostname "$1": $2
+Error setting socket to listen mode: $1
+Error writing to socket: $1
+Error writing to socket: Operation timed out.
+Format error in data received from the server.
 
 ; Rare external network errors. These may happen but there's rarely anything
 ; the user can do to fix them.
@@ -802,9 +921,11 @@ The directory '$1' was not found and could not be created.
 ; the server is shutting down. In rare cases they take longer to disappear.
 Shutdown: ABORTING $1 tournament updates
 Shutdown: admin shell threads
+Shutdown: bot thread
 Shutdown: main thread
 Shutdown: master talker thread
 Shutdown: net server
+Shutdown: relay thread
 Shutdown: waiting for $1 tournament updates
 Shutdown: website thread
 

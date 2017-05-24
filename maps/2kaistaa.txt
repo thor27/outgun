@@ -1,0 +1,136 @@
+;
+; 2kaistaa.txt
+;
+; The outgun own level
+; by Juggis and Huntta (aka JR Oja) 2003
+;
+V 1
+P width 6
+P height 6
+P title 2 kaistaa
+P author Juggis and Huntta
+
+flag  0 0 0 0.5 0.5
+spawn 0 0 0 0.3 0.4
+spawn 0 0 0 0.4 0.4
+spawn 0 0 0 0.5 0.4
+spawn 0 0 0 0.6 0.4
+spawn 0 0 0 0.7 0.4
+spawn 0 0 0 0.4 0.6
+spawn 0 0 0 0.5 0.6
+spawn 0 0 0 0.6 0.6
+
+flag  1 5 5 0.5 0.5
+spawn 1 5 5 0.3 0.6
+spawn 1 5 5 0.4 0.6
+spawn 1 5 5 0.5 0.6
+spawn 1 5 5 0.6 0.6
+spawn 1 5 5 0.7 0.6
+spawn 1 5 5 0.4 0.4
+spawn 1 5 5 0.5 0.4
+spawn 1 5 5 0.6 0.4
+
+X top 0 0 5 0
+X top 2 1 3 1
+X top 2 5 3 5
+X top 2 4 3 4
+
+
+X bottom 0 5 5 5
+X bottom 2 0 3 0
+X bottom 2 4 3 4
+X bottom 2 1 3 1
+
+X left 0 0 0 5
+X left 1 2 1 3
+X left 5 2 5 3
+X left 4 2 4 3
+
+X right 5 0 5 5
+X right 0 2 0 3
+X right 4 2 4 3
+X right 1 2 1 3
+
+X top_hole 0 1 0 5
+X top_hole 5 1 5 5
+X top_hole 2 2 3 2
+X top_hole 1 1
+X top_hole 4 1
+X top_hole 1 5
+X top_hole 4 5
+
+X bottom_hole 0 0 0 5
+X bottom_hole 5 0 5 4
+X bottom_hole 2 3 3 3
+X bottom_hole 1 0
+X bottom_hole 4 0
+X bottom_hole 1 4
+X bottom_hole 4 4
+
+
+
+X right_hole 0 0 4 0
+X right_hole 0 5 4 5
+X right_hole 3 2 3 3
+X right_hole 4 1
+X right_hole 4 4
+X right_hole 0 1
+X right_hole 0 4
+
+X left_hole 1 0 5 0
+X left_hole 1 5 5 5
+X left_hole 2 2 2 3
+X left_hole 1 1
+X left_hole 1 4
+X left_hole 5 1
+X left_hole 5 4
+
+X full 2 2 3 3
+
+X corner_nw 4 4
+X corner_ne 1 4
+X corner_sw 4 1
+X corner_se 1 1
+
+:top
+W 0 0 1 0.05
+
+:bottom
+W 0 0.95 1 1
+
+:right
+W 0.95 0 1 1
+
+:left
+W 0 0 0.05 1
+
+:top_hole
+W 0 0 0.25 0.05
+W 0.75 0 1 0.05
+
+:bottom_hole
+W 0 0.95 0.25 1
+W 0.75 0.95 1 1
+
+:right_hole
+W 0.95 0 1 0.25
+W 0.95 0.75 1 1
+
+:left_hole
+W 0 0 0.05 0.25
+W 0 0.75 0.05 1
+
+:full
+W 0 0 1 1
+
+:corner_nw
+W 0 0 0.05 0.05
+
+:corner_sw
+W 0 0.95 0.05 1
+
+:corner_ne
+W 0.95 0 1 0.05
+
+:corner_se
+W 0.95 0.95 1 1

@@ -1,0 +1,101 @@
+     0,51: Loading game mod: '/home/thomaz/projetos/outgun/config/gamemod.txt'
+     0,51: Relay server set to 127.0.0.1:9090.
+     0,51: ERROR: Unrecognized gamemod setting: 'spectating_delay:'.
+     0,51: Game mod file read.
+     0,51: Added 'viemari2' to map rotation
+     0,51: Added '8_askelta' to map rotation
+     0,51: Added 'duel2' to map rotation
+     0,52: Added 'umpikuja' to map rotation
+     0,52: Added 'the_cross2' to map rotation
+     0,52: Added '2x2x2' to map rotation
+     0,52: Added 'duel' to map rotation
+     0,52: Added '7_askelta' to map rotation
+     0,52: Added 'kalteri' to map rotation
+     0,52: Added 'naama' to map rotation
+     0,52: Added 'target' to map rotation
+     0,52: Added 'tutorial' to map rotation
+     0,52: Added 'xicle' to map rotation
+     0,52: Added 'tyhma' to map rotation
+     0,52: Added 'ongelma' to map rotation
+     0,52: Added 'ristikko' to map rotation
+     0,52: Added 'putkilo' to map rotation
+     0,52: Added 'oikotie' to map rotation
+     0,53: Added 'outgun1' to map rotation
+     0,53: Added 'tetris' to map rotation
+     0,53: Added 'ihime' to map rotation
+     0,53: Added 'linnoitus' to map rotation
+     0,53: Added 'kierto' to map rotation
+     0,53: Added 'the_cross' to map rotation
+     0,53: Added '3x3' to map rotation
+     0,53: Added 'Phobos' to map rotation
+     0,53: Added 'silima' to map rotation
+     0,53: Added 'attack' to map rotation
+     0,53: Added 'spike' to map rotation
+     0,53: Added 'kenka' to map rotation
+     0,53: Added '3bridges' to map rotation
+     0,54: Added 'runaway2' to map rotation
+     0,54: Added 'kiekura' to map rotation
+     0,54: Added 'hassakka' to map rotation
+     0,54: Added 'viemari1' to map rotation
+     0,54: Added 'haukka' to map rotation
+     0,54: Added 'koukku' to map rotation
+     0,54: Added 'Run' to map rotation
+     0,54: Added '2kaistaa' to map rotation
+     0,54: Added 'DeadLine' to map rotation
+     0,54: Added '3x2' to map rotation
+     0,54: Added 'spiraali' to map rotation
+     0,54: Added '8-kulmio' to map rotation
+     0,54: Added 'palikka2' to map rotation
+     0,54: Added 'seina' to map rotation
+     0,54: Added 'attack2' to map rotation
+     0,54: Added 'pallohuoneet' to map rotation
+     0,54: Added 'Too Close' to map rotation
+     0,54: Added 'murga2' to map rotation
+     0,54: Added '2x2' to map rotation
+     0,55: Added 'blow' to map rotation
+     0,55: Added 'lepakko' to map rotation
+     0,55: Added 'leikkipuisto' to map rotation
+     0,55: Added 'luolasto' to map rotation
+     0,55: Added 'tolpat' to map rotation
+     0,55: Added 'Escape' to map rotation
+     0,55: Added 'nollanolla' to map rotation
+     0,55: Added 'aita' to map rotation
+     0,55: Added 'vino' to map rotation
+     0,55: Added 'siksak' to map rotation
+     0,55: Added 'avaimet' to map rotation
+     0,56: Added 'aim' to map rotation
+     0,56: Added 'normalisoittaan' to map rotation
+     0,56: Added 'redxblue' to map rotation
+     0,56: Added 'stocker' to map rotation
+     0,56: Added 'pikatie' to map rotation
+     0,56: Added '2x2b' to map rotation
+     0,56: Added 'pitka_matka' to map rotation
+     0,56: Added 'kaks' to map rotation
+     0,56: Added 'hyokkays' to map rotation
+     0,56: Added 'Simple' to map rotation
+     0,56: Added '6_askelta' to map rotation
+     0,56: Added 'ammu' to map rotation
+     0,56: Added 'eestaas' to map rotation
+     0,56: Added 'lipunryosto' to map rotation
+     0,56: Added 'huippu' to map rotation
+     0,56: Added 'ball' to map rotation
+     0,56: Added 'sika' to map rotation
+     0,56: Map number 0: '2kaistaa'
+     0,56: Admin shell master thread running
+     0,56: Master talker: No public IP address. Letting the master server decide.
+     0,56: at gameserver::loop()
+     0,56: run_bot_thread
+     0,58: 0 playing bots, 0 in vector.
+     0,58: 0 bots needed.
+    17,61: 0 playing bots, 0 in vector.
+    17,61: 0 bots needed.
+    31,59: ERROR: Master talker: There was an unexpected error while sending information to the master list. See log/master.log. To suppress this error, make the server private by using the -priv argument.
+   366,26: Map number 1: '2x2'
+   371,27: First data 47 bytes.
+  1223,82: Map number 2: '2x2b'
+  1228,87: First data 49 bytes.
+  1354,72: Map number 3: '2x2x2'
+  1359,77: First data 49 bytes.
+  2559,12: Relay thread: Error writing to socket: Pipe quebrado
+  3685,46: 0 playing bots, 0 in vector.
+  3685,46: 0 bots needed.

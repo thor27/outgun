@@ -1,8 +1,8 @@
 /*
  *  client_menus.cpp
  *
- *  Copyright (C) 2004, 2005, 2006 - Niko Ritari
- *  Copyright (C) 2004, 2005, 2006 - Jani Rivinoja
+ *  Copyright (C) 2004, 2005, 2006, 2008 - Niko Ritari
+ *  Copyright (C) 2004, 2005, 2006, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -35,6 +35,7 @@
 #include "network.h"
 #include "sounds.h"
 #include "utility.h"
+#include "version.h"
 
 #include "client_menus.h"
 
@@ -48,25 +49,86 @@ class StringSelectInserter : public LineReceiver {
     Select<string>& dst;
 
 public:
-    StringSelectInserter(Select<string>& dst_) : dst(dst_) { }
-    StringSelectInserter& operator()(const string& str) { dst.addOption(str, str); return *this; }
+    StringSelectInserter(Select<string>& dst_) throw () : dst(dst_) { }
+    StringSelectInserter& operator()(const string& str) throw () { dst.addOption(str, str); return *this; }
 };
 
-Spacer g_menuSpace(5);
+class BasicComponentAdder {
+    Menu& menu;
+    static Spacer sharedSpace;
 
-#define ins_space() menu.add_component(&g_menuSpace);
+protected:
+    void add(Component* c) throw () { menu.add_component(c); } // easier to use than operator()
 
-Menu_addServer::Menu_addServer() :
+public:
+    BasicComponentAdder(Menu& menu_) throw () : menu(menu_) { }
+    virtual ~BasicComponentAdder() throw () { }
+
+    void operator()(Component* c) throw () { add(c); }
+    void space() throw () { add(&sharedSpace); }
+};
+
+Spacer BasicComponentAdder::sharedSpace(5);
+
+class DualComponentAdder : public BasicComponentAdder {
+    SettingCollector& collector;
+
+    template<class CT> class BaseHandler : public SettingCollector::SaverLoader {
+    protected:
+        CT& component;
+
+    public:
+        BaseHandler(CT& comp) throw () : component(comp) { }
+        virtual void save(std::ostream& os) const throw () { os << component(); }
+        virtual void load(const string& s) throw () = 0;
+    };
+
+    template<class CT> class StraightStringHandler : public BaseHandler<CT> {
+    public:
+        StraightStringHandler(CT& comp) throw () : BaseHandler<CT>(comp) { }
+        void load(const string& s) throw () { BaseHandler<CT>::component.set(s); }
+    };
+
+    template<class CT, class ValT> class IntConvertibleHandler : public BaseHandler<CT> {
+    public:
+        IntConvertibleHandler(CT& comp) throw () : BaseHandler<CT>(comp) { }
+        void load(const string& s) throw () { BaseHandler<CT>::component.set(static_cast<ValT>(atoi(s))); }
+    };
+
+    template<class CT> class BoundSetIntHandler : public BaseHandler<CT> {
+    public:
+        BoundSetIntHandler(CT& comp) throw () : BaseHandler<CT>(comp) { }
+        void load(const string& s) throw () { BaseHandler<CT>::component.boundSet(atoi(s)); }
+    };
+
+public:
+    DualComponentAdder(Menu& menu_, SettingCollector& collector_) throw () : BasicComponentAdder(menu_), collector(collector_) { }
+
+    void operator()(Component* c) throw () { BasicComponentAdder::operator()(c); }
+    void operator()(TextfieldBase*  c, ClientCfgSetting key) throw () { add(c); collector.add(key, new StraightStringHandler<TextfieldBase>  (*c)); }
+    template<class T>
+      void operator()(Select<T>*    c, ClientCfgSetting key) throw () { add(c); collector.add(key, new IntConvertibleHandler<Select<T>, T>   (*c)); }
+    void operator()(Select<string>* c, ClientCfgSetting key) throw () { add(c); collector.add(key, new StraightStringHandler<Select<string> >(*c)); }
+    void operator()(Checkbox*       c, ClientCfgSetting key) throw () { add(c); collector.add(key, new IntConvertibleHandler<Checkbox, bool> (*c)); }
+    void operator()(Slider*         c, ClientCfgSetting key) throw () { add(c); collector.add(key, new BoundSetIntHandler<Slider>            (*c)); }
+    void operator()(NumberEntry*    c, ClientCfgSetting key) throw () { add(c); collector.add(key, new BoundSetIntHandler<NumberEntry>       (*c)); }
+};
+
+Menu_addServer::Menu_addServer() throw () :
     address     (_("IP address"), true, false),
     save        (_("Add to favorite list")),
 
     menu        (_("Add server"), false)
-{
-    menu.add_component(&address);
-    menu.add_component(&save);
+{ }
+
+void Menu_addServer::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&address);
+    add(&save);
 }
 
-Menu_serverList::Menu_serverList() :
+Menu_serverList::Menu_serverList() throw () :
     update          (_("Update server list")),
     refresh         (_("Refresh servers")),
     refreshStatus   (_("Refresh status")),
@@ -84,53 +146,60 @@ Menu_serverList::Menu_serverList() :
     reset();
 }
 
-void Menu_serverList::add(const NLaddress& address, const string& serverInfo) {
-    servers.push_back(pair<NLaddress, Textarea>(address, Textarea(serverInfo)));
+void Menu_serverList::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    addServer.initialize(opener->clone(), collector);
+    DualComponentAdder add(menu, collector);
+    add(&favorites, CCS_Favorites);
+    // meaningful adding of components is only in reset()
 }
 
-void Menu_serverList::reset() {
+void Menu_serverList::add(const Network::Address& address, const string& serverInfo) throw () {
+    servers.push_back(pair<Network::Address, Textarea>(address, Textarea(serverInfo)));
+}
+
+void Menu_serverList::reset() throw () {
     menu.clear_components();
     servers.clear();
-    menu.add_component(&update);
-    menu.add_component(&refresh);
-    menu.add_component(&refreshStatus);
-    ins_space();
-    menu.add_component(&favorites);
-    menu.add_component(&addServer.menu);
-    menu.add_component(&manualEntry);
-    ins_space();
-//  menu.add_component(&keyHelp);
-//  ins_space();
-    menu.add_component(&caption);
+    BasicComponentAdder add(menu);
+    add(&update);
+    add(&refresh);
+    add(&refreshStatus);
+    add.space();
+    add(&favorites);
+    add(&addServer.menu);
+    add(&manualEntry);
+    add.space();
+//  add(&keyHelp);
+//  add.space();
+    add(&caption);
 }
 
-void Menu_serverList::addHooks(MenuHookable<Textarea>::HookFunctionT* hook, KeyHookable<Textarea>::HookFunctionT* keyHook) {
-    for (vector<pair<NLaddress, Textarea> >::iterator servi = servers.begin(); servi != servers.end(); ++servi) {
+void Menu_serverList::addHooks(MenuHookable<Textarea>::HookFunctionT* hook, KeyHookable<Textarea>::HookFunctionT* keyHook) throw () {
+    BasicComponentAdder add(menu);
+    for (vector<pair<Network::Address, Textarea> >::iterator servi = servers.begin(); servi != servers.end(); ++servi) {
         servi->second.setHook(hook->clone());
         servi->second.setKeyHook(keyHook->clone());
-        menu.add_component(&servi->second);
+        add(&servi->second);
     }
     delete hook;
     delete keyHook;
 }
 
-NLaddress Menu_serverList::getAddress(const Textarea& target) {
-    for (vector<pair<NLaddress, Textarea> >::iterator servi = servers.begin(); servi != servers.end(); ++servi) {
+Network::Address Menu_serverList::getAddress(const Textarea& target) throw () {
+    for (vector<pair<Network::Address, Textarea> >::const_iterator servi = servers.begin(); servi != servers.end(); ++servi) {
         if (&servi->second == &target)
             return servi->first;
     }
     nAssert(0);
-    return NLaddress();
+    return Network::Address();
 }
 
-void Menu_serverList::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
-    menu.setHook(opener);
-    addServer.recursiveSetMenuOpener(opener->clone());
-}
-
-Menu_name::Menu_name() :
+Menu_player::Menu_player() throw () :
     name            (_("Name"), "", 15),
     randomName      (_("Get random name")),
+
+    favoriteColors  (_("Favorite colors")),
 
     password        (_("Tournament password"), "", 15, '*'),
     namestatus      (_("Registration status")),
@@ -138,25 +207,35 @@ Menu_name::Menu_name() :
 
     removePasswords (_("Remove server-specific player passwords")),
 
-    menu            (_("Name and passwords"), true)
-{
-    menu.add_component(&name);
-    menu.add_component(&randomName);
-    ins_space();
-    menu.add_component(&password);
-    menu.add_component(&namestatus);
-    menu.add_component(&tournament);
-    ins_space();
-    menu.add_component(&removePasswords);
+    menu            (_("Player options"), true)
+{ }
+
+void Menu_player::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&name);
+    add(&randomName);
+    add.space();
+    add(&favoriteColors);
+    #if 0
+    add.space();
+    add(&password);
+    add(&namestatus);
+    add(&tournament, CCS_Tournament);
+    #endif
+    add.space();
+    add(&removePasswords);
 }
 
-Menu_game::Menu_game() :
-    showNames           (_("Show player names"), false),
-    favoriteColors      (_("Favorite colors")),
+Menu_game::Menu_game() throw () :
     lagPrediction       (_("Lag prediction"), false),
     lagPredictionAmount (_("Lag prediction amount"), true, 0, 10, 10),
+    minimapBandwidth    (_("Bandwidth for out-of-room players (cps)"), false, 0, 640, 80, 20, true),
 
     messageLogging      (_("Save game messages")),
+    showFlagMessages    (_("Show flag messages"), true),
+    showKillMessages    (_("Show killing messages"), false),
+
     saveStats           (_("Save game statistics"), false),
     showStats           (_("Show stats after the round")),
     showServerInfo      (_("Show server info when connected"), false),
@@ -168,21 +247,6 @@ Menu_game::Menu_game() :
 
     menu                (_("Game options"), true)
 {
-    menu.add_component(&showNames);
-    menu.add_component(&favoriteColors);
-    menu.add_component(&lagPrediction);
-    menu.add_component(&lagPredictionAmount);
-    ins_space();
-    menu.add_component(&messageLogging);
-    menu.add_component(&saveStats);
-    menu.add_component(&showStats);
-    menu.add_component(&showServerInfo);
-    menu.add_component(&stayDead);
-    menu.add_component(&underlineMasterAuth);
-    menu.add_component(&underlineServerAuth);
-    ins_space();
-    menu.add_component(&autoGetServerList);
-
     messageLogging.addOption(_("off"), ML_none);
     messageLogging.addOption(_("chat only"), ML_chat);
     messageLogging.addOption(_("all messages"), ML_full);
@@ -191,10 +255,36 @@ Menu_game::Menu_game() :
     showStats.addOption(_("players"), SS_players);
 }
 
-Menu_controls::Menu_controls() :
+void Menu_game::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&lagPrediction,          CCS_LagPrediction);
+    add(&lagPredictionAmount,    CCS_LagPredictionAmount);
+    add(&minimapBandwidth,       CCS_MinimapBandwidth);
+    add.space();
+    add(&messageLogging,         CCS_MessageLogging);
+    add(&showFlagMessages,       CCS_ShowFlagMessages);
+    add(&showKillMessages,       CCS_ShowKillMessages);
+    add.space();
+    add(&saveStats,              CCS_SaveStats);
+    add(&showStats,              CCS_ShowStats);
+    add(&showServerInfo,         CCS_ShowServerInfo);
+    add(&stayDead,               CCS_StayDeadInMenus);
+    add(&underlineMasterAuth,    CCS_UnderlineMasterAuth);
+    add(&underlineServerAuth,    CCS_UnderlineServerAuth);
+    add.space();
+    add(&autoGetServerList,      CCS_AutoGetServerList);
+}
+
+Menu_controls::Menu_controls() throw () :
     keyboardLayout      (_("Keyboard layout")),
     keypadMoving        (_("Use keypad for moving"), true),
     arrowKeysInStats    (_("Arrow keys in statistics")),
+    arrowKeysInTextInput(_("Use arrow keys to edit message input"), false),
+
+    aimMode             (_("Preferrably aim with")),
+    moveRelativity      (_("With mouse aim move relative to")),
+    turningSpeed        (_("Keyboard turning speed"), true, 0, 100, 50, 5),
 
     joystick            (_("Enable joystick control"), false),
     joyMove             (_("Moving stick"), false, 0, 5, 1),
@@ -203,25 +293,24 @@ Menu_controls::Menu_controls() :
     joyRun              (_("Run   "), false, 0, 16, 2),
     joyStrafe           (_("Strafe"), false, 0, 16, 3),
 
+    mouseText           (_("Mouse control (buttons: 0 = disabled)")),
+    mouseSensitivity    (_("Sensitivity"), true, 1, 101, 50, 0),
+    mouseShoot          (_("Shoot "), false, 0, 16, 1),
+    mouseRun            (_("Run   "), false, 0, 16, 2),
+
     activeControls      (_("Active controls")),
+    activeJoystick      (_("Active joystick buttons")),
+    activeMouse         (_("Active mouse buttons")),
 
     menu                (_("Controls"), true)
 {
-    menu.add_component(&keyboardLayout);
-    menu.add_component(&keypadMoving);
-    menu.add_component(&arrowKeysInStats);
-    ins_space();
-    menu.add_component(&joystick);
-    menu.add_component(&joyMove);
-    menu.add_component(&joyText);
-    menu.add_component(&joyShoot);
-    menu.add_component(&joyRun);
-    menu.add_component(&joyStrafe);
-    ins_space();
-    menu.add_component(&activeControls);
-
     arrowKeysInStats.addOption(_("change stats view"), AS_useMenu);
     arrowKeysInStats.addOption(_("move player"), AS_movePlayer);
+    aimMode.addOption(_("keyboard (8-directional)"), AM_8way);
+    aimMode.addOption(_("keyboard (smooth turning)"), AM_Turn);
+    aimMode.addOption(_("mouse"), AM_Mouse);
+    moveRelativity.addOption(_("room (up = up)"), AM_World);
+    moveRelativity.addOption(_("aim (up = forward)"), AM_Gun);
 
     // add keyboard layouts in alphabetical order (depends on translation)
     vector< pair<string, string> > layouts;
@@ -252,7 +341,36 @@ Menu_controls::Menu_controls() :
     keyboardLayout.set("us");
 }
 
-void Menu_screenMode::reloadChoices(const Graphics& gfx) {
+void Menu_controls::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&keyboardLayout);
+    add(&keypadMoving,         CCS_KeypadMoving);
+    add(&arrowKeysInStats,     CCS_ArrowKeysInStats);
+    add(&arrowKeysInTextInput, CCS_ArrowKeysInTextInput);
+    add.space();
+    add(&aimMode,              CCS_AimMode);
+    add(&moveRelativity,       CCS_MoveRelativity);
+    add(&turningSpeed,         CCS_TurningSpeed);
+    add.space();
+    add(&joystick,             CCS_Joystick);
+    add(&joyMove,              CCS_JoystickMove);
+    add(&joyText);
+    add(&joyShoot,             CCS_JoystickShoot);
+    add(&joyRun,               CCS_JoystickRun);
+    add(&joyStrafe,            CCS_JoystickStrafe);
+    add.space();
+    add(&mouseText);
+    add(&mouseSensitivity,     CCS_MouseSensitivity);
+    add(&mouseShoot,           CCS_MouseShoot);
+    add(&mouseRun,             CCS_MouseRun);
+    add.space();
+    add(&activeControls);
+    add(&activeJoystick);
+    add(&activeMouse);
+}
+
+void Menu_screenMode::reloadChoices(const Graphics& gfx) throw () {
     const vector<ScreenMode> modes = gfx.getResolutions(colorDepth());
     nAssert(!modes.empty());
     resolution.clearOptions();
@@ -260,7 +378,7 @@ void Menu_screenMode::reloadChoices(const Graphics& gfx) {
         resolution.addOption(itoa(mode->width) + '×' + itoa(mode->height), *mode);
 }
 
-Menu_screenMode::Menu_screenMode() :
+Menu_screenMode::Menu_screenMode() throw () :
     oldMode(-1, -1),    // guarantees anything to be newMode()
 
     colorDepth  (_("Color depth")),
@@ -273,18 +391,22 @@ Menu_screenMode::Menu_screenMode() :
     apply       (_("Apply changes")),
 
     menu        (_("Screen mode"), true)
-{
-    menu.add_component(&colorDepth);
-    menu.add_component(&desktopDepth);
-    menu.add_component(&resolution);
-    menu.add_component(&windowed);
-    menu.add_component(&flipping);
-    menu.add_component(&alternativeFlipping);
-    menu.add_component(&refreshRate);
-    menu.add_component(&apply);
+{ }
+
+void Menu_screenMode::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&colorDepth);
+    add(&desktopDepth);
+    add(&resolution);
+    add(&windowed,            CCS_Windowed);
+    add(&flipping,            CCS_Flipping);
+    add(&alternativeFlipping, CCS_AlternativeFlipping);
+    add(&refreshRate);
+    add(&apply);
 }
 
-void Menu_screenMode::init(const Graphics& gfx) { // call just once, before calling update
+void Menu_screenMode::init(const Graphics& gfx) throw () { // call just once, before calling update
     nAssert(colorDepth.size() == 0);
     if (gfx.depthAvailable(16))
         colorDepth.addOption(_("$1-bit", "16"), 16);
@@ -299,13 +421,13 @@ void Menu_screenMode::init(const Graphics& gfx) { // call just once, before call
     resolution.set(ScreenMode(640, 480));   // default resolution
 }
 
-void Menu_screenMode::update(const Graphics& gfx) {   // tries to keep the selected resolution
+void Menu_screenMode::update(const Graphics& gfx) throw () {   // tries to keep the selected resolution
     ScreenMode oldmode = resolution();
     reloadChoices(gfx);
     resolution.set(oldmode); // may fail; ignore
 }
 
-bool Menu_screenMode::newMode() {
+bool Menu_screenMode::newMode() throw () {
     if (oldMode == resolution() && oldDepth == colorDepth() && oldWin == windowed() && oldFlip == flipping())
         return false;
     oldMode = resolution();
@@ -316,101 +438,207 @@ bool Menu_screenMode::newMode() {
 }
 
 
-void Menu_graphics::reloadChoices(const Graphics& gfx) {
+void Menu_theme::reloadChoices(const Graphics& gfx) throw () {
     theme.clearOptions();
     background.clearOptions();
+    colours.clearOptions();
     font.clearOptions();
-    StringSelectInserter insTheme(theme), insBg(background), insFont(font);
-    gfx.search_themes(insTheme, insBg);
+    StringSelectInserter insTheme(theme), insBg(background), insCol(colours), insFont(font);
+    gfx.search_themes(insTheme, insBg, insCol);
     gfx.search_fonts(insFont);
 }
 
-Menu_graphics::Menu_graphics() :
-    theme       (_("Theme")),
-    background  (_("Background theme")),
-    useThemeBackground(_("Prefer main theme background"), true),
-    font        (_("Font")),
+Menu_theme::Menu_theme() throw () :
+    theme                (_("Theme")),
+    background           (_("Background theme")),
+    useThemeBackground   (_("Prefer main theme background"), true),
+    colours              (_("Colour theme")),
+    useThemeColours      (_("Prefer main theme colours"), true),
+    font                 (_("Font")),
 
-    antialiasing(_("Antialiasing"), true),
-    minTransp   (_("Less transparency effects"), false),
-    contTextures(_("Continuous textures between rooms"), false),
-    minimapPlayers(_("Disappeared players on minimap")),
-    statsBgAlpha(_("Stats screen alpha"), true, 0, 255, 255, 15),
+    menu                 (_("Theme and font"), true)
+{ }
 
-    fpsLimit    (_("FPS limit"), false, 1, 10000, 60, 0),
-    mapInfoMode (_("Map info mode"), false),
-
-    menu        (_("Graphic options"), true)
-{
-    menu.add_component(&theme);
-    menu.add_component(&background);
-    menu.add_component(&useThemeBackground);
-    menu.add_component(&font);
-    ins_space();
-    menu.add_component(&antialiasing);
-    menu.add_component(&minTransp);
-    menu.add_component(&contTextures);
-    menu.add_component(&minimapPlayers);
-    menu.add_component(&statsBgAlpha);
-    ins_space();
-    menu.add_component(&fpsLimit);
-    menu.add_component(&mapInfoMode);
-
-    minimapPlayers.addOption(_("fade out"  ), MP_Fade);
-    minimapPlayers.addOption(_("hide early"), MP_EarlyCut);
-    minimapPlayers.addOption(_("hide late" ), MP_LateCut);
+void Menu_theme::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&theme,                  CCS_GFXTheme);
+    add(&background,             CCS_Background);
+    add(&useThemeBackground,     CCS_UseThemeBackground);
+    add.space();
+    add(&colours,                CCS_Colours);
+    add(&useThemeColours,        CCS_UseThemeColours);
+    add.space();
+    add(&font,                   CCS_Font);
 }
 
-void Menu_graphics::init(const Graphics& gfx) { // call just once, before calling update
+void Menu_theme::init(const Graphics& gfx) throw () { // call just once, before calling update
     reloadChoices(gfx);
 }
 
-void Menu_graphics::update(const Graphics& gfx) {   // tries to keep the selected theme
+void Menu_theme::update(const Graphics& gfx) throw () { // tries to keep the selected choices
     const string oldtheme = theme();
     const string oldbg = background();
+    const string oldcol = colours();
     const string oldfont = font();
     reloadChoices(gfx);
     // These all may fail; ignore.
     theme.set(oldtheme);
     background.set(oldbg);
+    colours.set(oldcol);
     font.set(oldfont);
 }
 
+Menu_graphics::Menu_graphics() throw () :
+    showNames            (_("Show player names")),
+    visibleRoomsPlay     (_("Rooms on screen in each direction in game"), false, 1, 20, 2),
+    visibleRoomsReplay   (_("Rooms on screen in each direction in replay"), false, 1, 20, 20),
+    scroll               (_("Scrolling"), true),
 
-Menu_sounds::Menu_sounds() :
+    antialiasing         (_("Antialiasing"), true),
+    minTransp            (_("Less transparency effects"), false),
+    contTextures         (_("Continuous textures between rooms"), true),
+    minimapPlayers       (_("Disappeared players on minimap")),
+    highlightReturnedFlag(_("Highlight returned and dropped flags"), true),
+    emphasizeFlags       (_("Make flags extra-visible")),
+    oldFlagPositions     (_("Show flag disappearance positions"), false),
+    spawnHighlight       (_("Highlight self after spawn"), true),
+    neighborMarkersPlay  (_("Markers for nearby players and flags in game")),
+    neighborMarkersReplay(_("Markers for nearby players and flags in replay")),
+    boxRoomsWhenPlaying  (_("Box visible area on map in game"), true),
+    viewOverMapBorder    (_("Let view follow over map border")),
+    repeatMap            (_("Allow parts of map to repeat on screen"), false),
+    statsBgAlpha         (_("Stats screen alpha"), true, 0, 255, 255, 15),
+
+    fpsLimit             (_("FPS limit"), false, 1, 10000, 60, 0),
+    mapInfoMode          (_("Map info mode"), false),
+
+    menu                 (_("Graphic options"), true)
+{
+    showNames.addOption(_("never"), N_Never);
+    showNames.addOption(_("in same room"), N_SameRoom);
+    showNames.addOption(_("always"), N_Always);
+    minimapPlayers.addOption(_("fade out"  ), MP_Fade);
+    minimapPlayers.addOption(_("hide early"), MP_EarlyCut);
+    minimapPlayers.addOption(_("hide late" ), MP_LateCut);
+    emphasizeFlags.addOption(_("never"       ), FE_Never);
+    emphasizeFlags.addOption(_("multi-roomed"), FE_MultiRoom);
+    emphasizeFlags.addOption(_("always"      ), FE_Always);
+    neighborMarkersPlay.addOption(_("never"        ), NM_Never);
+    neighborMarkersPlay.addOption(_("single-roomed"), NM_OneRoom);
+    neighborMarkersPlay.addOption(_("always"       ), NM_Always);
+    neighborMarkersReplay.addOption(_("never"        ), NM_Never);
+    neighborMarkersReplay.addOption(_("single-roomed"), NM_OneRoom);
+    neighborMarkersReplay.addOption(_("always"       ), NM_Always);
+    viewOverMapBorder.addOption(_("never"                      ), VOB_Never);
+    viewOverMapBorder.addOption(_("when all rooms aren't shown"), VOB_MapDoesntFit);
+    viewOverMapBorder.addOption(_("if the border has doorways" ), VOB_MapWraps);
+    viewOverMapBorder.addOption(_("always"                     ), VOB_Always);
+    viewOverMapBorder.set(VOB_MapWraps);
+}
+
+void Menu_graphics::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&showNames,              CCS_ShowNames);
+    add(&visibleRoomsPlay,       CCS_VisibleRoomsPlay);
+    add(&visibleRoomsReplay,     CCS_VisibleRoomsReplay);
+    add(&scroll,                 CCS_Scroll);
+    add.space();
+    add(&antialiasing);
+    add(&minTransp,              CCS_MinTransp);
+    add(&contTextures,           CCS_ContinuousTextures);
+    add(&minimapPlayers,         CCS_MinimapPlayers);
+    add(&highlightReturnedFlag,  CCS_HighlightReturnedFlag);
+    add(&emphasizeFlags,         CCS_EmphasizeFlags);
+    add(&oldFlagPositions,       CCS_OldFlagPositions);
+    add(&spawnHighlight,         CCS_SpawnHighlight);
+    add(&neighborMarkersPlay,    CCS_NeighborMarkersPlay);
+    add(&neighborMarkersReplay,  CCS_NeighborMarkersReplay);
+    add(&boxRoomsWhenPlaying,    CCS_BoxRoomsWhenPlaying);
+    add(&viewOverMapBorder,      CCS_ViewOverMapBorder);
+    add(&repeatMap,              CCS_RepeatMap);
+    add(&statsBgAlpha,           CCS_StatsBgAlpha);
+    add.space();
+    add(&fpsLimit,               CCS_FPSLimit);
+    add(&mapInfoMode);
+}
+
+bool Menu_graphics::showNeighborMarkers(bool replaying, double visible_rooms) const throw () {
+    switch (replaying ? neighborMarkersReplay() : neighborMarkersPlay()) {
+    /*break;*/ case NM_Never:   return false;
+        break; case NM_OneRoom: return visible_rooms < 2.;
+        break; case NM_Always:  return true;
+        break; default: nAssert(0);
+    }
+}
+
+Menu_sounds::Menu_sounds() throw () :
     enabled (_("Sounds enabled"), true),
     volume  (_("Volume"), true, 0, 255, 128, 15),
     theme   (_("Theme")),
 
     menu    (_("Sound options"), true)
-{
-    menu.add_component(&enabled);
-    menu.add_component(&volume);
-    menu.add_component(&theme);
+{ }
+
+void Menu_sounds::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&enabled, CCS_SoundEnabled);
+    add(&volume,  CCS_Volume);
+    add(&theme,   CCS_SoundTheme);
 }
 
-void Menu_sounds::init(const Sounds& snd) {
+void Menu_sounds::init(const Sounds& snd) throw () {
     theme.clearOptions();
     StringSelectInserter ins(theme);
     snd.search_themes(ins);
 }
 
-void Menu_sounds::update(const Sounds& snd) {   // tries to keep the selected theme
+void Menu_sounds::update(const Sounds& snd) throw () {   // tries to keep the selected theme
     const string oldTheme = theme();
     init(snd);
     theme.set(oldTheme);
 }
 
-Menu_language::Menu_language() :
-    language(_("Language")),
-
-    menu(_("Change language"), false)
+Menu_language::Menu_language() throw () :
+    menu(_("Choose language"), false)
 {
-    menu.add_component(&language);
-    // it's callers responsibility to set up the choices for language
+    reset();
 }
 
-Menu_bugReportPolicy::Menu_bugReportPolicy() :
+void Menu_language::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector&) throw () {
+    menu.setHook(opener);
+}
+
+void Menu_language::add(const string& code, const string& name) throw () {
+    languages.push_back(pair<string, Textarea>(code, Textarea(name)));
+}
+
+void Menu_language::reset() throw () {
+    menu.clear_components();
+    languages.clear();
+}
+
+void Menu_language::addHooks(MenuHookable<Textarea>::HookFunctionT* hook) throw () {
+    BasicComponentAdder add(menu);
+    for (vector<pair<string, Textarea> >::iterator li = languages.begin(); li != languages.end(); ++li) {
+        li->second.setHook(hook->clone());
+        add(&li->second);
+    }
+    delete hook;
+}
+
+const string& Menu_language::getCode(const Textarea& target) throw () {
+    for (vector<pair<string, Textarea> >::const_iterator li = languages.begin(); li != languages.end(); ++li) {
+        if (&li->second == &target)
+            return li->first;
+    }
+    nAssert(0);
+    return languages.front().first;
+}
+
+Menu_bugReportPolicy::Menu_bugReportPolicy() throw () :
     text    (),
     policy  (_("Automatic bug reporting")),
 
@@ -423,7 +651,12 @@ Menu_bugReportPolicy::Menu_bugReportPolicy() :
     policy.set(g_autoBugReporting);
 }
 
-void Menu_bugReportPolicy::addLine(const string& line) {
+void Menu_bugReportPolicy::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    (void)collector;
+}
+
+void Menu_bugReportPolicy::addLine(const string& line) throw () {
     lines.push_back(line);
 
     const int oldSel = menu.selection();
@@ -437,49 +670,54 @@ void Menu_bugReportPolicy::addLine(const string& line) {
 }
 
 // If you change this method somehow, check Menu::handleKeypress hack.
-void Menu_bugReportPolicy::init() {
-    menu.add_component(&text);
-    ins_space();
-    menu.add_component(&policy);
+void Menu_bugReportPolicy::init() throw () {
+    BasicComponentAdder add(menu);
+    add(&text);
+    add.space();
+    add(&policy);
 }
 
-Menu_options::Menu_options() :
-    name      (),
+Menu_options::Menu_options() throw () :
+    player    (),
     game      (),
     controls  (),
     screenMode(),
+    theme     (),
     graphics  (),
     sounds    (),
     language  (),
     bugReports(),
 
     menu      (_("Options"), true)
-{
-    menu.add_component(&name.menu);
-    menu.add_component(&game.menu);
-    menu.add_component(&controls.menu);
-    ins_space();
-    menu.add_component(&screenMode.menu);
-    menu.add_component(&graphics.menu);
-    menu.add_component(&sounds.menu);
-    ins_space();
-    menu.add_component(&language.menu);
-    menu.add_component(&bugReports.menu);
-}
+{ }
 
-void Menu_options::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
+void Menu_options::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
     menu.setHook(opener);
-    name      .recursiveSetMenuOpener(opener->clone());
-    game      .recursiveSetMenuOpener(opener->clone());
-    controls  .recursiveSetMenuOpener(opener->clone());
-    screenMode.recursiveSetMenuOpener(opener->clone());
-    graphics  .recursiveSetMenuOpener(opener->clone());
-    sounds    .recursiveSetMenuOpener(opener->clone());
-    language  .recursiveSetMenuOpener(opener->clone());
-    bugReports.recursiveSetMenuOpener(opener->clone());
+    player    .initialize(opener->clone(), collector);
+    game      .initialize(opener->clone(), collector);
+    controls  .initialize(opener->clone(), collector);
+    screenMode.initialize(opener->clone(), collector);
+    theme     .initialize(opener->clone(), collector);
+    graphics  .initialize(opener->clone(), collector);
+    sounds    .initialize(opener->clone(), collector);
+    language  .initialize(opener->clone(), collector);
+    bugReports.initialize(opener->clone(), collector);
+    DualComponentAdder add(menu, collector);
+    add(&player.menu);
+    add(&game.menu);
+    add(&controls.menu);
+    add.space();
+    add(&screenMode.menu);
+    add(&theme.menu);
+    add(&graphics.menu);
+    add.space();
+    add(&sounds.menu);
+    add.space();
+    add(&language.menu);
+    add(&bugReports.menu);
 }
 
-Menu_ownServer::Menu_ownServer() :
+Menu_ownServer::Menu_ownServer() throw () :
     pub     (_("Add to public serverlist"), false),
     port    (_("Server port"), 1, 65535, DEFAULT_UDP_PORT),
     address (_("IP address"), false, true),
@@ -490,22 +728,26 @@ Menu_ownServer::Menu_ownServer() :
     stop    (_("Stop server")),
 
     menu    (_("Local server"), true)
-{
-    menu.add_component(&pub);
-    menu.add_component(&port);
-    menu.add_component(&address);
-    menu.add_component(&autoIP);
-    ins_space();
-    menu.add_component(&start);
-    menu.add_component(&play);
-    menu.add_component(&stop);
+{ }
+
+void Menu_ownServer::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    DualComponentAdder add(menu, collector);
+    add(&pub,     CCS_ServerPublic);
+    add(&port,    CCS_ServerPort);
+    add(&address, CCS_ServerAddress);
+    add(&autoIP,  CCS_AutodetectAddress);
+    add.space();
+    add(&start);
+    add(&play);
+    add(&stop);
 }
 
-void Menu_ownServer::init(const std::string& detectedAddress) {
+void Menu_ownServer::init(const string& detectedAddress) throw () {
     detectedIP = detectedAddress;
 }
 
-void Menu_ownServer::refreshCaption(bool serverRunning) {
+void Menu_ownServer::refreshCaption(bool serverRunning) throw () {
     if (serverRunning)
         menu.setCaption(_("Local server (running)"));
     else
@@ -519,7 +761,7 @@ void Menu_ownServer::refreshCaption(bool serverRunning) {
         address.setFixedPortString("");
 }
 
-void Menu_ownServer::refreshEnables(bool serverRunning, bool connected) {
+void Menu_ownServer::refreshEnables(bool serverRunning, bool connected) throw () {
     if (serverRunning) {
         pub.setEnable(false);
         port.setEnable(false);
@@ -540,11 +782,49 @@ void Menu_ownServer::refreshEnables(bool serverRunning, bool connected) {
     }
 }
 
-void Menu_ownServer::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
-    menu.setHook(opener);
+Menu_replays::Menu_replays() throw () :
+    caption (_("Date - Server - Map")),
+
+    menu    (_("Replays"), false)
+{
+    reset();
 }
 
-Menu_main::Menu_main() :
+void Menu_replays::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    (void)collector;
+}
+
+void Menu_replays::add(const string& replay, const string& text) throw () {
+    items.push_back(pair<string, Textarea>(replay, Textarea(text)));
+}
+
+void Menu_replays::reset() throw () {
+    menu.clear_components();
+    items.clear();
+    BasicComponentAdder add(menu);
+    add(&caption);
+}
+
+void Menu_replays::addHooks(MenuHookable<Textarea>::HookFunctionT* hook) throw () {
+    BasicComponentAdder add(menu);
+    for (vector<pair<string, Textarea> >::iterator item = items.begin(); item != items.end(); ++item) {
+        item->second.setHook(hook->clone());
+        add(&item->second);
+    }
+    delete hook;
+}
+
+const string& Menu_replays::getFile(const Textarea& target) throw () {
+    for (vector<pair<string, Textarea> >::const_iterator item = items.begin(); item != items.end(); ++item) {
+        if (&item->second == &target)
+            return item->first;
+    }
+    nAssert(0);
+    return items.front().first;
+}
+
+Menu_main::Menu_main() throw () :
     newVersion  (""),
 
     connect     (),
@@ -554,111 +834,122 @@ Menu_main::Menu_main() :
 
     ownServer   (),
 
+    replays     (),
+
     help        (),
     exitOutgun  (_("Exit Outgun")),
 
-    menu        ("Outgun " GAME_VERSION, true)
-{
-    menu.add_component(&newVersion);
-    menu.add_component(&connect.menu);
-    menu.add_component(&disconnect);
-    ins_space();
-    menu.add_component(&options.menu);
-    ins_space();
-    menu.add_component(&ownServer.menu);
-    ins_space();
-    menu.add_component(&help.menu);
-    menu.add_component(&exitOutgun);
-}
+    menu        ("Outgun " + getVersionString(), true)
+{ }
 
-void Menu_main::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
+void Menu_main::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
     menu.setHook(opener);
-    connect.recursiveSetMenuOpener(opener->clone());
-    options.recursiveSetMenuOpener(opener->clone());
-    ownServer.recursiveSetMenuOpener(opener->clone());
-    help.recursiveSetMenuOpener(opener->clone());
+    connect.initialize(opener->clone(), collector);
+    options.initialize(opener->clone(), collector);
+    ownServer.initialize(opener->clone(), collector);
+    replays.initialize(opener->clone(), collector);
+    help.initialize(opener->clone(), collector);
+    DualComponentAdder add(menu, collector);
+    add(&newVersion);
+    add(&connect.menu);
+    add(&disconnect);
+    add.space();
+    add(&options.menu);
+    add.space();
+    add(&ownServer.menu);
+    add.space();
+    add(&replays.menu);
+    add.space();
+    add(&help.menu);
+    add(&exitOutgun);
 }
 
-Menu_text::Menu_text() :
+Menu_text::Menu_text() throw () :
     accept  (_("OK")),
     cancel  (_("Cancel")),
 
-    menu    ("Outgun " GAME_VERSION, false)
+    menu    ("Outgun " + getVersionString(), false)
 { }
 
-void Menu_text::addLine(const string& line, bool cancelable) {
+void Menu_text::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    (void)collector;
+}
+
+void Menu_text::addLine(const string& line, bool cancelable) throw () {
     addLine(line, "", cancelable);
 }
 
-void Menu_text::addLine(const string& caption, const string& value, bool cancelable, bool passive) {
+void Menu_text::addLine(const string& caption, const string& value, bool cancelable, bool passive) throw () {
     lines.push_back(StaticText(caption, value));
 
     const int oldSel = menu.selection();
     menu.clear_components();
+    BasicComponentAdder add(menu);
     for (vector<StaticText>::iterator li = lines.begin(); li != lines.end(); ++li)
-        menu.add_component(&*li);
+        add(&*li);
     if (passive)
         return;
-    ins_space();
+    add.space();
     if (cancelable)
-        menu.add_component(&cancel);
+        add(&cancel);
     else
-        menu.add_component(&accept);
+        add(&accept);
     menu.setSelection(oldSel);
 }
 
-void Menu_text::wrapLine(const string& line, bool cancelable, int wrapPos) {
+void Menu_text::wrapLine(const string& line, bool cancelable, int wrapPos) throw () {
     vector<string> lines = split_to_lines(line, wrapPos, 5);    // indent continuation lines by 5 characters
     for (vector<string>::const_iterator li = lines.begin(); li != lines.end(); ++li)
         addLine(*li, "", cancelable);
 }
 
-void Menu_text::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
-    menu.setHook(opener);
-}
-
-Menu_playerPassword::Menu_playerPassword() :
+Menu_playerPassword::Menu_playerPassword() throw () :
     password    (_("Password"), "", 15, '*'),
     save        (_("Save password")),
 
     menu        (string(), false)   // caption is set by setup()
 {
-    menu.add_component(&password);
-    menu.add_component(&save);
+    BasicComponentAdder add(menu);
+    add(&password);
+    add(&save);
 }
 
-void Menu_playerPassword::setup(const string& plyName, bool saveChecked) {
+void Menu_playerPassword::setup(const string& plyName, bool saveChecked) throw () {
     menu.setCaption(_("Player password for $1", plyName));
     password.set("");
     save.set(saveChecked);
 }
 
-Menu_serverPassword::Menu_serverPassword() :
+Menu_serverPassword::Menu_serverPassword() throw () :
     password    (_("Password"), "", 15, '*'),
 
     menu        (_("Server password"), false)
 {
-    menu.add_component(&password);
+    BasicComponentAdder add(menu);
+    add(&password);
 }
 
-Menu_help::Menu_help() :
+Menu_help::Menu_help() throw () :
     text    (),
 
     menu    (_("Help"), false)
 { }
 
-void Menu_help::addLine(const string& line) {
+void Menu_help::initialize(MenuHookable<Menu>::HookFunctionT* opener, SettingCollector& collector) throw () {
+    menu.setHook(opener);
+    (void)collector;
+}
+
+void Menu_help::addLine(const string& line) throw () {
     lines.push_back(line);
 
     const int oldSel = menu.selection();
     menu.clear_components();
     text = Textobject();
-    for (vector<string>::iterator li = lines.begin(); li != lines.end(); ++li)
+    for (vector<string>::const_iterator li = lines.begin(); li != lines.end(); ++li)
         text.addLine(*li);
-    menu.add_component(&text);
+    BasicComponentAdder add(menu);
+    add(&text);
     menu.setSelection(oldSel);
-}
-
-void Menu_help::recursiveSetMenuOpener(MenuHookable<Menu>::HookFunctionT* opener) {
-    menu.setHook(opener);
 }

@@ -14,7 +14,7 @@ Muut n‰pp‰imet
  
  Viestit                Kirjoita viesti ja paina Enteri‰.
  Joukkueviestit         Aloita viesti pisteell‰ (".").
- Joukkueen vaihto       End (vain, jos joukkueellasi on ylivoima)
+ Joukkueen vaihto       End
  Itsemurha              Delete
  Lipun pudotus          Page Down
  Karttalista            F2
@@ -31,7 +31,7 @@ Pelin idea
  
 Terveys ja energia
  
- Pelaaja kuolee, kun h‰nen terveytens‰ putoaa nollaan. Energiaa k‰ytet‰‰n juoksemiseen, ampumiseen ja suojan yll‰pit‰miseen. Terveys ja energia palautuvat v‰hitellen 200:een.
+ Pelaaja kuolee, kun h‰nen terveytens‰ putoaa nollaan. Energiaa k‰ytet‰‰n juoksemiseen, ampumiseen ja suojan yll‰pit‰miseen. Terveys ja energia palautuvat v‰hitellen 200:aan.
  
 Kartta
  

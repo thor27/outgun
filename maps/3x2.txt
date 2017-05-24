@@ -1,0 +1,85 @@
+V 1
+P width 3
+P height 2
+P title 3x2
+P author coiote
+S 16 12
+
+flag  0 0 0 8 3
+spawn 0 0 0 2 9
+spawn 0 0 0 3 9
+spawn 0 0 0 4 9
+spawn 0 0 0 5 9
+spawn 0 0 0 6 9
+spawn 0 0 0 7 9
+spawn 0 0 0 8 9
+spawn 0 0 0 9 9
+spawn 0 0 0 10 9
+spawn 0 0 0 11 9
+spawn 0 0 0 12 9
+spawn 0 0 0 13 9
+spawn 0 0 0 14 9
+
+flag  2 1 0 8 3
+
+flag  1 2 0 8 3
+spawn 1 2 0 2 9
+spawn 1 2 0 3 9
+spawn 1 2 0 4 9
+spawn 1 2 0 5 9
+spawn 1 2 0 6 9
+spawn 1 2 0 7 9
+spawn 1 2 0 8 9
+spawn 1 2 0 9 9
+spawn 1 2 0 10 9
+spawn 1 2 0 11 9
+spawn 1 2 0 12 9
+spawn 1 2 0 13 9
+spawn 1 2 0 14 9
+
+X esq 0 0 2 0
+X dir 0 0 2 0
+X cima 0 0 2 0
+X baixo 0 0 2 0
+X baixao 0 1 2 1
+X ladoesq 0 1
+X ladodir 2 1
+X meiobaixo 1 1
+X bases 0 0 2 0
+
+:esq
+W 0 0 0.8 12
+
+:dir
+W 15.2 0 16 12
+
+:cima
+W 0 0 16 0.6
+
+:baixo
+W 0 11.4 4 12
+W 12 11.4 16 12
+
+:baixao
+W 0 11.4 16 12
+W 0 0 4 0.6
+W 12 0 16 0.6
+
+:ladoesq
+W 0 0 0.8 12
+W 15.2 0 16 3
+W 15.2 9 16 12
+
+:ladodir
+W 15.2 0 16 12
+W 0 0 0.8 3
+W 0 9 0.8 12
+
+:meiobaixo
+W 0 0 0.8 3
+W 0 9 0.8 12
+W 15.2 0 16 3
+W 15.2 9 16 12
+
+:bases
+W 4 5.4 12 6.6

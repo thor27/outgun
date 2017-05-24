@@ -42,9 +42,6 @@
 #include <cstdio>
 #include <cstdarg>
 
-//Include the HawkNL library
-#include <nl.h>
-
 //Standard C++ includes
 //We don't include the iostream includes because not all compilers support
 //pre-compiled headers, and the iostream library is quite large, and is used
@@ -56,12 +53,6 @@
 
 //Other standard includes
 #include <assert.h>
-
-//Include pthreads, disabling the catch warning.
-#define PtW32NoCatchWarn
-#include <pthread.h>
-#include <sched.h>
-#undef PtW32NoCatchWarn
 
 //Define a custom "assert" macro
 #ifdef _DEBUG

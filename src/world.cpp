@@ -2,8 +2,8 @@
  *  world.cpp
  *
  *  Copyright (C) 2002, 2004 - Fabio Reis Cecin
- *  Copyright (C) 2003, 2004, 2005, 2006 - Niko Ritari
- *  Copyright (C) 2003, 2004, 2005, 2006 - Jani Rivinoja
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2008 - Niko Ritari
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -26,24 +26,22 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <sstream>
-#include <string>
 #include <vector>
 
 #include <cmath>
 
+#include "binaryaccess.h"
 #include "language.h"
-#include "nassert.h"
+#include "mapgen.h"
 #include "network.h"    // for safeReadFloat, safeWriteFloat
-#include "protocol.h"   // needed for possible definition of SEND_FRAMEOFFSET
+#include "platform.h"   // for FileFinder
 #include "timer.h"
-#include "utility.h"
 
 #include "world.h"
 
-static const int PICKUP_RADIUS = 15, FLAG_RADIUS = 15;  // for touch checks, mostly
-
-const int shot_deltax = PLAYER_RADIUS + ROCKET_RADIUS - 2;
+static const int POWERUP_RADIUS = 15, FLAG_RADIUS = 15;  // for touch checks, mostly
 
 //minimum time in seconds between flag steal at base and capture, to consider a map to be valid for scoring
 const double minimum_grab_to_capture_time = 4.0;
@@ -68,7 +66,7 @@ using std::string;
 using std::swap;
 using std::vector;
 
-bool compare_players(const PlayerBase* a, const PlayerBase* b) {
+bool compare_players(const PlayerBase* a, const PlayerBase* b) throw () {
     if (a->team() != b->team())
         return a->team() < b->team();
     return a->stats().frags() > b->stats().frags();
@@ -83,9 +81,9 @@ bool compare_players(const PlayerBase* a, const PlayerBase* b) {
  * those ranges are solved with simple linear equations since lx and rx are linear
  */
 bool subIntersection(double lx1, double ly1,  double lx2, double ly2,  double rx1, double ry1,  double rx2, double ry2,
-                double rectx1, double recty1, double rectx2, double recty2) {
-    nAssert(ly1<=ly2 && ry1<=ry2);
-    double miny = max(max(ly1, ry1), recty1), maxy=min(min(ly2, ry2), recty2);
+                double rectx1, double recty1, double rectx2, double recty2) throw () {
+    nAssert(ly1 <= ly2 && ry1 <= ry2);
+    double miny = max(max(ly1, ry1), recty1), maxy = min(min(ly2, ry2), recty2);
     if (maxy < miny)
         return false;
     // first narrow the range by lx(y) <= rectx2
@@ -125,7 +123,7 @@ bool subIntersection(double lx1, double ly1,  double lx2, double ly2,  double rx
     return (maxy >= miny);
 }
 
-bool RectWall::intersects_circ(double x, double y, double r) const {
+bool RectWall::intersects_circ(double x, double y, double r) const throw () {
     if (x - r <= c && x + r >= a && y - r <= d && y + r >= b) {
         if (x >= a && x <= c)
             return true;
@@ -145,8 +143,9 @@ bool RectWall::intersects_circ(double x, double y, double r) const {
     return false;
 }
 
-TriWall::TriWall(double x1, double y1, double x2, double y2, double x3, double y3, int tex_, int alpha_)
-        : WallBase(tex_, alpha_), p1x(x1), p1y(y1), p2x(x2), p2y(y2), p3x(x3), p3y(y3) {
+TriWall::TriWall(double x1, double y1, double x2, double y2, double x3, double y3, int tex_, int alpha_) throw ()
+        : WallBase(tex_, alpha_), p1x(x1), p1y(y1), p2x(x2), p2y(y2), p3x(x3), p3y(y3)
+{
     if (p2y < p1y) { swap(p1x, p2x); swap(p1y, p2y); }  // 1, 2 sorted
     if (p3y < p2y) {
         swap(p2x, p3x); swap(p2y, p3y); // 1, 3 and 2, 3 sorted
@@ -156,7 +155,7 @@ TriWall::TriWall(double x1, double y1, double x2, double y2, double x3, double y
     boundx2 = max(p1x, max(p2x, p3x)), boundy2 = max(p1y, max(p2y, p3y));
 }
 
-bool TriWall::intersects_circ(double x, double y, double r) const {
+bool TriWall::intersects_circ(double x, double y, double r) const throw () {
     // A crude check first.
     if (!intersects_rect(x - r, y - r, x + r, y + r))
         return false;
@@ -184,7 +183,7 @@ bool TriWall::intersects_circ(double x, double y, double r) const {
     return abc * (bc - bp + cp) > 0 && abc * (ca - cp + ap) > 0 && abc * (ab - ap + bp) > 0;
 }
 
-bool TriWall::intersects_rect(double rx1, double ry1, double rx2, double ry2) const {
+bool TriWall::intersects_rect(double rx1, double ry1, double rx2, double ry2) const throw () {
     nAssert(ry1 <= ry2 && rx1 <= rx2);
     nAssert(p1y <= p2y && p2y <= p3y);
     if (rx1 > boundx2 || rx2 < boundx1 || ry1 > boundy2 || ry2 < boundy1)
@@ -209,7 +208,7 @@ bool TriWall::intersects_rect(double rx1, double ry1, double rx2, double ry2) co
     return false;
 }
 
-CircWall::CircWall(double x_, double y_, double ro_, double ri_, double ang1, double ang2, int tex_, int alpha_) :
+CircWall::CircWall(double x_, double y_, double ro_, double ri_, double ang1, double ang2, int tex_, int alpha_) throw () :
     WallBase(tex_, alpha_),
     x(x_),
     y(y_),
@@ -236,7 +235,7 @@ CircWall::CircWall(double x_, double y_, double ro_, double ri_, double ang1, do
  * - if the circle to be tested against overlaps the center of the wall, the current algorithm can't calculate the exact result
  * - the corners (where the wall's limiting angles cut the inner or outer limiting circle) aren't calculated exactly
  */
-bool CircWall::intersects_circ(double rcx, double rcy, double rr) const {
+bool CircWall::intersects_circ(double rcx, double rcy, double rr) const throw () {
     const double dx = rcx - x, dy = rcy - y;
     const double dcr = sqrt( dx*dx + dy*dy );   // this is the radius of the tested circle center in relation to the wall's center of radius
     // if the circle is wholly outside the wall bounding circle (r=ro), there's no intersection
@@ -288,37 +287,69 @@ bool CircWall::intersects_circ(double rcx, double rcy, double rr) const {
 
 /* CircWall::intersects_rect:
  * this function cheats a bit: it often returns true even if they don't really intersect, but if it returns false, it's certain they don't intersect
- * - the rectangle is extended: instead of it, the intersection is tested against it's bounding circle
+ * - the rectangle is extended: instead of it, the intersection is tested against its bounding circle
  * - the cheat in intersects_circ also applies
  */
-bool CircWall::intersects_rect(double x1, double y1, double x2, double y2) const {
+bool CircWall::intersects_rect(double x1, double y1, double x2, double y2) const throw () {
     // more crude check against the wall's bounding rectangle would be: return x1<=x+ro && x2>=x-ro && y1<=y+ro && y2>=y-ro;
     const double rwr = (x2 - x1) / 2., rhr = (y2 - y1) / 2.;
     return intersects_circ(x1 + rwr, y1 + rhr, sqrt(rwr * rwr + rhr * rhr));
 }
 
-Room::~Room() {
+Room::Room(const Room& room) throw () {
+    *this = room;
+}
+
+Room& Room::operator=(const Room& op) throw () {
+    for (vector<WallBase*>::const_iterator i = walls.begin(); i != walls.end(); ++i)
+        delete *i;
+    for (vector<WallBase*>::const_iterator i = ground.begin(); i != ground.end(); ++i)
+        delete *i;
+    walls.clear();
+    ground.clear();
+    for (vector<WallBase*>::const_iterator i = op.walls.begin(); i != op.walls.end(); ++i)
+        if (RectWall* rw = dynamic_cast<RectWall*>(*i))
+            addWall(new RectWall(*rw));
+        else if (TriWall* tw = dynamic_cast<TriWall*>(*i))
+            addWall(new TriWall(*tw));
+        else if (CircWall* cw = dynamic_cast<CircWall*>(*i))
+            addWall(new CircWall(*cw));
+        else
+            nAssert(0);
+    for (vector<WallBase*>::const_iterator i = op.ground.begin(); i != op.ground.end(); ++i)
+        if (RectWall* rw = dynamic_cast<RectWall*>(*i))
+            addGround(new RectWall(*rw));
+        else if (TriWall* tw = dynamic_cast<TriWall*>(*i))
+            addGround(new TriWall(*tw));
+        else if (CircWall* cw = dynamic_cast<CircWall*>(*i))
+            addGround(new CircWall(*cw));
+        else
+            nAssert(0);
+    return *this;
+}
+
+Room::~Room() throw () {
     for (vector<WallBase*>::iterator i = walls.begin(); i != walls.end(); i = walls.erase(i))
         delete *i;
     for (vector<WallBase*>::iterator i = ground.begin(); i != ground.end(); i = ground.erase(i))
         delete *i;
 }
 
-bool Room::fall_on_wall(int x1, int y1, int x2, int y2) const { // note: this is only a bounding-box check - no accurate checks possible for circular walls yet
+bool Room::fall_on_wall(double x1, double y1, double x2, double y2) const throw () { // note: this is only a bounding-box check - no accurate checks possible for circular walls yet
     for (vector<WallBase*>::const_iterator wi = walls.begin(); wi != walls.end(); ++wi)
         if ((*wi)->intersects_rect(x1, y1, x2, y2))
             return true;
     return false;
 }
 
-bool Room::fall_on_wall(int x, int y, int r) const {
+bool Room::fall_on_wall(double x, double y, double r) const throw () {
     for (vector<WallBase*>::const_iterator wi = walls.begin(); wi != walls.end(); ++wi)
         if ((*wi)->intersects_circ(x, y, r))
             return true;
     return false;
 }
 
-BounceData Room::genGetTimeTillWall(double x, double y, double mx, double my, double radius, double maxFraction) const {
+BounceData Room::genGetTimeTillWall(double x, double y, double mx, double my, double radius, double maxFraction) const throw () {
     BounceData bd;
     bd.first = 1e99;
 
@@ -346,7 +377,7 @@ BounceData Room::genGetTimeTillWall(double x, double y, double mx, double my, do
     return bd;
 }
 
-bool Map::load(LogSet& log, const string& mapdir, const string& mapname) {
+bool Map::load(LogSet& log, const string& mapdir, const string& mapname, string* buffer) throw () {
     const string fileName = wheregamedir + mapdir + directory_separator + mapname + ".txt";
 
     ifstream in(fileName.c_str());
@@ -354,7 +385,10 @@ bool Map::load(LogSet& log, const string& mapdir, const string& mapname) {
         log("Can't find mapfile '%s'!", fileName.c_str());
         return false;
     }
-    *this = Map();
+    if (buffer) {
+        *buffer = string(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()); // http://www.gamedev.net/community/forums/topic.asp?topic_id=353162
+        in.seekg(0);
+    }
     if (!parse_file(log, in)) {
         log.error(_("Can't load: error in map '$1'.", mapname));
         return false;
@@ -362,7 +396,8 @@ bool Map::load(LogSet& log, const string& mapdir, const string& mapname) {
     return true;
 }
 
-bool Map::parse_file(LogSet& log, istream& in) {
+bool Map::parse_file(LogSet& log, istream& in) throw () {
+    *this = Map();
     int crx = 0, cry = 0;
     double scalex = 1., scaley = 1.;
     vector<pair<string, pair<int, int> > > labels;
@@ -395,7 +430,7 @@ bool Map::parse_file(LogSet& log, istream& in) {
         else                            // labels have started
             label_lines.back().second.push_back(line);
     }
-    crc = nlGetCRC16(const_cast<NLubyte*>(reinterpret_cast<const NLubyte*>(crcData.data())), crcData.length());
+    crc = CRC16(crcData.data(), crcData.length());
     crcData.clear();    // free the memory; crcData is not needed from here on
     for (vector<string>::const_iterator line = file_lines.begin(); line != file_lines.end(); ++line)
         if (!parse_line(log, *line, label_lines, crx, cry, scalex, scaley))
@@ -424,12 +459,31 @@ bool Map::parse_file(LogSet& log, istream& in) {
                 wallError = true;
             }
         }
+        for (unsigned i = 0; i < tinfo[t].respawn.size(); ++i) {
+            const WorldRect& area = tinfo[t].respawn[i];
+            const int xStepSize = max(static_cast<int>(area.x2 - area.x1) / 5, PLAYER_RADIUS * 2),
+                      yStepSize = max(static_cast<int>(area.y2 - area.y1) / 5, PLAYER_RADIUS * 2);
+            const int xSteps = static_cast<int>(area.x2 - area.x1) / xStepSize + 1,
+                      ySteps = static_cast<int>(area.y2 - area.y1) / yStepSize + 1;
+            const int minFreeSpace = max(1, xSteps * ySteps / 5); // for area size 1..9, 1 free spot is enough
+            int freeSpace = 0;
+            bool ok = false;
+            for (double y = area.y1; y <= area.y2 && !ok; y += yStepSize)
+                for (double x = area.x1; x <= area.x2 && !ok; x += xStepSize)
+                    if (!fall_on_wall(area.px, area.py, x, y, PLAYER_RADIUS * 5 / 4))
+                        if (++freeSpace >= minFreeSpace)
+                            ok = true;
+            if (!ok) {
+                log.error(_("Team $1, respawn area $2 does not have enough free space.", itoa(t), itoa(i)));
+                return false;
+            }
+        }
     }
     return !wallError;
 }
 
 bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, vector<string> > >& label_lines,
-                                                        int& crx, int& cry, double& scalex, double& scaley, bool label_block) {
+                                                        int& crx, int& cry, double& scalex, double& scaley, bool label_block) throw () {
     istringstream ist(line);
     string command;
     ist >> command;
@@ -445,7 +499,7 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
             ist >> alpha;
         else
             alpha = 255;
-        if (!ist || !ist.eof() || crx < 0 || cry < 0 || crx >= w || cry >= h || alpha < 0 || alpha > 255 || texid > 7) {
+        if (!ist || !ist.eof() || crx < 0 || cry < 0 || crx >= w || cry >= h || alpha < 0 || alpha > 255 || texid < 0 || texid > 7) {
             log.error(_("Invalid map line: $1", line));
             return false;
         }
@@ -471,7 +525,7 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
             ist >> alpha;
         else
             alpha = 255;
-        if (!ist || !ist.eof() || (type != 'W' && type != 'G') || crx < 0 || cry < 0 || crx >= w || cry >= h || alpha < 0 || alpha > 255 || texid > 7) {
+        if (!ist || !ist.eof() || (type != 'W' && type != 'G') || crx < 0 || cry < 0 || crx >= w || cry >= h || alpha < 0 || alpha > 255 || texid < 0 || texid > 7) {
             log.error(_("Invalid map line: $1", line));
             return false;
         }
@@ -509,7 +563,7 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
             a1 += 360;
         if (a2 < 0)
             a2 += 360;
-        if (!ist || !ist.eof() || ro <= 0 || ri < 0 || ri >= ro || (a1 != 0 && a1 == a2) || a1 < 0 || a2 < 0 || a1 >= 360 || a2 >= 360 || alpha < 0 || alpha > 255 || texid > 7) {
+        if (!ist || !ist.eof() || ro <= 0 || ri < 0 || ri >= ro || (a1 != 0 && a1 == a2) || a1 < 0 || a2 < 0 || a1 >= 360 || a2 >= 360 || alpha < 0 || alpha > 255 || texid < 0 || texid > 7) {
             log.error(_("Invalid map line: $1", line));
             return false;
         }
@@ -636,7 +690,7 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
             log.error(_("Invalid map line: $1", line));
             return false;
         }
-        const WorldCoords spot(rx, ry, static_cast<int>(x * plw / scalex), static_cast<int>(y * plh / scaley));
+        const WorldCoords spot(rx, ry, static_cast<int>(x * plw / scalex), static_cast<int>(y * plh / scaley)); // cast to int to keep identical behaviour with previous versions
         tinfo[team].spawn.push_back(spot);
     }
     else if (command == "flag") {   // flag t rx ry x y : set team t's flag position to room (rx,ry) at (x,y)
@@ -648,14 +702,61 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
             log.error(_("Invalid map line: $1", line));
             return false;
         }
-        const WorldCoords flag(rx, ry, static_cast<int>(x * plw / scalex), static_cast<int>(y * plh / scaley));
+        const WorldCoords flag(rx, ry, static_cast<int>(x * plw / scalex), static_cast<int>(y * plh / scaley)); // cast to int to keep identical behaviour with previous versions
         if (team < 2)
             tinfo[team].flags.push_back(flag);
         else
             wild_flags.push_back(flag);
     }
-    else if (command == "V") {  // V ver : never really used "version"
-        // silently accept it with no action
+    else if (command == "V") {  // V * : version specific extensions (originally meant as some kind of version number but ignored by all versions of Outgun)
+        string subCommand;
+        ist >> subCommand;
+        if (subCommand == "respawn") { // V respawn t rx ry [x1 y1 [x2 y2]] : make a respawn area for team t at room (rx,ry) at (x1,y1) to (x2,y2); t=2 means both teams
+            int team, rx, ry;
+            double x1, y1, x2, y2;
+            bool point = false;
+            ist >> team >> rx >> ry;
+            if (ist.good()) {
+                ist >> x1 >> y1;
+                if (ist.good()) {
+                    ist >> x2 >> y2;
+                    if (x2 < x1)
+                        swap(x1, x2);
+                    if (y2 < y1)
+                        swap(y1, y2);
+                }
+                else {
+                    x2 = x1;
+                    y2 = y1;
+                    point = true;
+                }
+            }
+            else {
+                x1 = y1 = 0;
+                x2 = scalex;
+                y2 = scaley;
+            }
+            double cx1 = x1 * plw / scalex, cy1 = y1 * plh / scaley;
+            double cx2 = x2 * plw / scalex, cy2 = y2 * plh / scaley;
+            if (!point) {
+                cx1 += PLAYER_RADIUS; cy1 += PLAYER_RADIUS;
+                cx2 -= PLAYER_RADIUS; cy2 -= PLAYER_RADIUS;
+            }
+            if (!ist || !ist.eof() || team < 0 || team > 2 || rx < 0 || rx >= w ||
+                  ry < 0 || ry >= h || x1 < 0 || y1 < 0 ||
+                  cx2 < cx1 || x2 > scalex || cy2 < cy1 || y2 > scaley) { // although initially ordered, cx2 < cx1 is possible because of PLAYER_RADIUS adjustments above
+                log.error(_("Invalid map line: $1", line));
+                return false;
+            }
+            const WorldRect area(rx, ry, cx1, cy1, cx2, cy2);
+            if (team < 2)
+                tinfo[team].respawn.push_back(area);
+            else {
+                tinfo[0].respawn.push_back(area);
+                tinfo[1].respawn.push_back(area);
+            }
+        }
+        // silently accept unknown subcommands with no action; they might be a version number or an extension in a future version of Outgun (or a typo; bad luck ;))
     }
     else if (command == "S") {  // S x y : set map scale
         ist >> scalex >> scaley;
@@ -671,9 +772,9 @@ bool Map::parse_line(LogSet& log, const string& line, const vector<pair<string, 
     return true;
 }
 
-MapInfo::MapInfo() : votes(0), sentVotes(0), last_game(0), highlight(false) { }
+MapInfo::MapInfo() throw () : random(false), over_edge(false), votes(0), sentVotes(0), last_game(0), highlight(false) { }
 
-bool MapInfo::load(LogSet& log, const string& mapName) {
+bool MapInfo::load(LogSet& log, const string& mapName) throw () {
     Map map;
     const bool ok = map.load(log, SERVER_MAPS_DIR, mapName);
     if (!ok)
@@ -683,19 +784,29 @@ bool MapInfo::load(LogSet& log, const string& mapName) {
     author = map.author;
     width = map.w;
     height = map.h;
+    random = false;
+    over_edge = false;
     votes = sentVotes = 0;
     return true;
 }
 
-void PlayerBase::clear(bool enable, int _pid, const std::string& _name, int team_id) {
+void MapInfo::update(const Map& map) throw () {
+    title = map.title;
+    author = map.author;
+    width = map.w;
+    height = map.h;
+}
+
+void PlayerBase::clear(bool enable, int _pid, const string& _name, int team_id) throw () {
     ping = 0;
     id = _pid;
     name = _name;
-    item_deathbringer = item_shield = item_power = item_turbo = false;
+    item_deathbringer = item_power = item_turbo = false;
+    item_shield = 0;
     visibility = 255;
     roomx = roomy = 0;
     lx = ly = sx = sy = 0;
-    gundir = 0;
+    gundir.from8way(0);
     controls = ClientControls();
     dead = false;
     reg_status = ClientLoginStatus();   // clear
@@ -705,12 +816,12 @@ void PlayerBase::clear(bool enable, int _pid, const std::string& _name, int team
     team_nr = team_id;
     stats().clear(false);
     stats().set_start_time(static_cast<int>(get_time()));
-    personal_color = -1;
+    personal_color = invalid_color;
     used = enable;
 }
 
-void ServerPlayer::clear(bool enable, int _pid, int _cid, const string& _name, int team_id) {
-    attack = false;
+void ServerPlayer::clear(bool enable, int _pid, int _cid, const string& _name, int team_id, unsigned uniqueId_) throw () {
+    attack = attackOnce = false;
     oldfrags = -666;
     want_map_exit = false;      //by default don't want change maps
     mapVote = -1;
@@ -719,8 +830,7 @@ void ServerPlayer::clear(bool enable, int _pid, int _cid, const string& _name, i
     muted = 0;
     want_change_teams = false;  // don't want to change teams yet
     team_change_time = 0;
-    team_change_pending = false;
-    next_shoot_time = 0;
+    next_shoot_frame = 0;
     talk_temp = 0.0;
     talk_hotness = 1.0;
     cid = _cid;
@@ -728,12 +838,8 @@ void ServerPlayer::clear(bool enable, int _pid, int _cid, const string& _name, i
     localIP = false;
 
     lastClientFrame = 0;
-    #ifdef SEND_FRAMEOFFSET
     frameOffset = 0;
-    #endif
     awaiting_client_readies = 0;
-    item_deathbringer_time = 0;
-    deathbringer_team = 0;  // need not be valid yet
     deathbringer_end = 0;
     deathbringer_attacker = 0;
     item_power_time = item_turbo_time = item_shadow_time = 0;
@@ -742,13 +848,29 @@ void ServerPlayer::clear(bool enable, int _pid, int _cid, const string& _name, i
     weapon = 1;
     drop_key = false;
     dropped_flag = false;
-    respawn_time = 0;
+    frames_to_respawn = extra_frames_to_respawn = 0;
     respawn_to_base = false;
+    fav_col.clear();
+    for (char i = 0; i < 16; ++i)
+        fav_col.push_back(i);
+    random_shuffle(fav_col.begin(), fav_col.end());
+
+    bot = false;
+    record_position = true;
+
+    current_map_list_item = 0;
+    nextMinimapPlayer = 0;
+    minimapPlayersPerFrame = 2;
+
+    protocolExtensionsLevel = -1;
+    toldAboutExtensionAdvantage = false;
+
+    uniqueId = uniqueId_;
 
     PlayerBase::clear(enable, _pid, _name, team_id);
 }
 
-void ClientPlayer::clear(bool enable, int _pid, const std::string& _name, int team_id) {
+void ClientPlayer::clear(bool enable, int _pid, const string& _name, int team_id) throw () {
     item_power_time = item_turbo_time = item_shadow_time = 0;
     health = energy = 0;
     weapon = 1;
@@ -758,9 +880,8 @@ void ClientPlayer::clear(bool enable, int _pid, const std::string& _name, int te
     deathbringer_affected = false;
     next_smoke_effect_time = 0;
     hitfx = 0;
-    drawptr = drawused = 0;
     oldx = oldy = 0;
-    posUpdated = 0;
+    posUpdated = -1e10;
 
     PlayerBase::clear(enable, _pid, _name, team_id);
 }
@@ -782,7 +903,7 @@ void ClientPlayer::clear(bool enable, int _pid, const std::string& _name, int te
  * d? = distance vector of the point, m? = movement vector of the circle, r = radius of the circle
  * returns: pair( t, pair(collisionn-centern, collisionp-centerp) ) or pair(1e99, ...) for no collision
  */
-BounceData bounceFromPoint(double dx, double dy, double mx, double my, double r) {
+BounceData bounceFromPoint(double dx, double dy, double mx, double my, double r) throw () {
     const double m2 = mx * mx + my * my, r2 = r * r;
     const double mdotd = mx * dx + my * dy;
     const double d2 = dx * dx + dy * dy;
@@ -809,14 +930,14 @@ BounceData bounceFromPoint(double dx, double dy, double mx, double my, double r)
  *             /
  *           wall
  *
- * the circle hits the wall proper with it's center projection on the line
+ * the circle hits the wall proper with its center projection on the line
  * | ( t(mx,my)-(dx1,dy1) ) x ( (dx2,dy2)-(dx1,dy1) ) | / | (dx2,dy2)-(dx1,dy1) | = r
  * take the smaller solution of t and make sure the point is on the line
  *
  * d?? = distance vectors of the line's end-points, m? = movement vector of the circle, r = radius of the circle
  * returns: pair( t, pair(collisionn-centern, collisionp-centerp) ) or pair(1e99, ...) for no collision
  */
-BounceData bounceFromLine(double dx1, double dy1, double dx2, double dy2, double mx, double my, double r) {
+BounceData bounceFromLine(double dx1, double dy1, double dx2, double dy2, double mx, double my, double r) throw () {
     // t * ( mx(dy2-dy1) - my(dx2-dx1) ) = dx1(dy2-dy1) - dy1(dx2-dx1) +-R*|(dx2,dy2)-(dx1,dy1)|
     const double diffx = dx2 - dx1, diffy = dy2 - dy1;
     const double div = mx * diffy - my * diffx;
@@ -830,10 +951,10 @@ BounceData bounceFromLine(double dx1, double dy1, double dx2, double dy2, double
             // collp = p1 + k(p2-p1)    0<=k<=1 if on the line
             // | t*m - collp |  minimum (=r)
             // | t*m - p1 - k(p2-p1) |  minimum (=r)
-            // ( t*mx - dx1 - k(dx2-dx1) )^2 + ( t*my - dy1 - k(dy2-dy1) )^2  minimum (=r)
+            // ( t*mx - dx1 - k(dx2-dx1) )^2 + ( t*my - dy1 - k(dy2-dy1) )^2  minimum (=r^2)
             // (dx2-dx1)*( t*mx - dx1 - k(dx2-dx1) ) + (dy2-dy1)*( t*my - dy1 - k(dy2-dy1) ) = 0  (derivative of the expression above *(-.5))
             // (dx2-dx1)*(t*mx-dx1) + (dy2-dy1)*(t*my-dy1) = k[ (dx2-dx1)^2 + (dy2-dy1)^2 ]
-            const double k = (diffx * (t * mx - dx1) + diffy * (t  *my - dy1)) / (diffx * diffx + diffy * diffy);
+            const double k = (diffx * (t * mx - dx1) + diffy * (t * my - dy1)) / (diffx * diffx + diffy * diffy);
             if (k >= 0. && k <= 1.)
                 return BounceData(t, Coords(dx1 + k * diffx - t * mx, dy1 + k * diffy - t * my));
         }
@@ -855,15 +976,15 @@ BounceData bounceFromLine(double dx1, double dy1, double dx2, double dy2, double
  *                 \    } ar
  *                  \___}
  *
- * the circle hits the arc proper with it's center ar+cr (if outside) or ar-cr (if inside) and within the given angle from arc center vector
+ * the circle hits the arc proper with its center at a distance of ar+cr (if outside) or ar-cr (if inside) from the arc's radial center, and within the given angle from arc center vector
  *
  * | t(mx,my)-(dx,dy) | = ar+-cr , taking the smaller solution of t and making sure the position is within the given angle from av
  *
  * d? = distance vector of the arc's radial center, m? = movement vector of the circle, ar = radius of the arc, cr = radius of the moving circle
- * av = arc center unit vector, ahwcos = cosine of half arc width
+ * av = arc center unit vector, ahwcos = cosine of half arc "width" (angle)
  * returns: pair( t, pair(collisionn-centern, collisionp-centerp) ) or pair(1e99, ...) for no collision
  */
-BounceData bounceFromArc(double dx, double dy, double mx, double my, const Coords& av, double ahwcos, double ar, double cr, bool outside) {
+BounceData bounceFromArc(double dx, double dy, double mx, double my, const Coords& av, double ahwcos, double ar, double cr, bool outside) throw () {
     const double bounceRad = ar + (outside ? cr : -cr);
     const double m2 = mx * mx + my * my, r2 = bounceRad * bounceRad;
     const double mdotd = mx * dx + my * dy;
@@ -892,7 +1013,7 @@ BounceData bounceFromArc(double dx, double dy, double mx, double my, const Coord
     return BounceData(1e99, Coords());
 }
 
-void RectWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const {
+void RectWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const throw () {
     #define add_rv() if (rv.first < bd->first) *bd = rv;
 
     BounceData rv;
@@ -928,7 +1049,7 @@ void RectWall::tryBounce(BounceData* bd, double stx, double sty, double mx, doub
     #undef add_rv
 }
 
-void TriWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const {
+void TriWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const throw () {
     #define add_rv() if (rv.first < bd->first) *bd = rv;
 
     BounceData rv;
@@ -948,7 +1069,7 @@ void TriWall::tryBounce(BounceData* bd, double stx, double sty, double mx, doubl
     #undef add_rv
 }
 
-void CircWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const {
+void CircWall::tryBounce(BounceData* bd, double stx, double sty, double mx, double my, double plyRadius) const throw () {
     #define add_rv() if (rv.first < bd->first) *bd = rv;
 
     BounceData rv;
@@ -986,15 +1107,15 @@ void CircWall::tryBounce(BounceData* bd, double stx, double sty, double mx, doub
     #undef add_rv
 }
 
-BounceData WorldBase::getTimeTillBounce(const Room& room, const PlayerBase& pl, double plyRadius, double maxFraction) {
+BounceData WorldBase::getTimeTillBounce(const Room& room, const PlayerBase& pl, double plyRadius, double maxFraction) throw () {
     return room.genGetTimeTillWall(pl.lx, pl.ly, pl.sx, pl.sy, plyRadius, maxFraction);
 }
 
-double WorldBase::getTimeTillWall(const Room& room, const Rocket& rock, double maxFraction) {
+double WorldBase::getTimeTillWall(const Room& room, const Rocket& rock, double maxFraction) throw () {
     return room.genGetTimeTillWall(rock.x, rock.y, rock.sx, rock.sy, ROCKET_RADIUS, maxFraction).first;
 }
 
-double WorldBase::getTimeTillCollision(const PlayerBase& pl, const Rocket& rock, double collRadius) {
+double WorldBase::getTimeTillCollision(const PlayerBase& pl, const Rocket& rock, double collRadius) throw () {
     const double dx = rock.x - pl.lx, dy = rock.y - pl.ly, r2 = collRadius * collRadius;
     if (dx * dx + dy * dy < r2)
         return 0;
@@ -1012,7 +1133,7 @@ double WorldBase::getTimeTillCollision(const PlayerBase& pl, const Rocket& rock,
     return 1e99;
 }
 
-double WorldBase::getTimeTillCollision(const PlayerBase& pl1, const PlayerBase& pl2, double collRadius) {
+double WorldBase::getTimeTillCollision(const PlayerBase& pl1, const PlayerBase& pl2, double collRadius) throw () {
     const double dx = pl2.lx - pl1.lx, dy = pl2.ly - pl1.ly, r2 = collRadius * collRadius;
     if (dx * dx + dy * dy < r2)
         return 1e99;
@@ -1030,12 +1151,8 @@ double WorldBase::getTimeTillCollision(const PlayerBase& pl1, const PlayerBase& 
     return 1e99;
 }
 
-void WorldBase::applyPlayerAcceleration(int pid) {
+void WorldBase::applyPlayerAcceleration(int pid) throw () {
     PlayerBase* h = player[pid].getPtr();
-    const bool deathbringer_affected = h->under_deathbringer_effect(get_time());
-
-    double xAcc = (h->controls.isRight() ? 1 : 0) - (h->controls.isLeft() ? 1 : 0);
-    double yAcc = (h->controls.isDown () ? 1 : 0) - (h->controls.isUp  () ? 1 : 0);
 
     double player_accel = physics.accel;
     if (h->item_turbo)
@@ -1076,44 +1193,61 @@ void WorldBase::applyPlayerAcceleration(int pid) {
         h->sy *= mul;
     }
 
-    if (!deathbringer_affected && (xAcc != 0 || yAcc != 0)) {   // no acceleration when under the db effect
-        if (xAcc != 0 && yAcc != 0) {   // normalize the total acceleration vector
-            xAcc /= sqrt(2.);
-            yAcc /= sqrt(2.);
-        }
-        if (fabs(h->sx) > .001 || fabs(h->sy) > .001) { // the player is moving in some direction (otherwise, any direction is 'forward')
-            // handle different directions : scale braking component by brake_mul and turning component by turn_mul
-            // acceleration component parallel to v = par = (a dot v) * v / |v|^2 ; perpendicular component perp = a - par
-            const double par_mul = (xAcc * h->sx + yAcc * h->sy) / (h->sx * h->sx + h->sy * h->sy);
-            double par_x = par_mul * h->sx, par_y = par_mul * h->sy;
-            const double perp_x = xAcc - par_x, perp_y = yAcc - par_y;
-            if (par_mul < 0) {  // par is opposite to v == braking
-                par_x *= physics.brake_mul;
-                par_y *= physics.brake_mul;
-            }
-            xAcc = perp_x * physics.turn_mul + par_x;
-            yAcc = perp_y * physics.turn_mul + par_y;
-        }
-        h->sx += xAcc * player_accel;
-        h->sy += yAcc * player_accel;
+    if (h->under_deathbringer_effect(get_time()))
+        return;
+
+    double sideAcc = (h->controls.isRight() ? 1 : 0) - (h->controls.isLeft() ? 1 : 0);
+    double forwAcc = (h->controls.isUp   () ? 1 : 0) - (h->controls.isDown() ? 1 : 0);
+
+    if (sideAcc == 0 && forwAcc == 0)
+        return;
+    if (sideAcc != 0 && forwAcc != 0) {   // normalize the total acceleration vector
+        sideAcc /= sqrt(2.);
+        forwAcc /= sqrt(2.);
     }
+
+    double xAcc, yAcc;
+    if (h->accelerationMode == AM_World || !physics.allowFreeTurning) {
+        xAcc = sideAcc;
+        yAcc = -forwAcc;
+    }
+    else {
+        const double dirX = cos(h->gundir.toRad()), dirY = sin(h->gundir.toRad());
+        xAcc = dirX * forwAcc - dirY * sideAcc;
+        yAcc = dirY * forwAcc + dirX * sideAcc;
+    }
+    if (fabs(h->sx) > .001 || fabs(h->sy) > .001) { // the player is moving in some direction (otherwise, any direction is 'forward')
+        // handle different directions : scale braking component by brake_mul and turning component by turn_mul
+        // acceleration component parallel to v = par = (a dot v) * v / |v|^2 ; perpendicular component perp = a - par
+        const double par_mul = (xAcc * h->sx + yAcc * h->sy) / (h->sx * h->sx + h->sy * h->sy);
+        double par_x = par_mul * h->sx, par_y = par_mul * h->sy;
+        const double perp_x = xAcc - par_x, perp_y = yAcc - par_y;
+        if (par_mul < 0) {  // par is opposite to v == braking
+            par_x *= physics.brake_mul;
+            par_y *= physics.brake_mul;
+        }
+        xAcc = perp_x * physics.turn_mul + par_x;
+        yAcc = perp_y * physics.turn_mul + par_y;
+    }
+    h->sx += xAcc * player_accel;
+    h->sy += yAcc * player_accel;
 }
 
-void WorldBase::returnAllFlags() {
+void WorldBase::returnAllFlags() throw () {
     for (int t = 0; t < 2; t++)
         teams[t].return_all_flags();
     for (vector<Flag>::iterator fi = wild_flags.begin(); fi != wild_flags.end(); ++fi)
         fi->return_to_base();
 }
 
-void WorldBase::returnFlag(int team, int flag) {
+void WorldBase::returnFlag(int team, int flag) throw () {
     if (team == 2)
         wild_flags[flag].return_to_base();
     else
         teams[team].return_flag(flag);
 }
 
-void WorldBase::dropFlag(int team, int flag, int px, int py, int x, int y) {
+void WorldBase::dropFlag(int team, int flag, int px, int py, double x, double y) throw () {
     const WorldCoords pos(px, py, x, y);
     if (team == 2) {
         wild_flags[flag].move(pos);
@@ -1123,14 +1257,14 @@ void WorldBase::dropFlag(int team, int flag, int px, int py, int x, int y) {
         teams[team].drop_flag(flag, pos);
 }
 
-void WorldBase::stealFlag(int team, int flag, int carrier) {
+void WorldBase::stealFlag(int team, int flag, int carrier) throw () {
     if (team == 2)
         wild_flags[flag].take(carrier, get_time());
     else
         teams[team].steal_flag(flag, carrier, get_time());
 }
 
-void WorldBase::remove_team_flags(int t) {
+void WorldBase::remove_team_flags(int t) throw () {
     nAssert(t >= 0 && t <= 2);
     if (t == 2) {
         map.wild_flags.clear();
@@ -1142,8 +1276,30 @@ void WorldBase::remove_team_flags(int t) {
     }
 }
 
+void WorldBase::add_random_flag(int t) throw () {
+    nAssert(t >= 0 && t <= 2);
+    for (int i = 0; i < 100; ++i) {
+        const int rx = rand() % map.w;
+        const int ry = rand() % map.h;
+        const int x = rand() % plw;
+        const int y = rand() % plh;
+        if (!map.fall_on_wall(rx, ry, x, y, FLAG_RADIUS)) {
+            WorldCoords pos(rx, ry, x, y);
+            if (t == 2) {
+                wild_flags.push_back(pos);
+                map.wild_flags.push_back(pos);
+            }
+            else {
+                teams[t].add_flag(pos);
+                map.tinfo[t].flags.push_back(pos);
+            }
+            break;
+        }
+    }
+}
+
 void WorldBase::addRocket(int i, int playernum, int team, int px, int py, int x, int y,
-                          bool power, int dir, int xdelta, int frameAdvance, PhysicsCallbacksBase& cb) {
+                          bool power, GunDirection dir, int xdelta, int frameAdvance, PhysicsCallbacksBase& cb) throw () {
     Rocket& r = rock[i];
     r.owner = playernum;
     r.team = team;
@@ -1154,12 +1310,12 @@ void WorldBase::addRocket(int i, int playernum, int team, int px, int py, int x,
     r.y = y;
     r.direction = dir;
 
-    const double deg = dir * N_PI_4;
+    const double deg = dir.toRad();
 
     if (xdelta) {
         r.sx = xdelta * shot_deltax * cos(deg + N_PI_2);
         r.sy = xdelta * shot_deltax * sin(deg + N_PI_2);
-        const double wallTime = getTimeTillWall(map.room[px][py], r, 1.);
+        const double wallTime = getTimeTillWall(map.room[px][py], r, 1.01);
         r.move(1);
         if (wallTime < 1.) {
             cb.rocketHitWall(i, r.power, r.x, r.y, r.px, r.py);
@@ -1171,7 +1327,7 @@ void WorldBase::addRocket(int i, int playernum, int team, int px, int py, int x,
     r.sy = sin(deg) * physics.rocket_speed;
     // advance 15 pixels before really shooting -> don't hit very close by players
     const double advance = 15. / physics.rocket_speed + double(frameAdvance);
-    const double wallTime = getTimeTillWall(map.room[px][py], r, 1.);
+    const double wallTime = getTimeTillWall(map.room[px][py], r, advance * 1.01);
     if (wallTime <= advance) {
         r.move(wallTime);
         cb.rocketHitWall(i, r.power, r.x, r.y, r.px, r.py);
@@ -1182,8 +1338,8 @@ void WorldBase::addRocket(int i, int playernum, int team, int px, int py, int x,
         cb.rocketOutOfBounds(i);
 }
 
-void WorldBase::shootRockets(PhysicsCallbacksBase& cb, int playernum, int pow, int dir, NLubyte* rids, int frameAdvance,
-                             int team, bool power, int px, int py, int x, int y) {
+void WorldBase::shootRockets(PhysicsCallbacksBase& cb, int playernum, int pow, GunDirection dir, const uint8_t* rids, int frameAdvance,
+                             int team, bool power, int px, int py, int x, int y) throw () {
     struct RocketFormation {
         int nForward;
         int directions[6];
@@ -1214,10 +1370,29 @@ void WorldBase::shootRockets(PhysicsCallbacksBase& cb, int playernum, int pow, i
     }
     const int* dirp = &form.directions[0];
     for (int ri = form.nForward; ri < pow; ++ri, ++dirp)
-        addRocket(rids[ri], playernum, team, px, py, x, y, power, dir + *dirp, 0, frameAdvance, cb);
+        addRocket(rids[ri], playernum, team, px, py, x, y, power, GunDirection(dir).adjust(*dirp), 0, frameAdvance, cb);
 }
 
-PhysicalSettings::PhysicalSettings() :
+void ConstFlagIterator::findValid() throw () {
+    while (iFlag >= flags->size()) {
+        if (++iTeam == 3)
+            break;
+        setFlags();
+        iFlag = 0;
+    }
+}
+
+double DeathbringerExplosion::radius(double frame) const throw () {
+    nAssert(frame >= frame0);
+    // change expired() if this calculation changes
+    const double delta = (frame - frame0) * 0.1;
+    if (delta < 1.)
+        return delta * 100.;
+    else
+        return 100. + sqr(delta - 1.) * 800.;
+}
+
+PhysicalSettings::PhysicalSettings() throw () :
     fric        (0.20),
     drag        (0.16),
     accel       (2.60),
@@ -1229,51 +1404,58 @@ PhysicalSettings::PhysicalSettings() :
     rocket_speed(50.),
     friendly_fire(0.),
     friendly_db(0.),
-    player_collisions(PC_normal)
+    player_collisions(PC_normal),
+    allowFreeTurning(false)
 {
     calc_max_run_speed();
 }
 
-void PhysicalSettings::calc_max_run_speed() {
+void PhysicalSettings::calc_max_run_speed() throw () {
     max_run_speed = (run_mul * accel - fric) / drag;
 }
 
-void PhysicalSettings::read(char* lebuf, int& count) {
-    fric            = safeReadFloat(lebuf, count);
-    drag            = safeReadFloat(lebuf, count);
-    accel           = safeReadFloat(lebuf, count);
-    brake_mul       = safeReadFloat(lebuf, count);
-    turn_mul        = safeReadFloat(lebuf, count);
-    run_mul         = safeReadFloat(lebuf, count);
-    turbo_mul       = safeReadFloat(lebuf, count);
-    flag_mul        = safeReadFloat(lebuf, count);
-    friendly_fire   = safeReadFloat(lebuf, count);
-    friendly_db     = safeReadFloat(lebuf, count);
-    rocket_speed    = safeReadFloat(lebuf, count);
+void PhysicalSettings::read(BinaryReader& reader) throw () {
+    fric            = reader.flt();
+    drag            = reader.flt();
+    accel           = reader.flt();
+    brake_mul       = reader.flt();
+    turn_mul        = reader.flt();
+    run_mul         = reader.flt();
+    turbo_mul       = reader.flt();
+    flag_mul        = reader.flt();
+    friendly_fire   = reader.flt();
+    friendly_db     = reader.flt();
+    rocket_speed    = reader.flt();
 
-    NLubyte collisions;
-    readByte(lebuf, count, collisions);
-    player_collisions = static_cast<PlayerCollisions>(collisions & 0x03);
+    const uint8_t bitField = reader.U8();
+    player_collisions = static_cast<PlayerCollisions>(bitField & 0x03);
+    allowFreeTurning = (bitField & 0x04) != 0;
+
+    unsigned extraBytes = bitField >> 5;
+    if (extraBytes == 7)
+        extraBytes = unsigned(reader.U8()) + 7;
+    reader.block(extraBytes); // ignore data we don't understand
 
     calc_max_run_speed();
 }
 
-void PhysicalSettings::write(char* lebuf, int& count) const {
-    safeWriteFloat(lebuf, count, fric);
-    safeWriteFloat(lebuf, count, drag);
-    safeWriteFloat(lebuf, count, accel);
-    safeWriteFloat(lebuf, count, brake_mul);
-    safeWriteFloat(lebuf, count, turn_mul);
-    safeWriteFloat(lebuf, count, run_mul);
-    safeWriteFloat(lebuf, count, turbo_mul);
-    safeWriteFloat(lebuf, count, flag_mul);
-    safeWriteFloat(lebuf, count, friendly_fire);
-    safeWriteFloat(lebuf, count, friendly_db);
-    safeWriteFloat(lebuf, count, rocket_speed);
-    writeByte(lebuf, count, player_collisions);
+void PhysicalSettings::write(BinaryWriter& writer) const throw () {
+    writer.flt(fric);
+    writer.flt(drag);
+    writer.flt(accel);
+    writer.flt(brake_mul);
+    writer.flt(turn_mul);
+    writer.flt(run_mul);
+    writer.flt(turbo_mul);
+    writer.flt(flag_mul);
+    writer.flt(friendly_fire);
+    writer.flt(friendly_db);
+    writer.flt(rocket_speed);
+    const unsigned extraBytes = 0;
+    writer.U8(player_collisions | (allowFreeTurning << 2) | (extraBytes << 5));
 }
 
-void PowerupSettings::reset() {
+void PowerupSettings::reset() throw () {
     pup_add_time = 40;
     pup_max_time = 100;
 
@@ -1295,14 +1477,23 @@ void PowerupSettings::reset() {
     pup_health_bonus = 160;
     pup_power_damage = 2.0;
     pup_weapon_max = 9;
-    pup_shield_one_hit = false;
+    pup_shield_hits = 0;
     pup_deathbringer_time = 5.0;
+    deathbringer_health_limit = deathbringer_energy_limit = 100;
+    deathbringer_health_degradation = deathbringer_energy_degradation = 2.5;
 
     pups_drop_at_death = false;
     pups_player_max = INT_MAX;
+
+    start_shield = false;
+    start_turbo = 0;
+    start_shadow = 0;
+    start_power = 0;
+    start_weapon = 1;
+    start_deathbringer = false;
 }
 
-Powerup::Pup_type PowerupSettings::choose_powerup_kind() const {
+Powerup::Pup_type PowerupSettings::choose_powerup_kind() const throw () {
     const int max = pup_chance_shield + pup_chance_turbo + pup_chance_shadow + pup_chance_power
                         + pup_chance_weapon + pup_chance_megahealth + pup_chance_deathbringer;
 
@@ -1324,12 +1515,12 @@ Powerup::Pup_type PowerupSettings::choose_powerup_kind() const {
     return Powerup::pup_deathbringer;
 }
 
-int PowerupSettings::pups_by_percent(int percentage, const Map& map) const {
+int PowerupSettings::pups_by_percent(int percentage, const Map& map) const throw () {
     const int result = (map.w * map.h * percentage + 50) / 100; // +50 to round properly
     if (result == 0 && percentage > 0)
         return 1;
-    if (result > MAX_PICKUPS)
-        return MAX_PICKUPS;
+    if (result > MAX_POWERUPS)
+        return MAX_POWERUPS;
     return result;
 }
 
@@ -1338,12 +1529,29 @@ int PowerupSettings::pups_by_percent(int percentage, const Map& map) const {
 
 const int WorldSettings::shadow_minimum_normal = 7;
 
-void WorldSettings::reset() {
+void WorldSettings::reset() throw () {
     respawn_time = 2.0;
+    extra_respawn_time_alone = 0;
     waiting_time_deathbringer = 4.0;
     respawn_balancing_time = 0;
+    respawn_on_capture = false;
     shadow_minimum = shadow_minimum_normal;
     rocket_damage = 70;
+    start_health = start_energy = 100;
+    health_max = energy_max = 300;
+    min_health_for_run_penalty = 40;
+    health_regeneration_0_to_100 = 10.;
+    energy_regeneration_0_to_100 = 10.;
+    health_regeneration_100_to_200 = 1.;
+    energy_regeneration_100_to_200 = 5.;
+    health_regeneration_200_to_max = 0.;
+    energy_regeneration_200_to_max = 0.;
+    run_health_degradation = run_energy_degradation = 15.;
+    shooting_energy_base = 7.;
+    shooting_energy_per_extra_rocket = 1.;
+    hit_stun_time = 1.;
+    spawn_safe_time = 0.;
+    shoot_interval = shoot_interval_with_energy = .5;
     time_limit = 0;     // no time limit
     extra_time = 0;
     sudden_death = false;
@@ -1352,45 +1560,52 @@ void WorldSettings::reset() {
     flag_return_delay = 1.0;
     balance_teams = TB_disabled;
 
+    random_wild_flag = false;
+
     lock_team_flags = false;
     lock_wild_flags = false;
     capture_on_team_flag = true;
     capture_on_wild_flag = false;
+
+    see_rockets_distance = 0;
+
+    carrying_score_time = 0;
 }
 
-double WorldSettings::getRespawnTime(int playerTeamSize, int enemyTeamSize) const {
-    if (playerTeamSize <= enemyTeamSize || enemyTeamSize == 0)
-        return respawn_time;
-    return respawn_time + respawn_balancing_time * (playerTeamSize - enemyTeamSize) / (double)enemyTeamSize;
+pair<double, double> WorldSettings::getRespawnTime(int playerTeamSize, int enemyTeamSize) const throw () {
+    double extraTime = extra_respawn_time_alone;
+    if (playerTeamSize > enemyTeamSize && enemyTeamSize != 0)
+        extraTime += respawn_balancing_time * (playerTeamSize - enemyTeamSize) / (double)enemyTeamSize;
+    return pair<double, double>(respawn_time, extraTime);
 }
 
 class ServerPhysicsCallbacks : public PhysicsCallbacksBase {
     ServerWorld& w;
 
 public:
-    ServerPhysicsCallbacks(ServerWorld& w_) : w(w_) { }
+    ServerPhysicsCallbacks(ServerWorld& w_) throw () : w(w_) { }
 
-    bool collideToRockets() const { return true; }
-    bool gatherMovementDistance() const { return true; }
-    bool allowRoomChange() const { return true; }
-    void addMovementDistance(int pid, double dist) { w.addMovementDistanceCallback(pid, dist); }
-    void playerScreenChange(int pid) { w.playerScreenChangeCallback(pid); }
-    void rocketHitWall(int rid, bool, double, double, int, int) { w.rocketHitWallCallback(rid); }
-    bool rocketHitPlayer(int rid, int pid) { return w.rocketHitPlayerCallback(rid, pid); }
-    void playerHitWall(int) { }
-    PlayerHitResult playerHitPlayer(int pid1, int pid2, double speed) { return w.playerHitPlayerCallback(pid1, pid2, speed); }
-    void rocketOutOfBounds(int rid) { w.rocketOutOfBoundsCallback(rid); }
-    bool shouldApplyPhysicsToPlayer(int pid) { return w.shouldApplyPhysicsToPlayerCallback(pid); }
+    bool collideToRockets() const throw () { return true; }
+    bool collidesToRockets(int pid) const throw () { return w.frame >= w.player[pid].start_take_damage_frame; }
+    bool collidesToPlayers(int pid) const throw () { return w.frame >= w.player[pid].start_take_damage_frame; }
+    bool gatherMovementDistance() const throw () { return true; }
+    bool allowRoomChange() const throw () { return true; }
+    void addMovementDistance(int pid, double dist) throw () { w.addMovementDistanceCallback(pid, dist); }
+    void playerScreenChange(int pid) throw () { w.playerScreenChangeCallback(pid); }
+    void rocketHitWall(int rid, bool, double, double, int, int) throw () { w.rocketHitWallCallback(rid); }
+    bool rocketHitPlayer(int rid, int pid) throw () { return w.rocketHitPlayerCallback(rid, pid); }
+    void playerHitWall(int) throw () { }
+    PlayerHitResult playerHitPlayer(int pid1, int pid2, double speed) throw () { return w.playerHitPlayerCallback(pid1, pid2, speed); }
+    void rocketOutOfBounds(int rid) throw () { w.rocketOutOfBoundsCallback(rid); }
+    bool shouldApplyPhysicsToPlayer(int pid) throw () { return w.shouldApplyPhysicsToPlayerCallback(pid); }
 };
 
-void ServerWorld::reset() {
+void ServerWorld::reset() throw () {
     returnAllFlags();
     teams[0].clear_stats();
     teams[1].clear_stats();
 
-    // remove powerups
-    for (int i = 0; i < MAX_PICKUPS; i++)
-        item[i].kind = Powerup::pup_unused;
+    WorldBase::reset();
 
     for (int i = 0; i < maxplayers; i++)
         if (player[i].used) {
@@ -1402,16 +1617,9 @@ void ServerWorld::reset() {
             player[i].respawn_to_base = true;   // always spawn in the base at the beginning of a map
             // don't actually spawn until the client has loaded the map and is in the game
         }
-
-    // remove rockets
-    for (int i = 0; i < MAX_ROCKETS; i++)
-        rock[i].owner = -1;
-
-    // regenerate powerups
-    check_pickup_creation(true);
 }
 
-void ServerWorld::printTimeStatus(LineReceiver& printer) {
+void ServerWorld::printTimeStatus(LineReceiver& printer) throw () {
     // server uptime
     const unsigned long uptime = frame / 10 / 60;   // minutes
     const int days = uptime / 60 / 24;
@@ -1434,7 +1642,7 @@ void ServerWorld::printTimeStatus(LineReceiver& printer) {
         const int remaining_seconds = getTimeLeft() / 10;
         // time limit not very useful when only one player
         if (host->get_player_count() == 1)
-            map_time << " No time limit at the moment as you are the only player.";
+            map_time << " No time limit at the moment as there is only one player.";
         else if (remaining_seconds < 0) {
             const int extra_time_seconds = getExtraTimeLeft() / 10;
             if (extra_time_seconds > 0) {
@@ -1452,9 +1660,16 @@ void ServerWorld::printTimeStatus(LineReceiver& printer) {
     printer(map_time.str());
 }
 
-bool ServerWorld::load_map(const string& mapdir, const string& mapname) {
+void ServerWorld::generate_map(const string& mapdir, const string& file_name, int width, int height, float over_edge, const string& title, const string& author) throw () {
+    MapGenerator generator;
+    generator.generate(width, height, rand() % 1000 < 1000 * over_edge);
+    ofstream out((mapdir + directory_separator + file_name + ".txt").c_str(), ios::binary);
+    generator.save_map(out, title, author);
+}
+
+bool ServerWorld::load_map(const string& mapdir, const string& mapname, string* buffer) throw () {
     map_start_time = frame;
-    const bool success = WorldBase::load_map(log, mapdir, mapname);
+    const bool success = WorldBase::load_map(log, mapdir, mapname, buffer);
     for (int t = 0; t < 2; t++) {
         teams[t].remove_flags();
         for (vector<WorldCoords>::const_iterator pi = map.tinfo[t].flags.begin(); pi != map.tinfo[t].flags.end(); ++pi)
@@ -1466,31 +1681,31 @@ bool ServerWorld::load_map(const string& mapdir, const string& mapname) {
     return success;
 }
 
-void ServerWorld::returnAllFlags() {
+void ServerWorld::returnAllFlags() throw () {
     WorldBase::returnAllFlags();
-    net->ctf_net_flag_status(-1, 0);
-    net->ctf_net_flag_status(-1, 1);
-    net->ctf_net_flag_status(-1, 2);
+    net->ctf_net_flag_status(pid_all, 0);
+    net->ctf_net_flag_status(pid_all, 1);
+    net->ctf_net_flag_status(pid_all, 2);
 }
 
-void ServerWorld::returnFlag(int team, int flag) {
+void ServerWorld::returnFlag(int team, int flag) throw () {
     WorldBase::returnFlag(team, flag);
-    net->ctf_net_flag_status(-1, team);
+    net->ctf_net_flag_status(pid_all, team);
 }
 
-void ServerWorld::dropFlag(int team, int flag, int roomx, int roomy, int lx, int ly) {
+void ServerWorld::dropFlag(int team, int flag, int roomx, int roomy, double lx, double ly) throw () {
     WorldBase::dropFlag(team, flag, roomx, roomy, lx, ly);
     if (team != 2)
         teams[team].set_flag_drop_time(flag, frame / 10.);
-    net->ctf_net_flag_status(-1, team);
+    net->ctf_net_flag_status(pid_all, team);
 }
 
-void ServerWorld::stealFlag(int team, int flag, int carrier) {
+void ServerWorld::stealFlag(int team, int flag, int carrier) throw () {
     WorldBase::stealFlag(team, flag, carrier);
-    net->ctf_net_flag_status(-1, team);
+    net->ctf_net_flag_status(pid_all, team);
 }
 
-bool ServerWorld::dropFlagIfAny(int pid, bool purpose) {
+bool ServerWorld::dropFlagIfAny(int pid, bool purpose) throw () {
     if (!player[pid].stats().has_flag())
         return false;
     int flag = -1;
@@ -1513,7 +1728,7 @@ bool ServerWorld::dropFlagIfAny(int pid, bool purpose) {
     nAssert(flag != -1);
     player[pid].stats().add_flag_drop(get_time());  // before dropFlag in hopes to alleviate the assertion above
     teams[pid / TSIZE].add_flag_drop();
-    dropFlag(team, flag, player[pid].roomx, player[pid].roomy, (int)player[pid].lx, (int)player[pid].ly);
+    dropFlag(team, flag, player[pid].roomx, player[pid].roomy, player[pid].lx, player[pid].ly);
     if (purpose) {  // Otherwise, the reason is dying, and in that case clients know the flag is dropped.
         net->broadcast_flag_drop(player[pid], team);
         host->score_frag(pid, -1);  // undo the bonus from taking the flag
@@ -1521,8 +1736,16 @@ bool ServerWorld::dropFlagIfAny(int pid, bool purpose) {
     return true;
 }
 
-void ServerWorld::respawnPlayer(int pid, bool dontInformClients) {
-    player[pid].respawn_time = -1;
+void ServerWorld::start_game() throw () {
+    net->ctf_net_flag_status(pid_record, 0);
+    net->ctf_net_flag_status(pid_record, 1);
+    net->ctf_net_flag_status(pid_record, 2);
+    reset_time();
+    // Regenerate powerups
+    check_powerup_creation(true);
+}
+
+void ServerWorld::respawnPlayer(int pid, bool dontInformClients) throw () {
     const int team = pid / TSIZE;
 
     WorldCoords pos;
@@ -1534,6 +1757,16 @@ void ServerWorld::respawnPlayer(int pid, bool dontInformClients) {
         if (++map.tinfo[team].lastspawn >= map.tinfo[team].spawn.size())
             map.tinfo[team].lastspawn = 0;
         pos = map.tinfo[team].spawn[map.tinfo[team].lastspawn]; // the point
+    }
+    else if (!map.tinfo[team].respawn.empty()) {
+        // choose a team respawn point
+        const WorldRect& area = map.tinfo[team].respawn[rand() % map.tinfo[team].respawn.size()];
+        pos.px = area.px;
+        pos.py = area.py;
+        do { // since the areas are checked not to contain too much wall, we are sure to find a space soon enough
+            pos.x = area.x1 + rand() % (static_cast<int>(area.x2 - area.x1) + 1);
+            pos.y = area.y1 + rand() % (static_cast<int>(area.y2 - area.y1) + 1);
+        } while (map.fall_on_wall(pos.px, pos.py, pos.x, pos.y, PLAYER_RADIUS));
     }
     else {
         // generate a random spot for respawn:
@@ -1567,9 +1800,6 @@ void ServerWorld::respawnPlayer(int pid, bool dontInformClients) {
             //fall on wall true, keep trying...
 
         } while (runaway-- > 0);
-
-        if (runaway <= 0)
-            net->broadcast_text(msg_warning, "PLAYER SPAWN RUNAWAY");
     }
 
     //put player there
@@ -1583,22 +1813,28 @@ void ServerWorld::respawnPlayer(int pid, bool dontInformClients) {
     player[pid].sy = 0;
 
     //reset player attributes
-    player[pid].health = 100;
-    player[pid].energy = 100;
+    player[pid].health = config.start_health;
+    player[pid].energy = config.start_energy;
     player[pid].megabonus = 0;
 
-    player[pid].weapon = 1;
+    player[pid].weapon = pupConfig.start_weapon;
 
     net->sendWeaponPower(pid);
 
-    player[pid].item_shield = false;
-    player[pid].item_power = false;
-    player[pid].item_turbo = false;
-    player[pid].visibility = 255;
-    player[pid].item_deathbringer = false;
+    player[pid].item_shield = pupConfig.start_shield;
+    player[pid].item_power = pupConfig.start_power;
+    player[pid].item_power_time = get_time() + pupConfig.start_power;
+    player[pid].item_turbo = pupConfig.start_turbo;
+    player[pid].item_turbo_time = get_time() + pupConfig.start_turbo;
+    player[pid].visibility = pupConfig.start_shadow ? config.getShadowMinimum() : 255;
+    player[pid].item_shadow_time = get_time() + pupConfig.start_shadow;
+    player[pid].item_deathbringer = pupConfig.start_deathbringer;
     player[pid].deathbringer_end = 0;
 
     player[pid].respawn_to_base = false;
+
+    player[pid].next_shoot_frame = player[pid].start_take_damage_frame = frame + config.get_spawn_safe_time_frames();
+    player[pid].attackOnce = false;
 
     player[pid].dead = false;
 
@@ -1607,25 +1843,34 @@ void ServerWorld::respawnPlayer(int pid, bool dontInformClients) {
     if (!dontInformClients)
         net->broadcast_spawn(player[pid]);
 
+    if (pupConfig.start_weapon > 1)
+        net->sendWeaponPower(pid);
+    if (pupConfig.start_power)
+        net->sendPupTime(pid, Powerup::pup_power, pupConfig.start_power);
+    if (pupConfig.start_turbo)
+        net->sendPupTime(pid, Powerup::pup_turbo, pupConfig.start_turbo);
+    if (pupConfig.start_shadow)
+        net->sendPupTime(pid, Powerup::pup_shadow, pupConfig.start_shadow);
+
     //for all effects, player screen changed
     game_player_screen_change(pid);
 }
 
 //flag touched by player?
-bool ServerWorld::check_flag_touch(const Flag& flag, int px, int py, int x, int y) {
+bool ServerWorld::check_flag_touch(const Flag& flag, int px, int py, double x, double y) throw () {
     //carried and in different screen can't be touched
     if (flag.carried() || flag.position().px != px || flag.position().py != py)
         return false;
 
-    const int dx = flag.position().x - x;
-    const int dy = flag.position().y - y;
+    const double dx = flag.position().x - x;
+    const double dy = flag.position().y - y;
     const int touchRadius = PLAYER_RADIUS + FLAG_RADIUS;
 
-    return (dx * dx + dy * dy < touchRadius * touchRadius);
+    return dx * dx + dy * dy < touchRadius * touchRadius;
 }
 
 // drop shield, turbo, shadow, power or weapon power-up if player has some of them
-void ServerWorld::drop_pickup(const ServerPlayer& player) {
+void ServerWorld::drop_powerup(const ServerPlayer& player) throw () {
     vector<Powerup::Pup_type> player_items;
     if (player.item_shield)         // only at suicides
         player_items.push_back(Powerup::pup_shield);
@@ -1641,7 +1886,7 @@ void ServerWorld::drop_pickup(const ServerPlayer& player) {
     if (player_items.empty())       // nothing to drop
         return;
 
-    for (int p = 0; p < MAX_PICKUPS; p++)
+    for (int p = 0; p < MAX_POWERUPS; p++)
         if (item[p].kind == Powerup::pup_unused) {
             item[p].kind = player_items[rand() % player_items.size()];
             item[p].px = player.roomx;
@@ -1651,12 +1896,14 @@ void ServerWorld::drop_pickup(const ServerPlayer& player) {
             // inform players
             for (int i = 0; i < maxplayers; i++)
                 if (this->player[i].used && this->player[i].roomx == item[p].px && this->player[i].roomy == item[p].py)
-                    net->sendPickupVisible(i, p, item[p]);
+                    net->sendPowerupVisible(i, p, item[p]);
+            if (host->recording_active())
+                net->sendPowerupVisible(pid_record, p, item[p]);
             break;
         }
 }
 
-void ServerWorld::respawn_pickup(int p) {
+void ServerWorld::respawn_powerup(int p) throw () {
     item[p].kind = Powerup::pup_unused;
 
     //find a screen with no players and no other powerups
@@ -1682,7 +1929,7 @@ void ServerWorld::respawn_pickup(int p) {
 
         //check items if no players found
         if (runaway > 100)
-            for (int i = 0; i < MAX_PICKUPS; i++)
+            for (int i = 0; i < MAX_POWERUPS; i++)
                 if (item[i].kind != Powerup::pup_unused && item[i].px == px && item[i].py == py) {
                     hit = true;
                     break;
@@ -1693,17 +1940,15 @@ void ServerWorld::respawn_pickup(int p) {
         //find a suitable coordinate -- middle square
         //itemx = plw / 8 + rand() % (3 * plw / 4);
         //itemy = plh / 8 + rand() % (3 * plh / 4);
-        itemx = PICKUP_RADIUS + rand() % (plw - 2 * PICKUP_RADIUS);
-        itemy = PICKUP_RADIUS + rand() % (plh - 2 * PICKUP_RADIUS);
+        itemx = POWERUP_RADIUS + rand() % (plw - 2 * POWERUP_RADIUS);
+        itemy = POWERUP_RADIUS + rand() % (plh - 2 * POWERUP_RADIUS);
 
         //do a check for walls, maybe retrying another screen if hits a wall
-        hit = map.fall_on_wall(px, py, itemx, itemy, PICKUP_RADIUS);
+        hit = map.fall_on_wall(px, py, itemx, itemy, POWERUP_RADIUS);
         if (!hit)
             break;
-        if (--runaway < 0) {
-            net->broadcast_text(msg_warning, "ITEM SPAWN RUNAWAY");
+        if (--runaway < 0)
             return;
-        }
     }
     item[p].kind = pupConfig.choose_powerup_kind();
     item[p].px = px;
@@ -1712,13 +1957,16 @@ void ServerWorld::respawn_pickup(int p) {
     item[p].y = itemy;
     for (int i = 0; i < maxplayers; i++)
         if (player[i].used && player[i].roomx == px && player[i].roomy == py)
-            net->sendPickupVisible(i, p, item[p]);
+            net->sendPowerupVisible(i, p, item[p]);
+
+    if (host->recording_active())
+        net->sendPowerupVisible(pid_record, p, item[p]);
 }
 
-void ServerWorld::check_pickup_creation(bool instant) {
+void ServerWorld::check_powerup_creation(bool instant) throw () {
     //count number of items
     int ic = 0;
-    for (int i = 0; i < MAX_PICKUPS; i++)
+    for (int i = 0; i < MAX_POWERUPS; i++)
         if (item[i].kind != Powerup::pup_unused)
             ic++;
     const int pc = host->get_player_count();
@@ -1731,12 +1979,12 @@ void ServerWorld::check_pickup_creation(bool instant) {
         real_min = real_max;
     if (ic >= real_min)
         return;
-    //while number of players > number of pickups: create a pickup and ic++
-    for (int i = 0; i < MAX_PICKUPS;  i++)
+    //while number of players > number of powerups: create a powerup and ic++
+    for (int i = 0; i < MAX_POWERUPS;  i++)
         if (item[i].kind == Powerup::pup_unused) {
             item[i].kind = Powerup::pup_respawning;
             if (instant)
-                respawn_pickup(i);
+                respawn_powerup(i);
             else
                 item[i].respawn_time = get_time() + pupConfig.getRespawnTime();
             if (++ic >= real_min)
@@ -1744,16 +1992,11 @@ void ServerWorld::check_pickup_creation(bool instant) {
         }
 }
 
-void ServerWorld::game_touch_pickup(int pid, int pk) {
+void ServerWorld::game_touch_powerup(int pid, int pk) throw () {
     Powerup& it = item[pk];
-
-    //send "item removed" message to all players on the current screen
-    char lebuf[256]; int count = 0;
-    writeByte(lebuf, count, data_pup_picked);
-    writeByte(lebuf, count, static_cast<NLubyte>(pk));  //what item id
-    net->broadcast_screen_message(it.px, it.py, lebuf, count);
-
     ServerPlayer& pl = player[pid];
+
+    net->broadcastPowerupPicked(it.px, it.py, pk);
 
     // Check which powerups player has.
     bool pups[Powerup::pup_last_real + 1];
@@ -1771,7 +2014,7 @@ void ServerWorld::game_touch_pickup(int pid, int pk) {
 
     switch (it.kind) {
     /*break;*/ case Powerup::pup_shield: {
-            pl.item_shield = true;
+            pl.item_shield = pupConfig.pup_shield_hits ? pupConfig.pup_shield_hits : 1;
 
             //increase health to minimum of 100
             if (pl.health < 100)
@@ -1784,7 +2027,7 @@ void ServerWorld::game_touch_pickup(int pid, int pk) {
                     pl.energy = 200;
             }
 
-            net->broadcast_screen_sample(pl.id, SAMPLE_SHIELD_PICKUP);
+            net->broadcast_screen_sample(pl.id, SAMPLE_SHIELD_POWERUP);
         }
         break; case Powerup::pup_turbo: {
             double itemTime = pl.item_turbo_time - get_time();
@@ -1852,11 +2095,11 @@ void ServerWorld::game_touch_pickup(int pid, int pk) {
     // unused item
     it.kind = Powerup::pup_unused;
 
-    // check pickup creation
-    check_pickup_creation(false);
+    // check powerup creation
+    check_powerup_creation(false);
 }
 
-void ServerWorld::drop_worst_powerup(ServerPlayer& pl) {
+void ServerWorld::drop_worst_powerup(ServerPlayer& pl) throw () {
     if (pl.item_turbo || pl.item_shadow() || pl.item_power) {
         double mintime = 1e50;
         if (pl.item_turbo)
@@ -1879,7 +2122,7 @@ void ServerWorld::drop_worst_powerup(ServerPlayer& pl) {
         net->broadcast_screen_sample(pl.id, SAMPLE_GETDEATHBRINGER);
     }
     else if (pl.item_shield) {
-        pl.item_shield = false;
+        pl.item_shield = 0;
         net->broadcast_screen_sample(pl.id, SAMPLE_SHIELD_LOST);
     }
     else {
@@ -1888,26 +2131,25 @@ void ServerWorld::drop_worst_powerup(ServerPlayer& pl) {
     }
 }
 
-//game player screen changed
-// --> send any pickups on screen
-void ServerWorld::game_player_screen_change(int p) {
-    //check for new pickups visible
-    for (int i = 0; i < MAX_PICKUPS; i++) {
+void ServerWorld::game_player_screen_change(int p) throw () {
+    player[p].record_position = true;
+    //check for new powerups visible
+    for (int i = 0; i < MAX_POWERUPS; i++) {
         const Powerup& it = item[i];
         if (it.kind != Powerup::pup_unused && it.kind != Powerup::pup_respawning &&
             it.px == player[p].roomx && it.py == player[p].roomy)
-                net->sendPickupVisible(p, i, item[i]);
+                net->sendPowerupVisible(p, i, item[i]);
     }
-    // check for rockets in the new room
+    // check for rockets visible to the new room
     for (int i = 0; i < MAX_ROCKETS; ++i)
-        if (rock[i].owner != -1 && rock[i].px == player[p].roomx && rock[i].py == player[p].roomy && !(rock[i].vislist & (1 << p))) {
-            rock[i].vislist |= (1 << p);
+        if (rock[i].owner != -1 && !(rock[i].vislist & (1u << p)) && doesPlayerSeeRocket(player[p], rock[i].px, rock[i].py)) {
+            rock[i].vislist |= (1u << p);
             net->sendOldRocketVisible(p, i, rock[i]);
         }
 }
 
-void ServerWorld::resetPlayer(int target, double time_penalty) {    // take the player out of the game; the clients must be informed and this function doesn't do that
-    player[target].health = 0;
+void ServerWorld::resetPlayer(int target, double time_penalty) throw () {    // take the player out of the game; the clients must be informed and this function doesn't do that
+    player[target].health = player[target].energy = 0;
 
     player[target].visibility = 255;
     player[target].item_power = false;
@@ -1925,34 +2167,37 @@ void ServerWorld::resetPlayer(int target, double time_penalty) {    // take the 
         if (player[i].used)
             ++ts[i / TSIZE];
     const int plTeam = target / TSIZE;
-    double timeDelay = config.getRespawnTime(ts[plTeam], ts[1 - plTeam]) + time_penalty;
-    if (player[target].item_deathbringer && timeDelay < 1.8)    // the time required for a deathbringer explosion to reach the other end of the screen
-        timeDelay = 1.8;
-    player[target].respawn_time = get_time() + timeDelay;
+    pair<double, double> respawnTime = config.getRespawnTime(ts[plTeam], ts[1 - plTeam]);
+    respawnTime.first += time_penalty;
+    if (respawnTime.first < 0) { // a negative time_penalty can cause this; in that case we want to eliminate extra waiting time too
+        respawnTime.second += respawnTime.first;
+        respawnTime.first = 0;
+    }
+    player[target].frames_to_respawn = iround_bound(respawnTime.first * 10.);
+    player[target].extra_frames_to_respawn = iround_bound(max(0., respawnTime.second) * 10.);
     player[target].stats().kill(get_time(), true);
     player[target].dead = true;
+    net->send_waiting_time(player[target]);
 }
 
-void ServerWorld::killPlayer(int target, bool time_penalty) {   // kill the player in the usual way with score penalties and deathbringer effect; the clients must be informed and this function doesn't do that
+void ServerWorld::killPlayer(int target, bool time_penalty) throw () {   // kill the player in the usual way with score penalties and deathbringer effect; the clients must be informed and this function doesn't do that
     host->score_neg(target, 1); // score neg points because of death
     if (dropFlagIfAny(target))
         host->score_neg(target, 1); // score neg points because of losing the flag
 
     if (player[target].item_deathbringer) {
-        //record time to simulate the deathbringer explosion
-        player[target].item_deathbringer_time = frame;
-        player[target].deathbringer_team = player[target].team();
+        addDeathbringerExplosion(DeathbringerExplosion(frame, player[target]));
         net->sendDeathbringer(target, player[target]);
     }
 
     if (pupConfig.pups_drop_at_death)
-        drop_pickup(player[target]);
+        drop_powerup(player[target]);
 
     resetPlayer(target, (player[target].item_deathbringer || time_penalty) ? config.getDeathbringerWaitingTime() : 0);  // clients must be informed by the caller
 }
 
-void ServerWorld::damagePlayer(int target, int attacker, int damage, DamageType type) {   // inflict damage on target
-    if (player[target].health <= 0)
+void ServerWorld::damagePlayer(int target, int attacker, int damage, DamageType type) throw () {   // inflict damage on target
+    if (player[target].dead || frame < player[target].start_take_damage_frame)
         return;
 
     // shadow powerup: show player
@@ -1960,16 +2205,16 @@ void ServerWorld::damagePlayer(int target, int attacker, int damage, DamageType 
         player[target].visibility = maximum_shadow_visibility;
 
     if (player[target].item_shield) {
-        if (pupConfig.pup_shield_one_hit) {
-            player[target].item_shield = false;
-            if (type != DT_deathbringer)
+        if (pupConfig.pup_shield_hits) {
+            player[target].item_shield--;
+            if (!player[target].item_shield && type != DT_deathbringer)
                 net->broadcast_screen_sample(target, SAMPLE_SHIELD_LOST);
         }
         else {
             player[target].energy -= damage;
             if (player[target].energy <= 0) {
                 player[target].energy = 0;
-                player[target].item_shield = false;
+                player[target].item_shield = 0;
                 if (type != DT_deathbringer)
                     net->broadcast_screen_sample(target, SAMPLE_SHIELD_LOST);
             }
@@ -1982,59 +2227,61 @@ void ServerWorld::damagePlayer(int target, int attacker, int damage, DamageType 
         player[target].health -= damage;
         //freeze target's gun
         if (type != DT_collision)
-            player[target].next_shoot_time = get_time() + 1.0;
+            player[target].next_shoot_frame = frame + config.get_hit_stun_time_frames();
     }
     if (player[target].health > 0)
         return;
 
-    const int tateam = target / TSIZE;
-    const int atteam = attacker / TSIZE;
-    const bool same_team = (tateam == atteam);
-    if (!same_team)
-        host->score_frag(attacker, 1);      // frag to attacker for the kill
-    else
-        host->score_frag(attacker, -2);     // take two frags for killing own player
-
-    bool carrier_defended = false, flag_defended = false;
-    if (!same_team) {
-        // Check if an enemy flag or a wild flag is carried in the target's screen by a teammate.
-        for (int i = atteam * TSIZE; i < (atteam + 1) * TSIZE; i++)
-            if (player[i].used && player[i].stats().has_flag() && i != attacker && player[i].roomx == player[target].roomx && player[i].roomy == player[target].roomy) {
-                carrier_defended = true;
-                host->score_frag(attacker, 1);
-                break;  // only one frag even for defending multiple carriers
-            }
-        // Check if an own or enemy flag is lying on the ground in the target's screen.
-        if (!lock_team_flags_in_effect()) {   // Not much defending or attacking if the flag couldn't be moved anyway.
-            for (vector<Flag>::const_iterator fi = teams[atteam].flags().begin(); fi != teams[atteam].flags().end(); ++fi)
-                if (!fi->carried() && fi->position().px == player[target].roomx && fi->position().py == player[target].roomy) {
-                    flag_defended = true;
-                    if (!carrier_defended)
-                        host->score_frag(attacker, 1);
-                    break;  // only one frag even for defending multiple flags
-                }
-            if (!carrier_defended && !flag_defended)
-                for (vector<Flag>::const_iterator fi = teams[tateam].flags().begin(); fi != teams[tateam].flags().end(); ++fi)
-                    if (!fi->carried() && fi->position().px == player[target].roomx && fi->position().py == player[target].roomy) {
-                        host->score_frag(attacker, 1);
-                        break;  // only one frag even for attacking multiple flags
-                    }
-        }
-    }
     const bool flag = player[target].stats().has_flag();
     const bool wild_flag = player[target].stats().has_wild_flag();
-    if (flag) {
-        if (!same_team) {
-            player[attacker].stats().add_carrier_kill();
-            host->score_frag(attacker, 1);  // extra frag for fragging a carrier
-        }
+    bool carrier_defended = false, flag_defended = false;
+    const int tateam = target / TSIZE;
+    if (attacker < maxplayers) { // the reverse happens with deathbringers whose owner has left the server
+        const int atteam = attacker / TSIZE;
+        const bool same_team = (tateam == atteam);
+        if (!same_team)
+            host->score_frag(attacker, 1);      // frag to attacker for the kill
         else
-            host->score_frag(attacker, -1); // extra penalty for fragging own carrier
-    }
+            host->score_frag(attacker, -2);     // take two frags for killing own player
 
-    if (!same_team) {
-        player[attacker].stats().add_kill(type == DT_deathbringer);
-        teams[atteam].add_kill();
+        if (!same_team) {
+            // Check if an enemy flag or a wild flag is carried in the target's screen by a teammate.
+            for (int i = atteam * TSIZE; i < (atteam + 1) * TSIZE; i++)
+                if (player[i].used && player[i].stats().has_flag() && i != attacker && player[i].roomx == player[target].roomx && player[i].roomy == player[target].roomy) {
+                    carrier_defended = true;
+                    host->score_frag(attacker, 1);
+                    break;  // only one frag even for defending multiple carriers
+                }
+            // Check if an own or enemy flag is lying on the ground in the target's screen.
+            if (!lock_team_flags_in_effect()) {   // Not much defending or attacking if the flag couldn't be moved anyway.
+                for (vector<Flag>::const_iterator fi = teams[atteam].flags().begin(); fi != teams[atteam].flags().end(); ++fi)
+                    if (!fi->carried() && fi->position().px == player[target].roomx && fi->position().py == player[target].roomy) {
+                        flag_defended = true;
+                        if (!carrier_defended)
+                            host->score_frag(attacker, 1);
+                        break;  // only one frag even for defending multiple flags
+                    }
+                if (!carrier_defended && !flag_defended)
+                    for (vector<Flag>::const_iterator fi = teams[tateam].flags().begin(); fi != teams[tateam].flags().end(); ++fi)
+                        if (!fi->carried() && fi->position().px == player[target].roomx && fi->position().py == player[target].roomy) {
+                            host->score_frag(attacker, 1);
+                            break;  // only one frag even for attacking multiple flags
+                        }
+            }
+        }
+        if (flag) {
+            if (!same_team) {
+                player[attacker].stats().add_carrier_kill();
+                host->score_frag(attacker, 1);  // extra frag for fragging a carrier
+            }
+            else
+                host->score_frag(attacker, -1); // extra penalty for fragging own carrier
+        }
+
+        if (!same_team) {
+            player[attacker].stats().add_kill(type == DT_deathbringer);
+            teams[atteam].add_kill();
+        }
     }
     player[target].stats().add_death(type == DT_deathbringer, static_cast<int>(get_time()));
     teams[tateam].add_death();
@@ -2043,35 +2290,46 @@ void ServerWorld::damagePlayer(int target, int attacker, int damage, DamageType 
     killPlayer(target, false);
 }
 
-void ServerWorld::removePlayer(int pid) {
-    for (int r = 0; r < MAX_ROCKETS; r++)   // remove all shots from this player
+void ServerWorld::removePlayer(int pid) throw () {
+    for (int r = 0; r < MAX_ROCKETS; r++) { // remove rockets, and player from their vislists
         if (rock[r].owner == pid)
             deleteRocket(r, 0, 0, 255);
+        else
+            rock[r].vislist &= ~(1u << pid);
+    }
+    if (maxplayers < MAX_PLAYERS) { // disown deathbringers if there is a convenient pseudo-pid to assign; otherwise just hope that no one gets the same pid soon (data_kill needs some player id for killer)
+        for (list<DeathbringerExplosion>::iterator dbi = dbExplosions.begin(); dbi != dbExplosions.end(); ++dbi)
+            if (dbi->player() == pid)
+                dbi->pidChange(MAX_PLAYERS - 1);
+        for (int i = 0; i < maxplayers; ++i)
+            if (player[i].deathbringer_attacker == pid)
+                player[i].deathbringer_attacker = MAX_PLAYERS - 1;
+    }
 
     dropFlagIfAny(pid, true);
 
     player[pid].used = false;
 }
 
-void ServerWorld::suicide(int pid) {
-    if (player[pid].health > 0) {
-        const bool flag = player[pid].stats().has_flag();
-        bool wild_flag = false;
-        if (flag)
-            for (vector<Flag>::const_iterator fi = wild_flags.begin(); fi != wild_flags.end(); ++fi)
-                if (fi->carrier() == pid) {
-                    wild_flag = true;
-                    break;
-                }
-        host->score_frag(pid, -1);
-        player[pid].stats().add_suicide(static_cast<int>(get_time()));
-        teams[pid / TSIZE].add_suicide();
-        net->broadcast_suicide(player[pid], flag, wild_flag);
-        killPlayer(pid, true);
-    }
+void ServerWorld::suicide(int pid) throw () {
+    if (player[pid].dead)
+        return;
+    const bool flag = player[pid].stats().has_flag();
+    bool wild_flag = false;
+    if (flag)
+        for (vector<Flag>::const_iterator fi = wild_flags.begin(); fi != wild_flags.end(); ++fi)
+            if (fi->carrier() == pid) {
+                wild_flag = true;
+                break;
+            }
+    host->score_frag(pid, -1);
+    player[pid].stats().add_suicide(static_cast<int>(get_time()));
+    teams[pid / TSIZE].add_suicide();
+    net->broadcast_suicide(player[pid], flag, wild_flag);
+    killPlayer(pid, true);
 }
 
-NLubyte ServerWorld::getFreeRocket() {
+uint8_t ServerWorld::getFreeRocket() throw () {
     for (int i = 0; i < MAX_ROCKETS; i++)
         if (rock[i].owner == -1) {
             rock[i].owner = 0;
@@ -2083,68 +2341,103 @@ NLubyte ServerWorld::getFreeRocket() {
     return i;
 }
 
-void ServerWorld::shootRockets(int pid, int shots) {
-    const int px = player[pid].roomx, py = player[pid].roomy, x = int(player[pid].lx), y = int(player[pid].ly);
+bool ServerWorld::doesPlayerSeeRocket(ServerPlayer& pl, int roomx, int roomy) const throw () {
+    if (pl.protocolExtensionsLevel < 0) // older clients can't show other rooms anyway, and will play some sounds for all rockets
+        return pl.roomx == roomx && pl.roomy == roomy;
+    int dx = positiveModulo(pl.roomx - roomx, map.w),
+        dy = positiveModulo(pl.roomy - roomy, map.h);
+    if (dx > map.w / 2)
+        dx = map.w - dx;
+    if (dy > map.h / 2)
+        dy = map.h - dy;
+    return dx + dy <= config.see_rockets_distance;
+}
+
+void ServerWorld::shootRockets(int pid, int shots) throw () {
+    const int px = player[pid].roomx, py = player[pid].roomy, x = static_cast<int>(player[pid].lx), y = static_cast<int>(player[pid].ly); // cast to be in sync: the coords need to be the same as client receives
 
     player[pid].stats().add_shot();
     teams[pid / TSIZE].add_shot();
 
-    NLubyte sid[16];
+    uint8_t sid[16];
     for (int i = 0; i < shots; ++i)
         sid[i] = getFreeRocket();
 
     ServerPhysicsCallbacks cb(*this);
-    WorldBase::shootRockets(cb, pid, shots, player[pid].gundir, sid, 0, pid/TSIZE, player[pid].item_power, px, py, x, y);
+    WorldBase::shootRockets(cb, pid, shots, player[pid].attackGunDir, sid, 0, pid/TSIZE, player[pid].item_power, px, py, x, y);
 
     //build people-that-know DOUBLE WORD (32bits == 32players max)
     //send message to players on the same screen
-    NLulong vislist = 0;
+    uint32_t vislist = 0;
     for (int p = 0; p < maxplayers; p++)
-        if (player[p].used && player[p].roomx == px && player[p].roomy == py)
-            vislist |= (1 << p);
+        if (player[p].used && doesPlayerSeeRocket(player[p], px, py))
+            vislist |= (1u << p);
 
     //mark all created rockets with the vislist
     for (int k = 0; k < shots; k++)
         rock[sid[k]].vislist = vislist;
 
-    net->sendRocketMessage(shots, player[pid].gundir, sid, pid / TSIZE, player[pid].item_power, px, py, x, y);
+    net->sendRocketMessage(shots, player[pid].attackGunDir, sid, pid, player[pid].item_power, px, py, x, y, vislist);
 }
 
-void ServerWorld::deleteRocket(int rid, NLshort hitx, NLshort hity, int targ) {
+void ServerWorld::deleteRocket(int rid, int16_t hitx, int16_t hity, int targ) throw () {
     Rocket& r = rock[rid];
     net->sendRocketDeletion(r.vislist, rid, hitx, hity, targ);
     r.owner = -1;
 }
 
-void ServerWorld::changeRocketsOwner(int source, int target) {
-    for (int i = 0; i < MAX_ROCKETS; i++)
+void ServerWorld::changeEmbeddedPids(int source, int target) throw () {
+    for (int i = 0; i < MAX_ROCKETS; i++) {
         if (rock[i].owner == source)
             rock[i].owner = target;
+        if (rock[i].vislist & (1u << source))
+            rock[i].vislist = rock[i].vislist & ~(1u << source) | (1u << target);
+    }
+    for (list<DeathbringerExplosion>::iterator dbi = dbExplosions.begin(); dbi != dbExplosions.end(); ++dbi)
+        if (dbi->player() == source)
+            dbi->pidChange(target);
+    for (int i = 0; i < MAX_PLAYERS; ++i)
+        if (player[i].deathbringer_attacker == source)
+            player[i].deathbringer_attacker = target;
 }
 
-void ServerWorld::swapRocketOwners(int a, int b) {
+void ServerWorld::swapEmbeddedPids(int a, int b) throw () {
     for (int i = 0; i < MAX_ROCKETS; i++) {
         if (rock[i].owner == a)
             rock[i].owner = b;
         else if (rock[i].owner == b)
             rock[i].owner = a;
+        if (((rock[i].vislist & (1u << a)) != 0) != ((rock[i].vislist & (1u << b)) != 0))
+            rock[i].vislist ^= (1u << a) | (1u << b);
+    }
+    for (list<DeathbringerExplosion>::iterator dbi = dbExplosions.begin(); dbi != dbExplosions.end(); ++dbi) {
+        if (dbi->player() == a)
+            dbi->pidChange(b);
+        else if (dbi->player() == b)
+            dbi->pidChange(a);
+    }
+    for (int i = 0; i < MAX_PLAYERS; ++i) {
+        if (player[i].deathbringer_attacker == a)
+            player[i].deathbringer_attacker = b;
+        else if (player[i].deathbringer_attacker == b)
+            player[i].deathbringer_attacker = a;
     }
 }
 
-void ServerWorld::addMovementDistanceCallback(int pid, double dist) {
+void ServerWorld::addMovementDistanceCallback(int pid, double dist) throw () {
     player[pid].stats().add_movement(dist);
     teams[pid / TSIZE].add_movement(dist);
 }
 
-void ServerWorld::playerScreenChangeCallback(int pid) {
+void ServerWorld::playerScreenChangeCallback(int pid) throw () {
     game_player_screen_change(pid);
 }
 
-void ServerWorld::rocketHitWallCallback(int rid) {
+void ServerWorld::rocketHitWallCallback(int rid) throw () {
     rock[rid].owner = -1;
 }
 
-bool ServerWorld::rocketHitPlayerCallback(int rid, int pid) {
+bool ServerWorld::rocketHitPlayerCallback(int rid, int pid) throw () {
     //record wether the player had shield, if yes, will not blink him
     const bool had_shield = player[pid].item_shield;
 
@@ -2164,20 +2457,20 @@ bool ServerWorld::rocketHitPlayerCallback(int rid, int pid) {
     teams[pid / TSIZE].add_shot_take();
 
     //if player not dead, push him
-    if (player[pid].health > 0) {
-        const double mul = .33 * (rock[rid].team == pid / TSIZE ? physics.friendly_fire : 1.);
+    if (!player[pid].dead) {
+        const double mul = 15. / physics.rocket_speed * (rock[rid].team == pid / TSIZE ? physics.friendly_fire : 1.); // divide by rocket_speed to remove its effect in rock.sx,sy
         player[pid].sx += rock[rid].sx * mul;
         player[pid].sy += rock[rid].sy * mul;
     }
 
     if (had_shield)
-        deleteRocket(rid, (NLshort)rock[rid].x, (NLshort)rock[rid].y, 252);     //do not blink
+        deleteRocket(rid, (int16_t)rock[rid].x, (int16_t)rock[rid].y, 252);     //do not blink
     else
-        deleteRocket(rid, (NLshort)rock[rid].x, (NLshort)rock[rid].y, pid);     //blink
-    return player[pid].health <= 0;
+        deleteRocket(rid, (int16_t)rock[rid].x, (int16_t)rock[rid].y, pid);     //blink
+    return player[pid].dead;
 }
 
-PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int pid1, int pid2, double speed) {
+PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int pid1, int pid2, double speed) throw () {
     if (physics.player_collisions != PhysicalSettings::PC_special)
         return PhysicsCallbacksBase::PlayerHitResult(false, false, 1., 1.);
 
@@ -2186,7 +2479,7 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
     ServerPlayer& pl1 = player[pid1];
     ServerPlayer& pl2 = player[pid2];
 
-    nAssert(pl1.health > 0 && pl2.health > 0);
+    nAssert(!pl1.dead && !pl2.dead);
 
     bool toss_a = false;
     bool toss_b = false;
@@ -2227,7 +2520,8 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
     if (pl1.team() != pl2.team()) {
         // deathbringer player colliding with an enemy player without deathbringer causes a short "deathbringer infection"
         if (pl1.item_deathbringer && !pl2.item_deathbringer) {
-            pl2.deathbringer_end = pl2.next_shoot_time = get_time() + deathbringerEffectTime;
+            pl2.deathbringer_end = get_time() + deathbringerEffectTime;
+            pl2.next_shoot_frame = frame + iround(deathbringerEffectTime * 10.);
             pl2.deathbringer_attacker = pid1;
             // amplify the collision result to help on casting both players apart
             toss_a = true;
@@ -2236,7 +2530,8 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
             net->broadcast_screen_sample(pid2, SAMPLE_HITDEATHBRINGER);
         }
         else if (pl2.item_deathbringer && !pl1.item_deathbringer) {
-            pl1.deathbringer_end = pl1.next_shoot_time = get_time() + deathbringerEffectTime;
+            pl1.deathbringer_end = get_time() + deathbringerEffectTime;
+            pl1.next_shoot_frame = frame + iround(deathbringerEffectTime * 10.);
             pl1.deathbringer_attacker = pid2;
             toss_a = true;
             toss_b = true;
@@ -2252,10 +2547,10 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
         const int shieldColdam = static_cast<int>(speed * 60);  // 60 at top running speed without turbo - this only applies to the shielded player
         if (shieldHitBy1) {
             toss_b = true;
-            pl2.next_shoot_time = get_time() + 1.0;
+            pl2.next_shoot_frame = frame + config.get_hit_stun_time_frames();
             if (shieldHitBy2) {
                 toss_a = true;
-                pl1.next_shoot_time = get_time() + 1.0;
+                pl1.next_shoot_frame = frame + config.get_hit_stun_time_frames();
                 net->broadcast_screen_sample(pid1, SAMPLE_SHIELD_LOST); // applies to both players
                 pl1.energy = pl2.energy = 0;
                 pl1.item_shield = pl2.item_shield = 0;
@@ -2265,7 +2560,7 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
         }
         else if (shieldHitBy2) {
             toss_a = true;
-            pl1.next_shoot_time = get_time() + 1.0;
+            pl1.next_shoot_frame = frame + config.get_hit_stun_time_frames();
             damagePlayer(pid2, pid1, shieldColdam, DT_collision);
         }
         // works both ways
@@ -2303,15 +2598,15 @@ PhysicsCallbacksBase::PlayerHitResult ServerWorld::playerHitPlayerCallback(int p
     return PhysicsCallbacksBase::PlayerHitResult(pl1.dead, pl2.dead, toss_a ? 2. : 1., toss_b ? 2. : 1.);
 }
 
-void ServerWorld::rocketOutOfBoundsCallback(int rid) {
+void ServerWorld::rocketOutOfBoundsCallback(int rid) throw () {
     rock[rid].owner = -1;
 }
 
-bool ServerWorld::shouldApplyPhysicsToPlayerCallback(int pid) {
-    return player[pid].health > 0;
+bool ServerWorld::shouldApplyPhysicsToPlayerCallback(int pid) throw () {
+    return !player[pid].dead;
 }
 
-void WorldBase::executeBounce(PlayerBase& ply, const Coords& bounceVec, double plyRadius) { // needs plyRadius as a shortcut to bounceVec's length
+void WorldBase::executeBounce(PlayerBase& ply, const Coords& bounceVec, double plyRadius) throw () { // needs plyRadius as a shortcut to bounceVec's length
     // bounce: speed component parallel with bounceVec ( (S dot b / |b|) * b / |b| ) is reversed, while perpendicular component is kept
     // : S -= 2* ( (S dot b) * b / |b|^2 )  ; |b| is always plyRadius
     // to add a specific speed loss only in the bounce direction, reduce from the 2.
@@ -2324,7 +2619,7 @@ void WorldBase::executeBounce(PlayerBase& ply, const Coords& bounceVec, double p
 }
 
 // Bounce two players from each other.
-pair<bool, bool> WorldBase::executeBounce(PlayerBase& pl1, PlayerBase& pl2, PhysicsCallbacksBase& callback) const {
+pair<bool, bool> WorldBase::executeBounce(PlayerBase& pl1, PlayerBase& pl2, PhysicsCallbacksBase& callback) const throw () {
     // the formulas come simplified from a more complex bounce physics system, so the comments here aren't very descriptive
     const Coords ds(pl2.lx - pl1.lx, pl2.ly - pl1.ly);
     const double r = sqrt(ds.first * ds.first + ds.second * ds.second);
@@ -2358,7 +2653,7 @@ pair<bool, bool> WorldBase::executeBounce(PlayerBase& pl1, PlayerBase& pl2, Phys
     return res.deaths;
 }
 
-void WorldBase::limitPlayerSpeed(PlayerBase& pl) const {
+void WorldBase::limitPlayerSpeed(PlayerBase& pl) const throw () {
     const double playerSpeedHardLimit = physics.max_run_speed * physics.turbo_mul * 4.;
     if (fabs(pl.sx) > playerSpeedHardLimit || fabs(pl.sy) > playerSpeedHardLimit) { // no need to be exact here; per-axis view is adequate
         const double spd = sqrt(sqr(pl.sx) + sqr(pl.sy));
@@ -2368,7 +2663,7 @@ void WorldBase::limitPlayerSpeed(PlayerBase& pl) const {
     }
 }
 
-void WorldBase::applyPhysics(PhysicsCallbacksBase& callback, double plyRadius, double fraction) {
+void WorldBase::applyPhysics(PhysicsCallbacksBase& callback, double plyRadius, double fraction) throw () {
     if (fraction < .001)
         return;
 
@@ -2408,15 +2703,63 @@ void WorldBase::applyPhysics(PhysicsCallbacksBase& callback, double plyRadius, d
             applyPhysicsToRoom(map.room[rx][ry], roomPly[rx][ry], roomRock[rx][ry], callback, plyRadius, fraction);
 }
 
-void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<int>& rrock, PhysicsCallbacksBase& callback, double plyRadius, double fraction) {
+void WorldBase::applyPhysicsToPlayerInIsolation(PlayerBase& pl, double plyRadius, double fraction) throw () {
+    // this function is heavily copied from applyPhysicsToRoom; any changes should be made primarily there //#fix: refactor?
+
+    double subFrame = 0.;   // signifies current time within frame, goes from 0 to fraction (0 <= fraction <= 1)
+    for (;;) {
+        const BounceData bounce = getTimeTillBounce(map.room[pl.roomx][pl.roomy], pl, plyRadius, fraction);
+        const double bounceTime = bounce.first + subFrame;
+        const double mt = min(fraction, max(bounceTime, subFrame + .01)); // mt is where subFrame will be advanced to for the next round
+        const double plTime = min(bounceTime - .001, mt);
+        if (plTime > subFrame) {
+            pl.move(plTime - subFrame);
+            int rdx = 0, rdy = 0; // room change in either direction (-1 or +1 if changed)
+            double tbx = -1, tby = -1; // time to take back; used if room changed in the respective direction
+            if      (pl.lx <   0) { rdx = -1; nAssert(pl.sx < 0); tbx =  pl.lx        / pl.sx; }
+            else if (pl.lx > plw) { rdx = +1; nAssert(pl.sx > 0); tbx = (pl.lx - plw) / pl.sx; }
+            if      (pl.ly <   0) { rdy = -1; nAssert(pl.sy < 0); tby =  pl.ly        / pl.sy; }
+            else if (pl.ly > plh) { rdy = +1; nAssert(pl.sy > 0); tby = (pl.ly - plh) / pl.sy; }
+            if (rdx || rdy) {
+                double tb;
+                if (tbx > tby) {
+                    tb = tbx;
+                    pl.roomx = positiveModulo(pl.roomx + rdx, map.w);
+                    pl.lx -= rdx * plw;
+                }
+                else {
+                    tb = tby;
+                    pl.roomy = positiveModulo(pl.roomy + rdy, map.h);
+                    pl.ly -= rdy * plh;
+                }
+                // take back the time by which the player went over the edge and reapply in the new room
+                pl.move(-tb);
+                #ifdef EXTRA_DEBUG
+                nAssert(fabs(fmod(pl.lx + plw / 2, plw) - plw / 2) < .001 || fabs(fmod(pl.ly + plh / 2, plh) - plh / 2) < .001);
+                #endif
+                subFrame = max(plTime - tb, subFrame + .01); // ensure progress
+                continue;
+            }
+        }
+        subFrame = mt;
+        if (subFrame > fraction - .001)
+            break;
+        executeBounce(pl, bounce.second, plyRadius);
+        //callback.playerHitWall(bPly); // should be enabled (maybe other callbacks too) if the client ever needs to (indirectly) execute this method
+    }
+}
+
+void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<int>& rrock, PhysicsCallbacksBase& callback, double plyRadius, double fraction) throw () {
+    // many changes in this method should also be made in applyPhysicsToPlayerInIsolation
+
     vector<BounceData> plyMoveMax;  // plyMoveMax changes when player bounces
     vector<double> rockMoveMax; // rockMoveMax is fixed
 
     typedef unsigned int uint;  // for loop counters, to avoid the brainless 'signed vs unsigned comparison' warning by G++
 
-    for (vector<int>::const_iterator pi=rply.begin(); pi!=rply.end(); ++pi)
+    for (vector<int>::const_iterator pi = rply.begin(); pi != rply.end(); ++pi)
         plyMoveMax.push_back(getTimeTillBounce(room, player[*pi], plyRadius, fraction));
-    for (vector<int>::const_iterator ri=rrock.begin(); ri!=rrock.end(); ++ri)
+    for (vector<int>::const_iterator ri = rrock.begin(); ri != rrock.end(); ++ri)
         rockMoveMax.push_back(getTimeTillWall(room, rock[*ri], fraction));
 
     double subFrame = 0.;   // signifies current time within frame, goes from 0 to fraction (0 <= fraction <= 1)
@@ -2444,6 +2787,8 @@ void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<i
         if (callback.collideToRockets()) {
             for (uint pi = 0; pi < rply.size(); ++pi) {
                 const int pid = rply[pi];
+                if (!callback.collidesToRockets(pid))
+                    continue;
                 for (uint ri = 0; ri < rrock.size(); ++ri) {
                     const int rid = rrock[ri];
                     if (rock[rid].team == pid / TSIZE && (physics.friendly_fire == 0. || rock[rid].owner == pid))   // friendly rocket
@@ -2469,8 +2814,12 @@ void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<i
         if (physics.player_collisions != PhysicalSettings::PC_none) {
             for (uint pi = 0; pi < rply.size(); ++pi) {
                 const int pid = rply[pi];
+                if (!callback.collidesToPlayers(pid))
+                    continue;
                 for (uint ti = pi + 1; ti < rply.size(); ++ti) {
                     const int tid = rply[ti];
+                    if (!callback.collidesToPlayers(tid))
+                        continue;
                     const double time = getTimeTillCollision(player[pid], player[tid], 2. * plyRadius);
                     if (time < minPlyCollision) {
                         minPlyCollision = time;
@@ -2509,15 +2858,36 @@ void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<i
             pl.move(plTime - subFrame);
             if (callback.gatherMovementDistance())
                 callback.addMovementDistance(rply[pi], (plTime - subFrame) * sqrt( pl.sx*pl.sx + pl.sy*pl.sy ));
-            bool rch = false;
+            int rdx = 0, rdy = 0; // room change in either direction (-1 or +1 if changed)
+            double tbx = -1, tby = -1; // time to take back; used if room changed in the respective direction
             if (callback.allowRoomChange()) {
-                if (pl.lx <   0) { nAssert(pl.sx != 0); pl.ly -=  pl.lx     *pl.sy/pl.sx; pl.lx = plw; rch = true; if (--pl.roomx <      0) pl.roomx = map.w - 1; }
-                if (pl.lx > plw) { nAssert(pl.sx != 0); pl.ly -= (pl.lx-plw)*pl.sy/pl.sx; pl.lx =   0; rch = true; if (++pl.roomx >= map.w) pl.roomx =         0; }
-                if (pl.ly <   0) { nAssert(pl.sy != 0); pl.lx -=  pl.ly     *pl.sx/pl.sy; pl.ly = plh; rch = true; if (--pl.roomy <      0) pl.roomy = map.h - 1; }
-                if (pl.ly > plh) { nAssert(pl.sy != 0); pl.lx -= (pl.ly-plh)*pl.sx/pl.sy; pl.ly =   0; rch = true; if (++pl.roomy >= map.h) pl.roomy =         0; }
+                if      (pl.lx <   0) { rdx = -1; nAssert(pl.sx < 0); tbx =  pl.lx        / pl.sx; }
+                else if (pl.lx > plw) { rdx = +1; nAssert(pl.sx > 0); tbx = (pl.lx - plw) / pl.sx; }
+                if      (pl.ly <   0) { rdy = -1; nAssert(pl.sy < 0); tby =  pl.ly        / pl.sy; }
+                else if (pl.ly > plh) { rdy = +1; nAssert(pl.sy > 0); tby = (pl.ly - plh) / pl.sy; }
             }
-            if (rch) {
+            if (rdx || rdy) {
+                double tb;
+                if (tbx > tby) {
+                    tb = tbx;
+                    pl.roomx = positiveModulo(pl.roomx + rdx, map.w);
+                    pl.lx -= rdx * plw;
+                }
+                else {
+                    tb = tby;
+                    pl.roomy = positiveModulo(pl.roomy + rdy, map.h);
+                    pl.ly -= rdy * plh;
+                }
+                // take back the time by which the player went over the edge and reapply in the new room
+                pl.move(-tb);
+                #ifdef EXTRA_DEBUG
+                nAssert(fabs(fmod(pl.lx + plw / 2, plw) - plw / 2) < .001 || fabs(fmod(pl.ly + plh / 2, plh) - plh / 2) < .001);
+                #endif
+                applyPhysicsToPlayerInIsolation(pl, plyRadius, tb);
+
                 callback.playerScreenChange(rply[pi]);
+
+                // remove from this simulation
                 rply.erase(rply.begin() + pi);
                 plyMoveMax.erase(plyMoveMax.begin() + pi);
                 if (  bPlyI >= pi) { if (  bPlyI == pi)   bPlyI = -1; else --  bPlyI; }
@@ -2607,7 +2977,7 @@ void WorldBase::applyPhysicsToRoom(const Room& room, vector<int>& rply, vector<i
     }
 }
 
-void WorldBase::rocketFrameAdvance(int frames, PhysicsCallbacksBase& callback) {
+void WorldBase::rocketFrameAdvance(int frames, PhysicsCallbacksBase& callback) throw () {
     for (int i = 0; i < MAX_ROCKETS; ++i)
         if (rock[i].owner != -1) {
             const double wallTime = getTimeTillWall(map.room[rock[i].px][rock[i].py], rock[i], frames);
@@ -2623,12 +2993,63 @@ void WorldBase::rocketFrameAdvance(int frames, PhysicsCallbacksBase& callback) {
         }
 }
 
-void ServerWorld::simulateFrame() {
+void WorldBase::reset() throw () {
+    for (int i = 0; i < MAX_POWERUPS; ++i)
+        item[i].kind = Powerup::pup_unused;
+    for (int i = 0; i < MAX_ROCKETS; ++i)
+        rock[i].owner = -1;
+    dbExplosions.clear();
+}
+
+static bool doRegenerate(double& var, double limit, double speed, double& timeLeft) throw () {
+    if (var >= limit || speed == 0)
+        return false;
+    var += speed * timeLeft;
+    if (var <= limit)
+        return true;
+    timeLeft = (var - limit) / speed;
+    var = limit;
+    return false;
+}
+
+void ServerWorld::regenerateHealthOrEnergy(ServerPlayer& pl) throw () {
+    double timeLeft = .1; // 1 frame
+    if (doRegenerate(pl.health, min(config.health_max, 100), config.health_regeneration_0_to_100, timeLeft))
+        return;
+    if (doRegenerate(pl.energy, min(config.energy_max, 100), config.energy_regeneration_0_to_100, timeLeft))
+        return;
+    if (doRegenerate(pl.energy, min(config.energy_max, 200), config.energy_regeneration_100_to_200, timeLeft))
+        return;
+    if (doRegenerate(pl.health, min(config.health_max, 200), config.health_regeneration_100_to_200, timeLeft))
+        return;
+    if (doRegenerate(pl.energy,     config.energy_max      , config.energy_regeneration_200_to_max, timeLeft))
+        return;
+    doRegenerate(    pl.health,     config.health_max      , config.health_regeneration_200_to_max, timeLeft);
+}
+
+void ServerWorld::degradeHealthOrEnergyForRunning(ServerPlayer& pl) throw () {
+    double timeLeft = .1; // 1 frame
+    if (pl.energy > 0.) {
+        pl.energy -= config.run_energy_degradation * timeLeft;
+        if (pl.energy >= 0.)
+            return;
+        timeLeft = (0. - pl.energy) / config.run_energy_degradation;
+        pl.energy = 0.;
+    }
+    if (pl.health > config.min_health_for_run_penalty)
+        pl.health = max<double>(config.min_health_for_run_penalty, pl.health - config.run_health_degradation / 10.);
+}
+
+static bool sortByExtraFramesToRespawn(ServerPlayer* p1, ServerPlayer* p2) throw () {
+    return p1->extra_frames_to_respawn < p2->extra_frames_to_respawn
+        || p1->extra_frames_to_respawn == p2->extra_frames_to_respawn && p1->frames_to_respawn < p2->frames_to_respawn;
+}
+
+void ServerWorld::simulateFrame() throw () {
     // (-1) check powerup respawn
-    const double thetime = get_time();
-    for (int i = 0; i < MAX_PICKUPS; i++)
-        if (item[i].kind == Powerup::pup_respawning && thetime > item[i].respawn_time)
-            respawn_pickup(i);
+    for (int i = 0; i < MAX_POWERUPS; i++)
+        if (item[i].kind == Powerup::pup_respawning && get_time() > item[i].respawn_time)
+            respawn_powerup(i);
 
     // (0) do stuff for every player
     for (int i = 0; i < maxplayers; i++) {
@@ -2670,7 +3091,7 @@ void ServerWorld::simulateFrame() {
         // check deathbringer effect
         if (player[i].deathbringer_end > get_time()) {
             //check if still alive
-            if (player[i].health > 0) {
+            if (!player[i].dead) {
                 //has shield: do big damage to it, in order to remove the shield
                 if (player[i].item_shield)
                     damagePlayer(i, player[i].deathbringer_attacker, 12, DT_deathbringer);
@@ -2678,95 +3099,117 @@ void ServerWorld::simulateFrame() {
                     damagePlayer(i, player[i].deathbringer_attacker, 3, DT_deathbringer); // 30 / s, 150 / 5 s
             }
         }
+    }
 
-        // check for a player's deathbringer to bring death
-        if (player[i].dead && player[i].item_deathbringer) {
-            // note: if any of this calculation is changed, also update the time constant 1.8 in resetPlayer
-            const bool dbTeam = player[i].deathbringer_team;
-            //delta time since shoot
-            const double delta = (frame - player[i].item_deathbringer_time) * 0.1;
-            //figure out new radius
-            int rad;
-            if (delta < 1.0)
-                rad = (int)(delta * 100);
-            else
-                rad = 100 + (int)((delta - 1.0) * (delta - 1.0) * 800);
+    cleanOldDeathbringerExplosions();
 
-            //check players onscreen that are not hit by it yet and are inside
-            // the donut radius...radius-50
-            for (int v = 0; v < maxplayers; v++)
-                //enemy players only if friendly deathbringer is off
-                if ((v/TSIZE != dbTeam || physics.friendly_db > 0.) && player[v].used && player[v].health > 0 &&
-                                player[v].roomx == player[i].roomx && player[v].roomy == player[i].roomy &&
-                                player[v].deathbringer_end < get_time()) {
-                    //calculate player distance to the deathbringer core
-                    const double ex = player[i].lx;
-                    const double ey = player[i].ly;
-                    const double rx = player[v].lx;
-                    const double ry = player[v].ly;
-                    const double dt = sqrt(sqr(ex - rx) + sqr(ey - ry));
+    // check for deathbringer explosion hits
+    for (list<DeathbringerExplosion>::iterator dbi = dbExplosions.begin(); dbi != dbExplosions.end(); ++dbi) {
+        DeathbringerExplosion& db = *dbi;
+        const WorldCoords& pos = db.position();
+        const double radius = db.radius(frame);
 
-                    // hit distance: if dt == rad, hit, if rad
-                    if (rad <= dt + 20 && rad >= dt - 60) {
-                        net->broadcast_screen_sample(v, SAMPLE_HITDEATHBRINGER);
-                        player[v].deathbringer_attacker = i;
+        uint32_t newOutsideMask = 0;
+        for (int ti = 0; ti < maxplayers; ++ti) {
+            ServerPlayer& target = player[ti];
+            if (!target.used || target.dead || target.roomx != pos.px || target.roomy != pos.py)
+                continue;
+            const bool sameTeam = target.team() == db.team();
+            if (sameTeam && !physics.friendly_db)
+                continue;
 
-                        // time of effect ; also freeze his gun for this same amount of time
-                        const double mul = (v / TSIZE == dbTeam ? physics.friendly_db : 1.) * (9000 + rand() % 2000) / 10000.;
-                        player[v].deathbringer_end = player[v].next_shoot_time = get_time() + mul * pupConfig.pup_deathbringer_time;
+            const double dx = target.lx - pos.x;
+            const double dy = target.ly - pos.y;
 
-                        // calc recoil:
-                        const double tx = player[v].lx - player[i].lx;
-                        const double ty = player[v].ly - player[i].ly;
+            const double dist = sqrt(sqr(dx) + sqr(dy));
+            if (dist > radius + 60) {
+                newOutsideMask |= 1u << ti; // player is now in the same room but outside the db
+                continue;
+            }
+            if (dist < radius - 10 && !(db.playersOutsideMask & (1u << ti))) // player is now inside the db and previously either in another room (thus avoiding the deathbringer) or already inside
+                continue;
 
-                        const double div = sqrt(tx * tx + ty * ty);
-                        if (div != 0) {
-                            const double mul = 40. / div;   // set speed to 40
-                            player[v].sx = tx * mul;
-                            player[v].sy = ty * mul;
-                        }
-                    }
-                }
+            if (target.deathbringer_end >= get_time() || frame < target.start_take_damage_frame)
+                continue;
+
+            net->broadcast_screen_sample(target.id, SAMPLE_HITDEATHBRINGER);
+            target.deathbringer_attacker = db.player();
+
+            // time of effect ; also freeze his gun for this same amount of time
+            const double time = pupConfig.pup_deathbringer_time * (sameTeam ? physics.friendly_db : 1.) * (9000 + rand() % 2000) / 10000.;
+            target.deathbringer_end = get_time() + time;
+            target.next_shoot_frame = frame + iround(time * 10.);
+
+            // push player away from db center
+            if (dist != 0) {
+                const double mul = 40. / dist; // set speed to 40
+                target.sx = dx * mul;
+                target.sy = dy * mul;
+            }
         }
+        db.playersOutsideMask = newOutsideMask;
     }
 
     ServerPhysicsCallbacks cb(*this);
     applyPhysics(cb, PLAYER_RADIUS, 1.);    // 1. means apply the whole frame at once
 
+    const bool extra_time_and_sudden_death = config.suddenDeath() && getTimeLeft() < 0;
+
+    // check player respawn
+    vector<ServerPlayer*> respawners[2];
+    for (int i = 0; i < maxplayers; ++i) {
+        ServerPlayer& pl = player[i];
+        if (!pl.used || !pl.dead)
+            continue;
+        if (pl.frames_to_respawn)
+            --pl.frames_to_respawn;
+        else if (pl.extra_frames_to_respawn)
+            --pl.extra_frames_to_respawn;
+        if (!pl.awaiting_client_readies)
+            respawners[i / TSIZE].push_back(&pl);
+    }
+    for (int i = 0; i < 2; ++i)
+        sort(respawners[i].begin(), respawners[i].end(), sortByExtraFramesToRespawn);
+    unsigned i0 = 0, i1 = 0;
+    for (;;) {
+        ServerPlayer* p0 = i0 < respawners[0].size() ? respawners[0][i0] : 0;
+        ServerPlayer* p1 = i1 < respawners[1].size() ? respawners[1][i1] : 0;
+        if (!p0 && !p1)
+            break;
+        if (p1 && (!p0 || p1->extra_frames_to_respawn < p0->extra_frames_to_respawn)) {
+            swap(p0, p1);
+            ++i1;
+        }
+        else
+            ++i0;
+        if (p1) {
+            p1->extra_frames_to_respawn -= p0->extra_frames_to_respawn;
+            p0->extra_frames_to_respawn = 0;
+        }
+        if (p0->extra_frames_to_respawn == 0 && p0->frames_to_respawn == 0)
+            respawnPlayer(p0->id);
+    }
+
     // for each player, do misc stuff
     for (int i = 0; i < maxplayers; i++) {
         ServerPlayer& pl = player[i];
-        if (!pl.used)
+        if (!pl.used || pl.dead)
             continue;
 
-        //check if dead/respawn
-        if (pl.health <= 0) {
-            if (pl.respawn_time < get_time() && !pl.awaiting_client_readies)
-                respawnPlayer(i);       //time to respawn player
-            else
-                continue;
-        }
-
         // check for player weapons fire time
-        if (player[i].attack && player[i].health > 0 && get_time() > player[i].next_shoot_time) {
+        if ((player[i].attack || player[i].attackOnce) && !player[i].dead && frame >= player[i].next_shoot_frame) {
             int numshots = 1;
-            player[i].energy -= 7;
+            player[i].energy -= config.shooting_energy_base;
             if (player[i].energy < 0)
                 player[i].energy = 0;
             else {
-                for (int k = 1; k < player[i].weapon; k++) {
-                    //try add one shot
-                    player[i].energy -= 1;
-                    if (player[i].energy < 0) {
-                        player[i].energy = 0;
-                        break;
-                    }
-                    else
-                        numshots++;
+                for (int k = 1; k < player[i].weapon && player[i].energy >= config.shooting_energy_per_extra_rocket; k++) {
+                    player[i].energy -= config.shooting_energy_per_extra_rocket;
+                    ++numshots;
                 }
             }
 
-            player[i].next_shoot_time = get_time() + 0.5;       // add minimum interval (in secs)
+            player[i].next_shoot_frame = frame + (player[i].energy > 0 ? config.get_shoot_interval_with_energy_frames() : config.get_shoot_interval_frames());
 
             //show shadow
             if (player[i].item_shadow())
@@ -2774,87 +3217,33 @@ void ServerWorld::simulateFrame() {
 
             shootRockets(i, numshots);
         }
+        player[i].attackOnce = false;
 
-        // check don't regen because of deathbringer
-        //v0.4.0: do not regen if has deathbringer and both health/energy are at no less than 100
-        const bool deathbringer_penalty = (pl.item_deathbringer && pl.health >= 100 && pl.energy >= 100) || pl.deathbringer_end > get_time();
-
-        if (!deathbringer_penalty) {
-            // regenerate +1 health or +1 energy
-            if (pl.health < 100)
-                pl.health++;
-            else {
-                if (pl.energy < 100)
-                    pl.energy++;
-                else if (pl.energy < 200) {
-                    if (frame % 2)
-                        pl.energy++;
-                }
-                else if (pl.health < 200 && frame % 10 == 0)
-                    pl.health++;
-            }
-        }
-        //lose health & energy if running
-        const int min_health_for_run_penalty = 40;
-        if (pl.controls.isRun()) {
-            if (pl.energy <= 0) {
-                if (pl.health > min_health_for_run_penalty) {
-                    if (frame % 2 == 0)
-                        pl.health -= 2;
-                    else
-                        pl.health--;
-                    if (pl.health < min_health_for_run_penalty)
-                        pl.health = min_health_for_run_penalty;
-                }
-            }
-            else {
-                if (frame % 2 == 0)
-                    pl.energy -= 2;
-                else
-                    pl.energy--;
-                if (pl.energy == -1) { // special case
-                    pl.energy++;
-                    if (pl.health > min_health_for_run_penalty) {
-                        pl.health--;
-                        if (pl.health < min_health_for_run_penalty)
-                            pl.health = min_health_for_run_penalty;
-                    }
-                }
-            }
-        }
-        //rot health to 100 if has deathbringer
-        if (pl.item_deathbringer && pl.health > 100 && frame % 4 == 0)
-            pl.health--;
-        //rot energy to 100 if has deathbringer
-        if (pl.item_deathbringer && pl.energy > 100 && frame % 4 == 0)
-            pl.energy--;
+        // adjust health and energy for carrying deathbringer, running, and plain time passing
+        const bool deathbringer_penalty = (pl.item_deathbringer && pl.health >= pupConfig.deathbringer_health_limit && pl.energy >= pupConfig.deathbringer_energy_limit) || pl.deathbringer_end > get_time();
+        if (!deathbringer_penalty)
+            regenerateHealthOrEnergy(pl);
+        if (pl.controls.isRun())
+            degradeHealthOrEnergyForRunning(pl);
+        if (pl.item_deathbringer && pl.health > pupConfig.deathbringer_health_limit)
+            pl.health = max<double>(pupConfig.deathbringer_health_limit, pl.health - pupConfig.deathbringer_health_degradation / 10.);
+        if (pl.item_deathbringer && pl.energy > pupConfig.deathbringer_energy_limit)
+            pl.energy = max<double>(pupConfig.deathbringer_energy_limit, pl.energy - pupConfig.deathbringer_energy_degradation / 10.);
         //megahealth bonus:
         if (pl.megabonus > 0)
             for (int mh = 0; mh < 5; mh++) {
-                if (pl.megabonus > 0 && pl.health < 300) {
+                if (pl.megabonus > 0 && pl.health < config.health_max) {
                     pl.health++;
                     pl.megabonus--;
                 }
-                if (pl.megabonus > 0 && pl.energy < 300) {
+                if (pl.megabonus > 0 && pl.energy < config.energy_max) {
                     pl.energy++;
                     pl.megabonus--;
                 }
             }
         // new limit - don't store megabonuses
-        if (pl.health == 300 && pl.energy == 300)
+        if (pl.health == config.health_max && pl.energy == config.energy_max)
             pl.megabonus = 0;
-
-        //limit health 0...300
-        if (pl.health < 0)
-            pl.health = 0;
-        else if (pl.health > 300)
-            pl.health = 300;
-
-        //limit energy 0...300
-        if (pl.energy < 0)
-            pl.energy = 0;
-        else if (pl.energy > 300)
-            pl.energy = 300;
 
         //---------------------------------
         // check game object collisions
@@ -2863,16 +3252,25 @@ void ServerWorld::simulateFrame() {
         const int myteam = i / TSIZE;
         const int enemyteam = 1 - myteam;
 
-        // --> ITEM PICKUP
-        const int touchRadius = PICKUP_RADIUS + PLAYER_RADIUS;
+        // --> ITEM POWERUP
+        const int touchRadius = POWERUP_RADIUS + PLAYER_RADIUS;
 
-        for (int k = 0; k < MAX_PICKUPS; k++)
+        for (int k = 0; k < MAX_POWERUPS; k++)
             if (item[k].kind <= Powerup::pup_last_real && item[k].px == pl.roomx && item[k].py == pl.roomy) {
                 const double dx = item[k].x - pl.lx;
                 const double dy = item[k].y - pl.ly;
                 if (dx * dx + dy * dy < touchRadius * touchRadius)
-                    game_touch_pickup(i, k);
+                    game_touch_powerup(i, k);
             }
+
+        // limit health and energy (after powerups because they might have an effect)
+        nAssert(pl.health > 0);
+        if (pl.health > config.health_max)
+            pl.health = config.health_max;
+        if (pl.energy < 0)
+            pl.energy = 0;
+        else if (pl.energy > config.energy_max)
+            pl.energy = config.energy_max;
 
         // Flag steal - touch other team's flag or wild flag
         // ft = 0 => Touch enemy flag
@@ -2897,7 +3295,7 @@ void ServerWorld::simulateFrame() {
             }
             int f = 0;
             for (vector<Flag>::const_iterator fi = flags->begin(); fi != flags->end(); ++fi, ++f)
-                if (!fi->carried() && check_flag_touch(*fi, pl.roomx, pl.roomy, (int)pl.lx, (int)pl.ly)) {
+                if (!fi->carried() && check_flag_touch(*fi, pl.roomx, pl.roomy, pl.lx, pl.ly)) {
                     touches_flag = true;
                     // Has player just dropped the flag or not?
                     if (!pl.dropped_flag && !pl.drop_key) {
@@ -2912,7 +3310,7 @@ void ServerWorld::simulateFrame() {
         // Flag return - wild flags can't be returned
         int f = 0;
         for (vector<Flag>::const_iterator fi = teams[myteam].flags().begin(); fi != teams[myteam].flags().end(); ++fi, ++f)
-            if (!fi->carried() && !fi->at_base() && check_flag_touch(*fi, pl.roomx, pl.roomy, (int)pl.lx, (int)pl.ly) &&
+            if (!fi->carried() && !fi->at_base() && check_flag_touch(*fi, pl.roomx, pl.roomy, pl.lx, pl.ly) &&
                              frame / 10. >= fi->drop_time() + config.flag_return_delay) {
                 //FLAG RETURNED!
                 host->score_frag(i, 1); // just add some frags
@@ -2922,8 +3320,6 @@ void ServerWorld::simulateFrame() {
                 returnFlag(myteam, f);  //flag returned
             }
 
-        const bool extra_time_and_sudden_death = config.suddenDeath() && getTimeLeft() < 0;
-
         // Flag captures
         // ft = 0 => Take enemy or wild flag to own flag
         // ft = 1 => Take enemy or wild flag to wild flag
@@ -2931,7 +3327,7 @@ void ServerWorld::simulateFrame() {
             if (ft == 0 && !capture_on_team_flags_in_effect())
                 continue;
             if (ft == 1 && !capture_on_wild_flags_in_effect())
-                break;
+                continue;
             const vector<Flag>& flags = ft == 0 ? teams[myteam].flags() : wild_flags;
             for (vector<Flag>::const_iterator fmy = flags.begin(); fmy != flags.end(); ++fmy) {
                 if (!fmy->at_base())
@@ -2941,7 +3337,7 @@ void ServerWorld::simulateFrame() {
                     const int flagTeam = t == 0 ? enemyteam : 2;
                     int f = 0;
                     for (vector<Flag>::const_iterator fi = flags.begin(); fi != flags.end(); ++fi, ++f)
-                        if (fi->carrier() == i && check_flag_touch(*fmy, pl.roomx, pl.roomy, (int)pl.lx, (int)pl.ly)) {
+                        if (fi->carrier() == i && check_flag_touch(*fmy, pl.roomx, pl.roomy, pl.lx, pl.ly)) {
                             player_captures_flag(i, flagTeam, f);
                             if (teams[myteam].score() >= config.getCaptureLimit() && config.getCaptureLimit() > 0 &&
                                         teams[myteam].score() - teams[enemyteam].score() >= config.getWinScoreDifference() ||
@@ -2955,6 +3351,25 @@ void ServerWorld::simulateFrame() {
         }
     }
 
+    // check for score for carrying a wild flag
+    if (config.carrying_score_time >= minimum_grab_to_capture_time && teams[0].flags().empty() && teams[1].flags().empty()) {
+        for (vector<Flag>::iterator fi = wild_flags.begin(); fi != wild_flags.end(); ++fi)
+            if (fi->carried()) {
+                const int team = fi->carrier() / TSIZE;
+                fi->add_carrying_time(team);
+                if (fi->carrying_time() >= 10 * config.carrying_score_time) {
+                    fi->reset_carrying_time();
+                    team_gets_carrying_point(team, config.carrying_score_time >= minimum_grab_to_capture_time);
+                    if (teams[team].score() >= config.getCaptureLimit() && config.getCaptureLimit() > 0 &&
+                                teams[team].score() - teams[1 - team].score() >= config.getWinScoreDifference() ||
+                                extra_time_and_sudden_death) {
+                        host->server_next_map(NEXTMAP_CAPTURE_LIMIT);   // ignore return value
+                        return;
+                    }
+                }
+            }
+    }
+
     // check frags changed
     for (int i = 0; i < maxplayers; ++i)
         if (player[i].used && player[i].oldfrags != player[i].stats().frags()) {
@@ -2963,7 +3378,7 @@ void ServerWorld::simulateFrame() {
         }
 
     // check time limit
-    const NLulong time_limit = config.getTimeLimit();
+    const uint32_t time_limit = config.getTimeLimit();
     if (host->get_player_count() > 1 && time_limit > 0) {
         const int timeLeft = getTimeLeft();
         if      (time_limit >= 10*60 * 10 && timeLeft == 5*60 * 10)
@@ -2983,43 +3398,42 @@ void ServerWorld::simulateFrame() {
         }
         else if (timeLeft == 0) {
             net->broadcast_normal_time_out(config.suddenDeath());
-            net->send_map_time(-1);
+            net->send_map_time(pid_all);
         }
     }
 }
 
-bool ServerWorld::lock_team_flags_in_effect() const {
+bool ServerWorld::lock_team_flags_in_effect() const throw () {
     return config.lock_team_flags && all_kind_of_flags_exist();
 }
 
-bool ServerWorld::lock_wild_flags_in_effect() const {
+bool ServerWorld::lock_wild_flags_in_effect() const throw () {
     return config.lock_wild_flags && all_kind_of_flags_exist();
 }
 
-bool ServerWorld::capture_on_team_flags_in_effect() const {
+bool ServerWorld::capture_on_team_flags_in_effect() const throw () {
     return config.capture_on_team_flag || !all_kind_of_flags_exist();
 }
 
-bool ServerWorld::capture_on_wild_flags_in_effect() const {
+bool ServerWorld::capture_on_wild_flags_in_effect() const throw () {
     return config.capture_on_wild_flag || !all_kind_of_flags_exist();
 }
 
-bool ServerWorld::all_kind_of_flags_exist() const {
+bool ServerWorld::all_kind_of_flags_exist() const throw () {
     return !wild_flags.empty() && !teams[0].flags().empty() && !teams[1].flags().empty();
 }
 
-void ServerWorld::player_steals_flag(int pid, int team, int flag) {
-    host->score_frag(pid, 1);   // just add some frags
+void ServerWorld::player_steals_flag(int pid, int team, int flag) throw () {
+    host->score_frag(pid, 1);
     player[pid].stats().add_flag_take(get_time(), team == 2);
     teams[pid / TSIZE].add_flag_take();
     net->broadcast_flag_take(player[pid], team);
     stealFlag(team, flag, pid);
-    // shadow powerup: show player
     if (player[pid].item_shadow())
         player[pid].visibility = maximum_shadow_visibility;
 }
 
-void ServerWorld::player_captures_flag(int pid, int team, int flag) {
+void ServerWorld::player_captures_flag(int pid, int team, int flag) throw () {
     const Flag& capt_flag = (team == 2 ? wild_flags[flag] : teams[team].flag(flag));
     const int myteam = pid / TSIZE;
     const double timeDiff = get_time() - capt_flag.grab_time();
@@ -3049,17 +3463,33 @@ void ServerWorld::player_captures_flag(int pid, int team, int flag) {
 
     net->broadcast_capture(player[pid], team);
 
-    net->ctf_update_teamscore(myteam);      // this function can decide to restart the game
+    net->ctf_update_teamscore(myteam);
+
+    if (config.respawn_on_capture)
+        for (int i = 0; i < maxplayers; ++i)
+            player[i].frames_to_respawn = player[i].extra_frames_to_respawn = 0; // will respawn on next frame (only relevant for dead players, obviously)
+}
+
+void ServerWorld::team_gets_carrying_point(int team, bool forTournament) throw () {
+    for (int i = 0; i < MAX_PLAYERS; i++)
+        if (player[i].used) {
+            if (i / TSIZE == team)
+                host->score_frag(i, 2, forTournament);
+            else
+                host->score_neg(i, 1, forTournament);
+        }
+    teams[team].add_point();
+    net->ctf_update_teamscore(team);
 }
 
 // extrapolate : advances from source, a frame per every ctrl listed except the last one which gets subFrameAfter, controls are for player me
 void ClientWorld::extrapolate(ClientWorld& source, PhysicsCallbacksBase& physCallbacks, int me,
-                        ClientControls* ctrlTab, NLubyte ctrlFirst, NLubyte ctrlLast, double subFrameAfter) {
+                              ClientControls* ctrlTab, uint8_t ctrlFirst, uint8_t ctrlLast, double subFrameAfter) throw () {
     if (source.skipped) {
         skipped = true;
         return;
     }
-    nAssert(source.frame > 0);
+    nAssert(source.frame >= 0);
 
     frame = source.frame;
 
@@ -3067,7 +3497,7 @@ void ClientWorld::extrapolate(ClientWorld& source, PhysicsCallbacksBase& physCal
         teams[i] = source.teams[i]; //#fix: needed?
 
     for (int i = 0; i < maxplayers; ++i) {
-        if (source.player[i].onscreen || i == me)
+        if (source.player[i].onscreen || i == me || (me == -1 && source.player[i].used))
             player[i] = source.player[i];
         else
             player[i].used = false;
@@ -3079,20 +3509,21 @@ void ClientWorld::extrapolate(ClientWorld& source, PhysicsCallbacksBase& physCal
             rock[i] = source.rock[i];
     }
 
-    static const double playerPosAccuracy = plw / double(0xFFF) / 2.;
-    for (NLubyte ctrli = ctrlFirst; ctrli != ctrlLast; ++ctrli) {   // note: it is OK to wrap around in the middle of the sequence
-        player[me].controls = ctrlTab[ctrli];
+    static const double playerPosAccuracy = plw / double(0xFFF) / 2.; // used to counter problems in bouncing caused by inaccurate positions over network
+    for (uint8_t ctrli = ctrlFirst; ctrli != ctrlLast; ++ctrli) {   // note: it is OK to wrap around in the middle of the sequence
+        if (me != -1)
+            player[me].controls = ctrlTab[ctrli];
         applyPhysics(physCallbacks, PLAYER_RADIUS - playerPosAccuracy, 1.); // 1 is full frame
         ++frame;
     }
-    player[me].controls = ctrlTab[ctrlLast];
+    if (me != -1)
+        player[me].controls = ctrlTab[ctrlLast];
     applyPhysics(physCallbacks, PLAYER_RADIUS - playerPosAccuracy, subFrameAfter);
     frame += subFrameAfter;
-    // PLAYER_POS_ACCURACY is used to counter problems in bouncing caused by inaccurate positions over network
 }
 
 // Save stats in HTML file.
-void WorldBase::save_stats(const string& dir, const string& map_name) const {
+void WorldBase::save_stats(const string& dir, const string& map_name) const throw () {
     const string date_time = date_and_time();
     const string date = date_time.substr(0, date_time.find(' '));
     const string time = date_time.substr(date_time.find(' ') + 1);
@@ -3111,7 +3542,7 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
     if (print_html_begin) {
         out << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n";
         out << "<TITLE>Outgun statistics " << date << "</TITLE>\n";
-        out << "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=ISO-8851-1\">\n";
+        out << "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=ISO-8859-1\">\n";
         out << "<LINK REL=\"stylesheet\" HREF=\"stats.css\" TYPE=\"text/css\" TITLE=\"Outgun statistics style\">\n\n";
         out << "<H1>Outgun statistics " << date << "</H1>\n\n";
     }
@@ -3137,7 +3568,7 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
     out << "<H3>Player stats</H3>\n\n";
     out << "<TABLE BORDER CLASS=\"players\">\n <TR CLASS=\"pl-stats-thr\"><TH>Player<TH>Frags<TH>Captures<TH>Kills<TH>Deaths<TH>Suicides<TH>Flags taken<TH>Flags dropped<TH>Flags returned<TH>Carriers killed<TH>Carry time<TH>Cons. kills<TH>Cons. deaths<TH>Shots<TH>Accuracy<TH>Shots taken<TH>Movement\n";
     vector<const PlayerBase*> players;
-    for (vector<PointerContainer<PlayerBase> >::const_iterator pl = player.begin(); pl != player.end(); ++pl)
+    for (vector<PointerAsReference<PlayerBase> >::const_iterator pl = player.begin(); pl != player.end(); ++pl)
         if (pl->getPtr()->used)
             players.push_back(pl->getPtr());
     stable_sort(players.begin(), players.end(), compare_players);
@@ -3186,11 +3617,13 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
     out << " <TR><TH>Time<TH>Team<TH>Score<TH>Capturer\n";
 
     int red_score = teams[0].base_score(), blue_score = teams[1].base_score();
-    for (vector<pair<int, string> >::const_iterator red = teams[0].captures().begin(), blue = teams[1].captures().begin(); ;) {
+    for (vector<pair<int, string> >::const_iterator red = teams[0].captures().begin(), blue = teams[1].captures().begin();;) {
         string time, team, capturer;
+        int team_nr;
         if (red != teams[0].captures().end() && (blue == teams[1].captures().end() || red->first <= blue->first)) {
             ++red_score;
             team = "Red";
+            team_nr = 1;
             ostringstream ost;
             ost << red->first / 60 << ':' << setw(2) << setfill('0') << red->first % 60;
             time = ost.str();
@@ -3200,6 +3633,7 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
         else if (blue != teams[1].captures().end() && (red == teams[0].captures().end() || blue->first <= red->first)) {
             ++blue_score;
             team = "Blue";
+            team_nr = 2;
             ostringstream ost;
             ost << blue->first / 60 << ':' << setw(2) << setfill('0') << blue->first % 60;
             time = ost.str();
@@ -3208,7 +3642,7 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
         }
         else
             break;
-        out << " <TR><TD ALIGN=\"right\">" << time;
+        out << " <TR CLASS=\"team" << team_nr << "\"><TD ALIGN=\"right\">" << time;
         out << "<TD>" << team;
         out << "<TD ALIGN=\"center\">" << red_score << "&ndash;" << blue_score;
         out << "<TD>" << escape_for_html(capturer);
@@ -3217,20 +3651,27 @@ void WorldBase::save_stats(const string& dir, const string& map_name) const {
     out << "</TABLE>\n\n";
 }
 
-void WorldBase::print_team_stats_row(ostream& out, const string& header, int amount1, int amount2, const string& postfix) const {
+void WorldBase::print_team_stats_row(ostream& out, const string& header, int amount1, int amount2, const string& postfix) const throw () {
     out << " <TR><TH>" << header;
     out << "<TD ALIGN=\"center\">" << amount1 << postfix;
     out << "<TD ALIGN=\"center\">" << amount2 << postfix;
     out << '\n';
 }
 
+void WorldBase::cleanOldDeathbringerExplosions() throw () {
+    // only erase from the front of the list since new ones are added to the back and the lifetime is constant
+    for (std::list<DeathbringerExplosion>::iterator dbi = dbExplosions.begin();
+         dbi != dbExplosions.end() && dbi->expired(get_frame());
+         dbi = dbExplosions.erase(dbi));
+}
+
 // Team
 
-Team::Team() {
+Team::Team() throw () {
     clear_stats();
 }
 
-void Team::clear_stats() {
+void Team::clear_stats() throw () {
     points = 0;
     total_kills = 0;
     total_deaths = 0;
@@ -3247,50 +3688,54 @@ void Team::clear_stats() {
     start_score = 0;
 }
 
-void Team::add_flag(const WorldCoords& pos) {
+void Team::add_flag(const WorldCoords& pos) throw () {
     team_flags.push_back(Flag(pos));
 }
 
-void Team::remove_flags() {
+void Team::remove_flags() throw () {
     team_flags.clear();
 }
 
-void Team::add_score(double time, const string& player) {
+void Team::add_score(double time, const string& player) throw () {
     ++points;
     caps.push_back(pair<int, string>(static_cast<int>(time), player));
 }
 
-void Team::steal_flag(int n, int carrier) {
+void Team::steal_flag(int n, int carrier) throw () {
     team_flags[n].take(carrier);
 }
 
-void Team::steal_flag(int n, int carrier, double time) {
+void Team::steal_flag(int n, int carrier, double time) throw () {
     team_flags[n].take(carrier, time);
 }
 
-void Team::return_all_flags() {
+void Team::return_all_flags() throw () {
     for (vector<Flag>::iterator fi = team_flags.begin(); fi != team_flags.end(); ++fi)
         fi->return_to_base();
 }
 
-void Team::return_flag(int n) {
+void Team::return_flag(int n) throw () {
     team_flags[n].return_to_base();
 }
 
-void Team::drop_flag(int n, const WorldCoords& pos) {
+void Team::drop_flag(int n, const WorldCoords& pos) throw () {
     team_flags[n].move(pos);
     team_flags[n].drop();
 }
 
-void Team::move_flag(int n, const WorldCoords& pos) {
+void Team::move_flag(int n, const WorldCoords& pos) throw () {
     team_flags[n].move(pos);
 }
 
-void Team::set_flag_drop_time(int n, double time) {
+void Team::set_flag_drop_time(int n, double time) throw () {
     team_flags[n].set_drop_time(time);
 }
 
-double Team::accuracy() const {
+void Team::set_flag_return_time(int n, double time) throw () {
+    team_flags[n].set_return_time(time);
+}
+
+double Team::accuracy() const throw () {
     if (total_shots == 0)
         return 0;
     else
@@ -3299,39 +3744,52 @@ double Team::accuracy() const {
 
 // Flag
 
-Flag::Flag(const WorldCoords& pos_):
+Flag::Flag(const WorldCoords& pos_) throw () :
     status(status_at_base),
     carrier_id(-1),
+    return_t(-1e10),
     home_pos(pos_),
-    pos(pos_)
+    pos(pos_),
+    cteam(-1),
+    ctime(0)
 { }
 
-void Flag::take(int carr) {
+void Flag::take(int carr) throw () {
     status = status_carried;
     carrier_id = carr;
 }
 
-void Flag::take(int carr, double time) {
+void Flag::take(int carr, double time) throw () {
     if (status == status_at_base)
         grab_t = time;
     status = status_carried;
     carrier_id = carr;
 }
 
-void Flag::return_to_base() {
+void Flag::return_to_base() throw () {
     status = status_at_base;
     pos = home_pos;
     carrier_id = -1;
+    cteam = -1;
 }
 
-void Flag::drop() {
+void Flag::drop() throw () {
     status = status_dropped;
     carrier_id = -1;
 }
 
+void Flag::add_carrying_time(int team) throw () {
+    nAssert(team == 0 || team == 1);
+    if (cteam != team) {
+        cteam = team;
+        ctime = 0;
+    }
+    ++ctime;
+}
+
 // Statistics
 
-Statistics::Statistics():
+Statistics::Statistics() throw () :
     total_frags(0),
     total_kills(0),
     total_deaths(0),
@@ -3362,14 +3820,14 @@ Statistics::Statistics():
     flag_taking_time(0)
 { }
 
-void Statistics::clear(bool preserveTime) {
+void Statistics::clear(bool preserveTime) throw () {
     const double time = starttime;
     *this = Statistics();
     if (preserveTime)
         starttime = time;
 }
 
-void Statistics::kill(double time, bool allowAlreadyDead) {
+void Statistics::kill(double time, bool allowAlreadyDead) throw () {
     if (!allowAlreadyDead)
         nAssert(!dead);
     if (dead)
@@ -3378,7 +3836,7 @@ void Statistics::kill(double time, bool allowAlreadyDead) {
     total_lifetime += time - last_spawn_time;
 }
 
-void Statistics::add_kill(bool deathbringer) {
+void Statistics::add_kill(bool deathbringer) throw () {
     ++total_kills;
     if (++current_consecutive_kills > most_consecutive_kills)
         most_consecutive_kills = current_consecutive_kills;
@@ -3387,7 +3845,7 @@ void Statistics::add_kill(bool deathbringer) {
         ++total_deathbringer_kills;
 }
 
-void Statistics::add_death(bool deathbringer, double time) {
+void Statistics::add_death(bool deathbringer, double time) throw () {
     ++total_deaths;
     if (++current_consecutive_deaths > most_consecutive_deaths)
         most_consecutive_deaths = current_consecutive_deaths;
@@ -3397,19 +3855,19 @@ void Statistics::add_death(bool deathbringer, double time) {
     kill(time);
 }
 
-void Statistics::add_suicide(double time) {
+void Statistics::add_suicide(double time) throw () {
     add_death(false, time);
     ++total_suicides;
 }
 
-void Statistics::add_capture(double time) {
+void Statistics::add_capture(double time) throw () {
     nAssert(flag);
     flag = wild_flag = false;
     ++total_captures;
     total_flag_carrying_time += time - flag_taking_time;
 }
 
-void Statistics::add_flag_take(double time, bool wild) {
+void Statistics::add_flag_take(double time, bool wild) throw () {
     nAssert(!flag);
     flag = true;
     wild_flag = wild;
@@ -3417,14 +3875,14 @@ void Statistics::add_flag_take(double time, bool wild) {
     flag_taking_time = time;
 }
 
-void Statistics::add_flag_drop(double time) {
+void Statistics::add_flag_drop(double time) throw () {
     nAssert(flag);
     flag = wild_flag = false;
     ++total_flags_dropped;
     total_flag_carrying_time += time - flag_taking_time;
 }
 
-void Statistics::finish_stats(double time) {
+void Statistics::finish_stats(double time) throw () {
     if (!dead) {
         dead = true;
         total_lifetime += time - last_spawn_time;
@@ -3435,37 +3893,40 @@ void Statistics::finish_stats(double time) {
     }
 }
 
-double Statistics::accuracy() const {
+double Statistics::accuracy() const throw () {
     if (total_shots == 0)
         return 0;
     else
         return static_cast<double>(total_hits) / total_shots;
 }
 
-double Statistics::lifetime(double time) const {
+double Statistics::lifetime(double time) const throw () {
     if (dead)
         return total_lifetime;
     else
         return total_lifetime + (time - last_spawn_time);
 }
 
-double Statistics::average_lifetime(double time) const {
+double Statistics::average_lifetime(double time) const throw () {
     return lifetime(time) / (total_deaths + 1);
 }
 
-double Statistics::playtime(double time) const {
+double Statistics::playtime(double time) const throw () {
     return time - starttime;
 }
 
-double Statistics::movement() const {
+double Statistics::movement() const throw () {
     return total_movement;
 }
 
-double Statistics::speed(double time) const {
-    return movement() / lifetime(time) / PLAYER_RADIUS / 2.;
+double Statistics::speed(double time) const throw () {
+    const double lt = lifetime(time);
+    if (lt == 0.)
+        return 0.;
+    return movement() / lt / PLAYER_RADIUS / 2.;
 }
 
-double Statistics::flag_carrying_time(double time) const {
+double Statistics::flag_carrying_time(double time) const throw () {
     if (!flag)
         return total_flag_carrying_time;
     else

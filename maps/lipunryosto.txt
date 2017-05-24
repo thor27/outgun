@@ -1,0 +1,64 @@
+;
+; lipunryöstö.txt
+;
+; By Joonas 2003
+;
+
+V 1
+P width 3
+P height 1
+P title Lipunryöstö
+P author Joonas
+S 16 12
+
+; punainen lippu ja syntymäpaikat
+flag  0 2 0  12 6
+spawn 0 2 0  15 6
+spawn 0 2 0  6  4
+spawn 0 2 0  6  8
+spawn 0 2 0  10 4
+spawn 0 2 0  10 8
+
+; sininen lippu ja syntymäpaikat
+flag  1 0 0  4  6
+spawn 1 0 0  1  6
+spawn 1 0 0  6  4
+spawn 1 0 0  6  8
+spawn 1 0 0  10 4
+spawn 1 0 0  10 8
+
+R 0 0
+C W 4 6 2 1.5 180 0
+C W 4 6 8 4 180 0
+C W 13 4 6 2 0 90
+C W 13 8 6 2 90 180
+W 4 0 13 2
+W 4 10 13 12
+
+R 1 0
+;middle
+C W 7 6 3.5 3 180   0
+C W 9 6 3.5 3   0 180
+C W 7 6   1 0   180 0
+C W 9 6   1 0   0 180
+W   7 5   9 7
+;borders
+C W  4 8 6 3.5 180 -90
+C W  4 4 6 3.5 -90   0
+C W 12 4 6 3.5   0  90
+C W 12 8 6 3.5  90 180
+W   0    0 16 0.5
+W   0 11.5 16  12
+W   0    0 16 0.5
+W   0    0 16 0.5
+
+W  0.5 3.5 4.5   4
+W 11.5   8  16 8.5
+
+R 2 0
+C W 12 6 2 1.5 0 180
+C W 12 6 8 4 0 180
+C W 3 4 6 2 -90 0
+C W 3 8 6 2 180 -90
+W 3 0 12 2
+W 3 10 12 12

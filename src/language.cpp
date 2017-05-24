@@ -2,7 +2,7 @@
  *  language.cpp
  *
  *  Copyright (C) 2004, 2006 - Jani Rivinoja
- *  Copyright (C) 2004 - Niko Ritari
+ *  Copyright (C) 2004, 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -23,7 +23,9 @@
  */
 
 #include "incalleg.h"
+
 #include <fstream>
+
 #include "commont.h"
 #include "log.h"
 #include "utility.h"
@@ -36,16 +38,17 @@ using std::string;
 
 Language language;
 
-string Language::get_text(const string& text) const {
+string Language::get_text(const string& text) const throw () {
     const map<string, string>::const_iterator translation = texts.find(text);
     if (translation == texts.end())
         return text;
     return translation->second;
 }
 
-bool Language::load(const string& lang, LogSet& log) {
+bool Language::load(const string& lang, LogSet& log) throw () {
     texts.clear();
     lang_code = "en";
+    loc = "C";
     if (lang == lang_code)  // English - no need to load the same phrases as in the code.
         return true;
     const string dir = wheregamedir + "languages" + directory_separator;
@@ -65,10 +68,14 @@ bool Language::load(const string& lang, LogSet& log) {
         string key, value;
         getline_skip_comments(def, key);
         getline_skip_comments(transl, value);
-        if (def && transl)
-            texts[key] = value;
-        else
+        if (!def || !transl)
             break;
+        if (!value.compare(0, 9, "@MISSING@"))
+            continue;
+        if (key == "locale")
+            loc = value;
+        else
+            texts[key] = value;
     }
     if (def || transl) {
         log.error("Language file for '" + lang + "' is invalid, maybe for another version of Outgun. " +
@@ -81,11 +88,11 @@ bool Language::load(const string& lang, LogSet& log) {
     return true;
 }
 
-string _(const string& text) {
+string _(const string& text) throw () {
     return language.get_text(text);
 }
 
-string _(string text, const string& t1, const string& t2, const string& t3, const string& t4, const string& t5) {
+string _(string text, const string& t1, const string& t2, const string& t3, const string& t4, const string& t5) throw () {
     text = _(text);
     const int nReplacements = 5;
     const string* const replacement[nReplacements] = { &t1, &t2, &t3, &t4, &t5 };

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Copyright (C) 2002 - Fabio Reis Cecin
- *  Copyright (C) 2003, 2004, 2005, 2006 - Niko Ritari
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2008 - Niko Ritari
  */
 
 /*
@@ -33,10 +33,10 @@
 
 */
 
-#include <pthread.h>
+#include <memory>
 #include <sched.h>
-#include <nl.h>
 #include <stdio.h>
+#include "../binaryaccess.h"
 #include "../commont.h" // for wheregamedir
 #include "../debug.h"
 #include "../debugconfig.h" // LEETNET_LOG, LEETNET_DATA_LOG
@@ -50,8 +50,6 @@
 #include "rudp.h"
 #include "Timer.h"
 #include "../timer.h" // for platSleep
-#include "ConditionVariable.h"
-#include "Mutex.h"
 using namespace GNE;
 
 // max (absolute) clients that can connect to a server
@@ -76,13 +74,13 @@ struct client_t {
                                                                             // packet was already received from the client
     volatile bool       server_disconnected; // set to true when the server kicks the client. told_disconnect may
                                                                              // be false at that point.
-    NLubyte disconnect_reason;  // values are user defined, except 0 is used internally for drop at timeout
+    uint8_t disconnect_reason;  // values are user defined, except 0 is used internally for drop at timeout
 
     Time                    ping_start_time;        //time of last ping request from gameserver
 
     server_ci               *server;        // the server instance (for the thread)
 
-    NLaddress               addr;                   //client's address, to resolve incoming packets
+    Network::Address               addr;                   //client's address, to resolve incoming packets
 
     Thread              thread;         // the slave thread
 
@@ -98,28 +96,29 @@ struct client_t {
 
     bool                        in_lag;         // if client is lagged
 
+    int customStoredData; // freely set by the server in helloCallback, to be returned to connectedCallback
+
     //mutex for the station object and condition variable
     Mutex   station_mutex;
 
     //condition variable
     ConditionVariable       station_cond_hasdata;
-    //pthread_cond_t    station_cond_hasdata;
 
     //thread must quit flag
     volatile bool       quitflag;
 
-    client_t() : station_mutex(), station_cond_hasdata(&station_mutex) { }
+    client_t() throw () : station_mutex("client_t::station_mutex"), station_cond_hasdata("client_t::station_cond_hasdata") { }
 };
 
 
 // server thread (master)
-void thread_master_f(server_ci* server);
+void thread_master_f(server_ci* server) throw ();
 
 //client message processor (slaves)
-void thread_slave_f(client_t* mydata);
+void thread_slave_f(client_t* mydata) throw ();
 
 //client disconnectors
-void thread_disconnector_f(client_t* mydata);
+void thread_disconnector_f(client_t* mydata) throw ();
 
 //server_c implementation
 class server_ci : public server_c {
@@ -133,14 +132,14 @@ public:
 
     #ifdef LEETNET_DATA_LOG
     FILE* datalog;
-    MutexHolder datalogMutex;
+    Mutex datalogMutex;
     #endif
 
     // number of clients allocated
     int     num_clients;
 
     // the server UDP socket
-    NLsocket            servsock;
+    Network::UDPSocket            servsock;
 
     int minLocalPort, maxLocalPort;
 
@@ -179,13 +178,13 @@ public:
     //------------------------
 
     //set a callback. you must set all the callbacks before calling start()
-    virtual void setHelloCallback(helloCallbackT* fn) { helloCallback = fn; }
-    virtual void setConnectedCallback(connectedCallbackT* fn) { connectedCallback = fn; }
-    virtual void setDisconnectedCallback(disconnectedCallbackT* fn) { disconnectedCallback = fn; }
-    virtual void setDataCallback(dataCallbackT* fn) { dataCallback = fn; }
-    virtual void setLagStatusCallback(lagStatusCallbackT* fn) { lagStatusCallback = fn; }
-    virtual void setPingResultCallback(pingResultCallbackT* fn) { pingResultCallback = fn; }
-    virtual void setCallbackCustomPointer(void* ptr) { customp = ptr; }
+    virtual void setHelloCallback(helloCallbackT* fn) throw () { helloCallback = fn; }
+    virtual void setConnectedCallback(connectedCallbackT* fn) throw () { connectedCallback = fn; }
+    virtual void setDisconnectedCallback(disconnectedCallbackT* fn) throw () { disconnectedCallback = fn; }
+    virtual void setDataCallback(dataCallbackT* fn) throw () { dataCallback = fn; }
+    virtual void setLagStatusCallback(lagStatusCallbackT* fn) throw () { lagStatusCallback = fn; }
+    virtual void setPingResultCallback(pingResultCallbackT* fn) throw () { pingResultCallback = fn; }
+    virtual void setCallbackCustomPointer(void* ptr) throw () { customp = ptr; }
 
     //set the client timeouts in seconds. lagtime = time in secs without receiving packets that generates
     // SFUNC_CLIENT_LAG_STATUS callbacks. droptime = time in secs w/o recv. packets that before kicking the client
@@ -193,19 +192,19 @@ public:
     // OBS: make sure your app has the client sending packets regularly or else he might be dropped without
     //      being really unreachable. 10 times faster than the droptime is a good lower bound. if there is no
     //          frame data, just send some kind of "no-op" packet.
-    virtual int set_client_timeout(int lagtime, int droptime) {
+    virtual int set_client_timeout(int lagtime, int droptime) throw () {
         lagtimeout = lagtime;
         droptimeout = droptime;
         return 0;
     }
 
     //set serverinfo string
-    virtual void set_server_info(const char *info) {
+    virtual void set_server_info(const char *info) throw () {
         strcpy(serverinfo, info);
     }
 
     //start up the server at given port
-    virtual int start(int port) {
+    virtual int start(int port) throw () {
         //if not stopped, quit
         if (!server_stopped) {
             log("SERVER NOT STOPPED: CANT START SERVER_CI");
@@ -218,13 +217,7 @@ public:
         //timeout defaults
         set_client_timeout(5, 10);
 
-        //open the server socket
-        nlOpenMutex.lock();
-        nlDisable(NL_BLOCKING_IO);
-        servsock = nlOpen((NLushort)port, NL_UNRELIABLE);
-        nlOpenMutex.unlock();
-
-        if (servsock == NL_INVALID) {
+        if (!servsock.tryOpen(Network::NonBlocking, port)) {
             log("server_ci::start(): cannot nlOpen server socket!");
             return 0;  // error
         }
@@ -249,18 +242,22 @@ public:
             client[i].in_lag    = false;            // not in lag
 
             // create the slave thread
-            client[i].thread.start_assert(thread_slave_f, &client[i], threadPriority);
+            client[i].thread.start_assert("leetnet/server.cpp:thread_slave_f",
+                                          thread_slave_f, &client[i],
+                                          threadPriority);
         }
 
         //create and start the master thread
-        reader_thread.start_assert(thread_master_f, this, threadPriority);
+        reader_thread.start_assert("leetnet/server.cpp:thread_master_f",
+                                   thread_master_f, this,
+                                   threadPriority);
 
         //ok
         return 1;
     }
 
     //stops the server. parameter is number of seconds to wait for all clients to gently disconnect
-    virtual int stop(int disconnect_clients_timeout) {
+    virtual int stop(int disconnect_clients_timeout) throw () {
         int i;
 
         log("server_ci::stop()");
@@ -275,7 +272,7 @@ public:
         for (i=0;i<MAX_CLIENTS;i++)
         if (client[i].used) //valid
         if ((client[i].connected) && (!client[i].told_disconnect) && (!client[i].server_disconnected)) //still connected
-            disconnect_client(i, disconnect_clients_timeout, disconnect_server_shutdown);
+            disconnect_client(i, disconnect_clients_timeout, disconnect_server_shutdown, true);
 
         // signal threads to stop now
         server_stopped = true;
@@ -285,7 +282,7 @@ public:
             log("server_ci::stop() -- signal %i", i);
 
             //pthread_cond_signal( &client[i].station_cond_hasdata ); //slap the thread
-            client[i].station_cond_hasdata.signal();
+            client[i].station_cond_hasdata.signal(client[i].station_mutex);
         }
 
         log("server_ci::stop() -- joining master thread");
@@ -322,8 +319,7 @@ public:
 
         log("server_ci::stop() -- closing server socket");
 
-        // close the server's socket (DEBUG FIXME: catch error)
-        nlClose(servsock);
+        servsock.close();
 
         log("server_ci::stop() -- server socket closed");
 
@@ -332,12 +328,13 @@ public:
     }
 
     //disconnects a specific client, timeout = seconds to wait before loosing patience and just shooting the client
-    virtual int disconnect_client(int client_id, int timeout, NLubyte reason) { // reason is user defined; reserved: 0 = client initiated, 1 = timeout
+    virtual int disconnect_client(int client_id, int timeout, uint8_t reason, bool fromUserThread) throw () { // reason is user defined; reserved: 0 = client initiated, 1 = timeout
+        log("disconnect_client(%d, %d, %d, %d)", client_id, timeout, reason, fromUserThread);
 
         //call the "client disconnected" callback (2 of 2 : server-initiated disconnection)
         // DO NOT CALL if client not connected
         if (client[client_id].connected_knows)
-            disconnectedCallback(customp, client_id, true);
+            disconnectedCallback(customp, client_id, fromUserThread);
 
         //disconnect the client - this flags that the client is disconnected by the server but the
         // client at first doesn't know this. will keep sending disconnect packets to client
@@ -369,7 +366,9 @@ public:
             client[client_id].discleft = 5;
 
         //spawn disconnector thread
-        client[client_id].discthread.start_assert(thread_disconnector_f, &client[client_id], threadPriority);
+        client[client_id].discthread.start_assert("leetnet/server.cpp:thread_disconnector_f",
+                                                  thread_disconnector_f, &client[client_id],
+                                                  threadPriority);
 
         log("disconnect_client %i droptime = %.2f", client_id, client[client_id].droptime);
 
@@ -382,15 +381,15 @@ public:
     //like say 100ms for a 10Hz (update freq.) server. do not load too much shit in the packet, a 300-byte
     //packet is ok I guess, a 500-byte is too much IMHO (remember to give room for the reliable messages/ack
     //protocol that introduces it's own shitload). optimize your foken data, every byte saved counts!
-    virtual int broadcast_frame(const char* data, int length) {
+    virtual int broadcast_frame(ConstDataBlockRef data) throw () {
         #ifdef LEETNET_DATA_LOG
         if (datalog)
-            MutexLock ml(datalogMutex);
+            Lock ml(datalogMutex);
         #endif
 
         for (int i=0;i<MAX_CLIENTS;i++)
         if (client[i].used) {
-            client[i].station->write(data, length); // set frame data
+            client[i].station->write(data); // set frame data
             int packet_id;
 
             #ifdef LEETNET_DATA_LOG
@@ -414,16 +413,16 @@ public:
     }
 
         //send frame method - when broadcast_frame doesn't quite cut it
-    virtual int send_frame(int client_id, const char* data, int length) {
+    virtual int send_frame(int client_id, ConstDataBlockRef data) throw () {
         if (!client[client_id].used)
             return 0;   // client not used (?)
 
-        client[client_id].station->write(data, length); //set frame data
+        client[client_id].station->write(data); //set frame data
         int packet_id;
 
         #ifdef LEETNET_DATA_LOG
         if (datalog) {
-            MutexLock ml(datalogMutex);
+            Lock ml(datalogMutex);
             static const char writeModeMarker = 'W';
             fwrite(&writeModeMarker, sizeof(char), 1, datalog);
             double currTime = get_time();
@@ -445,12 +444,12 @@ public:
     //world update data. use for gamestate changes, talk messages and other stuff the client can't miss, or
     //stuff he can even miss but it's better if he doesn't and the message is so infrequent and small that
     //it's worth it.
-    virtual int send_message(int client_id, const char* data, int length) {
+    virtual int send_message(int client_id, ConstDataBlockRef data) throw () {
         //FIXME 1. assert here: client[client_id].used == true
         //          2. use station mutex ?
 
         //and that's it!
-        client[client_id].station->writer(data, length);
+        client[client_id].station->writer(data);
 
         //ok
         return 1;
@@ -459,7 +458,7 @@ public:
 
     //broadcasts the given reliable message to all active clients. for lazy people :-) like me :-))
     /* disabled in Outgun to prevent problems
-    virtual int broadcast_message(const char* data, int length) {
+    virtual int broadcast_message(const char* data, int length) throw () {
 
         for (int i=0;i<MAX_CLIENTS;i++)
         if (client[i].used)
@@ -472,32 +471,28 @@ public:
 
     //function to be called by the SFUNC_CLIENT_DATA callback
     //gets the next reliable message avaliable from the given client. null if no message pending
-    virtual char* receive_message(int client_id, int *length) {
-        data_c *data = client[client_id].station->read_reliable();
+    virtual ConstDataBlockRef receive_message(int client_id) throw () {
+        ConstDataBlockRef data = client[client_id].station->read_reliable();
 
-        if (data == 0)  // no messages
-            return 0;
+        if (data.size() == 0)  // no messages
+            return ConstDataBlockRef(0, 0);
 
         //debug
-        log("server->receive_message(clid=%i) length = %i", client_id, data->getlen());
+        log("server->receive_message(clid=%i) length = %i", client_id, data.size());
 
-        (*length) = data->getlen(); //return length
-        return data->getbuf();  // return buffer
+        return data;
     }
 
     //ping a client. results come in the SFUNC_PING_RESULT callback
-    virtual int ping_client(int client_id) {
+    virtual int ping_client(int client_id) throw () {
+        BinaryBuffer<32> msg;
 
-        data_c  *dat = new_data_c();
+        msg.U32(0);            //special packet
+        msg.U32(666);      // ping request
 
-        dat->addlong(0);            //special packet
-        dat->addlong(666);      // ping request
-
-        client[client_id].station->send_raw_packet(dat);
+        client[client_id].station->send_raw_packet(msg);
 
         client[client_id].ping_start_time = Timer::getCurrentTime();
-
-        delete dat;
 
         //ok
         return 1;
@@ -506,24 +501,24 @@ public:
     //get a statistic from sockets. stat = HawkNL socket-stats id
     //this function returns the sum of all sockets active in the server. no per-client
     //results available for now.
-    virtual int get_socket_stat(int stat) {
+    virtual int get_socket_stat(Network::Socket::StatisticType stat) throw () {
 
         int thestat = 0;
 
-        if (servsock == NL_INVALID) return 0;
+        if (!servsock.isOpen()) return 0;
         if (server_stopped) return 0;
 
         //add serversocket
-        thestat = nlGetSocketStat(servsock, stat);
+        thestat = servsock.getStat(stat);
 
         //add all active client sockets
         for (int i=0;i<MAX_CLIENTS;i++)
         if (client[i].used)
         if (client[i].station)
         {
-            NLsocket clsock = client[i].station->get_nl_socket();
-            if (clsock != NL_INVALID)
-                thestat += nlGetSocketStat(clsock, stat);
+            const Network::UDPSocket& clsock = client[i].station->get_nl_socket();
+            if (clsock.isOpen())
+                thestat += clsock.getStat(stat);
         }
 
         return thestat;
@@ -532,7 +527,7 @@ public:
     //------------------------
     // server slave-disconnector thread API (temp thread that sends disconnection packets to the client
     //------------------------
-    bool try_send_disconnect(int id) {
+    bool try_send_disconnect(int id) throw () {
 
         //check client not used for whatever reason -- this is PARANOIA
         if (!client[id].used)
@@ -548,12 +543,11 @@ public:
 
         //send the disconnection packet
         log("sent in try_send_disconnect(%i)...", id);
-        data_c *reply = new_data_c();
-        reply->addlong(0);      //"special packet"
-        reply->addlong(2);      //"you are now disconnected"
-        reply->addlong(client[id].disconnect_reason);
-        client[id].station->send_raw_packet(reply);
-        delete reply;
+        BinaryBuffer<32> msg;
+        msg.U32(0);      //"special packet"
+        msg.U32(2);      //"you are now disconnected"
+        msg.U32(client[id].disconnect_reason);
+        client[id].station->send_raw_packet(msg);
 
         //keep running if packets left to send, else stop
         //
@@ -565,66 +559,77 @@ public:
     //------------------------
 
     //incoming datagram from UDP socket
-    virtual int process_incoming_datagram(char* packet, int length) {
+    virtual int process_incoming_datagram(const Network::Address& remoteaddr, ConstDataBlockRef data) throw () {
         //MAKEIT
         //
         //o que pode acontecer
         // - forward de mensagem para existing client -- verifica remoteaddress da serversocket
         //    do client, foi updateada agora. -- e signal client
         // - se client unknown e SERVER FULL, dah reply aqui mesmo
-        // - se client unknown, "aloca" novo client para uma thread agora mesmo e já passa a mensagem
+        // - se client unknown, "aloca" novo client para uma thread agora mesmo e jï¿½ passa a mensagem
         //   pra ela. a thread lida com conexao tambem.
         // mensagem 0 666 = ping request
         // mensagem 0 200 = serverinfo request
 
-        //extract remote address from server socket
-        NLaddress remoteaddr;
-        nlGetRemoteAddr(servsock, &remoteaddr);
-
-        int count = 0;
-        NLulong packid, smsgid, leetversion;
-        readLong(packet, count, packid);    //packet id
-        readLong(packet, count, smsgid);    // special message id (if packet id == 0)
+        BinaryDataBlockReader read(data);
+        const uint32_t packid = read.U32(); //packet id
+        const uint32_t smsgid = read.U32(); // special message id (if packet id == 0)
 
         // verifica se a mensagem eh de algum client conhecido
       int i;
         for (i=0;i<MAX_CLIENTS;i++)
         if (client[i].used)
-        if (NL_TRUE == nlAddrCompare(&remoteaddr, &client[i].addr)) {
+        if (remoteaddr == client[i].addr) {
             log("DO CLIENT %i",i);
 
             #ifdef LEETNET_DATA_LOG
             if (datalog) {
-                MutexLock ml(datalogMutex);
+                Lock ml(datalogMutex);
                 static const char readModeMarker = 'R';
                 fwrite(&readModeMarker, sizeof(char), 1, datalog);
                 double currTime = get_time();
                 fwrite(&currTime, sizeof(double), 1, datalog);
                 fwrite(&i, sizeof(int), 1, datalog);    // which client
-                fwrite(&length, sizeof(int), 1, datalog);
-                fwrite(packet, 1, length, datalog);
+                const int size = data.size();
+                fwrite(&size, sizeof(int), 1, datalog);
+                fwrite(data.data(), 1, size, datalog);
             }
             #endif
 
             //achou: pertence a um client conectado, copia para a station, que a thread
-            // ira' processá-lo. obs: "station" precisa ser locket
+            // ira' processï¿½-lo. obs: "station" precisa ser locket
 
             //set packet, slap slave
-            client[i].station_mutex.acquire();
+            client[i].station_mutex.lock();
 
             //pode ser null aqui  (free slave  lock/delete/unlock)
             if (client[i].station)
-                client[i].station->set_incoming_packet(packet, length);
+                client[i].station->set_incoming_packet(data);
 
             //pthread_cond_signal ( &client[i].station_cond_hasdata );  //slap the slave
             client[i].station_cond_hasdata.signal();
 
-            client[i].station_mutex.release();
+            client[i].station_mutex.unlock();
 
             // ok
             return 1;
         }
         // ==== nao eh de client conhecido: aceita soh alguns special packets ====
+
+        #ifdef LEETNET_DATA_LOG
+        if (datalog) {
+            Lock ml(datalogMutex);
+            static const char readModeMarker = 'R';
+            fwrite(&readModeMarker, sizeof(char), 1, datalog);
+            double currTime = get_time();
+            fwrite(&currTime, sizeof(double), 1, datalog);
+            const int clid = -1;
+            fwrite(&clid, sizeof(int), 1, datalog);    // which client
+            const int size = data.size();
+            fwrite(&size, sizeof(int), 1, datalog);
+            fwrite(data.data(), 1, size, datalog);
+        }
+        #endif
 
         //se nao for special packet, nao aceita
         if (packid != 0) {  //special packet
@@ -634,20 +639,37 @@ public:
 
         //serverinfo request : answer
         if (smsgid == 200) {
-            NLubyte a,b;
-            readByte(packet, count, a);     //clientside gamespy entry (lazyness)
-            readByte(packet, count, b);     //packet try #
+            const uint8_t a = read.U8(); //clientside gamespy entry (lazyness)
+            const uint8_t b = read.U8(); //packet try #
 
-            char lebuf[512]; int count = 0;
-            writeLong(lebuf, count, 0);
-            writeLong(lebuf, count, 200);
-            writeByte(lebuf, count, a);
-            writeByte(lebuf, count, b);
-            writeString(lebuf, count, serverinfo);
+            ExpandingBinaryBuffer msg;
+            msg.U32(0);
+            msg.U32(200);
+            msg.U8(a);
+            msg.U8(b);
+            msg.str(serverinfo);
             //send
-            nlSetRemoteAddr(servsock, &remoteaddr);
-            log("SENDING REPLY TO CLIENT AT %s", addressToString(remoteaddr).c_str());
-            nlWrite(servsock, lebuf, count);
+            try {
+                log("SENDING REPLY TO CLIENT AT %s", remoteaddr.toString().c_str());
+                servsock.write(remoteaddr, msg);
+            } catch (Network::Error&) {
+                return 0;
+            }
+            return 1;
+        }
+
+        // broadcasted server request
+        if (smsgid == 0x4F757467) { // "Outg"
+            if (read.str() == "un") {
+                BinaryBuffer<512> msg;
+                msg.str("Outgun");
+                try {
+                    log("SENDING REPLY TO CLIENT AT %s", remoteaddr.toString().c_str());
+                    servsock.write(remoteaddr, msg);
+                } catch (Network::Error&) {
+                    return 0;
+                }
+            }
             return 1;
         }
 
@@ -663,21 +685,24 @@ public:
         if (num_clients >= MAX_CLIENTS) {
 
             //send ENGINE SERVER FULL to client
-            char lebuf[64]; int count = 0;
-            writeLong(lebuf, count, 0);             //"special packet"
-            writeLong(lebuf, count, 201);           //"connection rejected - engine server FULL"
+            BinaryBuffer<64> msg;
+            msg.U32(0);             //"special packet"
+            msg.U32(201);           //"connection rejected - engine server FULL"
 
             //send
-            nlSetRemoteAddr(servsock, &remoteaddr);
-            nlWrite(servsock, lebuf, count);
-            log("*** SENT SERVER-FULL (%i clients) REPLY TO CLIENT AT %s ***", num_clients, addressToString(remoteaddr).c_str());
-            return 1;
+            try {
+                servsock.write(remoteaddr, msg);
+                log("*** SENT SERVER-FULL (%i clients) REPLY TO CLIENT AT %s ***", num_clients, remoteaddr.toString().c_str());
+                return 1;
+            } catch (Network::Error&) {
+                return 0;
+            }
         }
 
         //verifica se LEETNET_VERSION match
-        readLong(packet, count, leetversion);   // leetnet version
+        const uint32_t leetversion = read.U32(); // leetnet version
         if (leetversion != LEETNET_VERSION) {
-            log("Client connection ignored: LEETNET_VERSION mismatch. c=%lu s=%u", leetversion, LEETNET_VERSION);
+            log("Client connection ignored: LEETNET_VERSION mismatch. c=%u s=%u", (unsigned)leetversion, LEETNET_VERSION);
             return 1;
         }
 
@@ -685,7 +710,7 @@ public:
         for (i=0;i<MAX_CLIENTS;i++)
         {
             //lock client
-            client[i].station_mutex.acquire();
+            client[i].station_mutex.lock();
 
             if (!client[i].used)
             {
@@ -698,7 +723,7 @@ public:
                 client[i].quitflag = false; //thread must quit flag
 
                 // aloca jogador para thread
-                nlGetRemoteAddr(servsock, &(client[i].addr));       //set address
+                client[i].addr = remoteaddr;       //set address
                 client[i].connected = false;                // must negotiate connection (client must first say "hello" :-)
                 client[i].connected_knows = false;      // did not receive game data packet yet when TRUE the
                                                                                             // server knows that the client knows that he was accepted
@@ -718,9 +743,9 @@ public:
                 //char  adrstr[NL_MAX_STRING_LENGTH];
                 //nlAddrToString(&client[i].addr, adrstr);
                 //client[i].station->set_remote_address(adrstr);
-                if (client[i].station->set_remote_address(&client[i].addr, minLocalPort, maxLocalPort) == 0) {
+                if (client[i].station->set_remote_address(client[i].addr, minLocalPort, maxLocalPort) == 0) {
                     log("process_incoming_datagram() ERROR: SET_REMOTE_ADDRESS RETURNED == 0!!!");
-                    client[i].station_mutex.release();
+                    client[i].station_mutex.unlock();
                     return 1;       //abort connection
                 }
 
@@ -730,7 +755,7 @@ public:
 
                 //set packet & slap slave
                 //pthread_mutex_lock( &client[i].station_mutex );
-                client[i].station->set_incoming_packet(packet, length); //set packet
+                client[i].station->set_incoming_packet(data); //set packet
 
                 //pthread_cond_signal ( &client[i].station_cond_hasdata ); //slap the slave
                 client[i].station_cond_hasdata.signal();
@@ -741,12 +766,12 @@ public:
                 client[i].used = true;
 
                 //ok - unlock client
-                client[i].station_mutex.release();
+                client[i].station_mutex.unlock();
                 return 1;
             }
 
             //unlock client
-            client[i].station_mutex.release();
+            client[i].station_mutex.unlock();
         }
 
         //WEIRD WEIRD fail: num_clients esta mentindo para baixo
@@ -754,7 +779,7 @@ public:
     }
 
     //HACK (a better one): called by reader thread to do some thinking for the server
-    void server_think() {
+    void server_think() throw () {
         //FIXME: THIS (was) JUST PLAIN WASTE OF CPU!
         //          but we can do better....
         double curr_time = get_time();
@@ -769,9 +794,9 @@ public:
                 if (client[i].droptime < curr_time) {
                     //bye
                     log("droptime: client %i's slave freed.", i);
-                    client[i].station_mutex.acquire();
+                    client[i].station_mutex.lock();
                     free_slave(i);
-                    client[i].station_mutex.release();
+                    client[i].station_mutex.unlock();
                 }
 
                 //HACK: check for lagged call
@@ -796,13 +821,13 @@ public:
                         lagStatusCallback(customp, i, 2);
 
                     //disconnect the client - 3 sec timeout
-                    disconnect_client(i, 3, disconnect_timeout);
+                    disconnect_client(i, 3, disconnect_timeout, false);
                 }
             }
     }
 
     //returns the serversocket
-    NLsocket get_server_socket() {
+    Network::UDPSocket& get_server_socket() throw () {
         return servsock;
     }
 
@@ -811,7 +836,7 @@ public:
     //------------------------
 
     //process data from a client (on the client's station)
-    virtual int process_client_data(int cid) {
+    virtual int process_client_data(int cid) throw () {
         //FIXME: no futuro: READ, UNLOCK, PROCESS e nao READ, PROCESS, UNLOCK
 
         //FIXME: read and process all the stuff from the station
@@ -824,7 +849,7 @@ public:
         //
         bool is_special; //check if packet is a special packet (connection packet)
         int len;
-        char *data = client[cid].station->process_incoming_packet(&len, &is_special);
+        const char *data = client[cid].station->process_incoming_packet(&len, &is_special);
 
         // HACK: no new packet in the station
         //
@@ -852,10 +877,9 @@ public:
         //
 
         if (is_special) {
-            // get the special code
-            NLulong code;
-            int count = 4;  //skip "0"
-            readLong(data, count, code);
+            BinaryDataBlockReader read(data, len);
+            read.U32(); //skip "0"
+            const uint32_t code = read.U32();
 
             //switch
             switch (code) {
@@ -880,42 +904,41 @@ public:
                     ServerHelloResult res;
                     res.accepted = false;
                     res.customDataLength = 0;
-                    helloCallback(customp, cid, &data[16], len-16, &res);
+                    helloCallback(customp, cid, ConstDataBlockRef(&data[16], len-16), &res);
                     log("client %i CONNECTION (II)", cid);
                     if (res.accepted) {
                         //connected!
                         client[cid].connected = true;
 
+                        client[cid].customStoredData = res.customStoredData;
+
                         //send hello packet back to the client
                         log("SENT CONNECTION ACCEPTED 0/3 to client_ci");
-                        data_c* reply = new_data_c();
-                        reply->addlong(0);  //"special packet"
-                        reply->addlong(3);  //"connection accepted"
-                        reply->addlong(client[cid].station->getLocalPort());
-                        if (res.customDataLength > 0)
-                            reply->add(res.customData, res.customDataLength);   // custom game data
+                        ExpandingBinaryBuffer msg;
+                        msg.U32(0);  //"special packet"
+                        msg.U32(3);  //"connection accepted"
+                        msg.U32(client[cid].station->getLocalPort());
+                        msg.block(ConstDataBlockRef(res.customData, res.customDataLength));   // custom game data
 
 //                      log("station debuginfo = %s", client[cid].station->debug_info());
 
                         // send using the server socket from where the originating message was received: to make sure the reply gets through any firewalls/NATs
-                        nlSetRemoteAddr(servsock, &client[cid].addr);
-                        nlWrite(servsock, reply->getbuf(), reply->getlen());
-
-                        delete reply;
+                        try {
+                            servsock.write(client[cid].addr, msg);
+                        } catch (Network::Error&) { }
 
                         client[cid].station->enablePortSearch();
                     }
                     else {
 
                         //send CONNECTION_REJECTED to client
-                        data_c* reply = new_data_c();
-                        reply->addlong(0);      //"special packet"
-                        reply->addlong(4);      //"connection rejected"
-                        if (res.customDataLength > 0)
-                            reply->add(res.customData, res.customDataLength);   // custom "connection denied" information
-                        nlSetRemoteAddr(servsock, &client[cid].addr);
-                        nlWrite(servsock, reply->getbuf(), reply->getlen());
-                        delete reply;
+                        BinaryBuffer<32> msg;
+                        msg.U32(0);      //"special packet"
+                        msg.U32(4);      //"connection rejected"
+                        msg.block(ConstDataBlockRef(res.customData, res.customDataLength));   // custom "connection denied" information
+                        try {
+                            servsock.write(client[cid].addr, msg);
+                        } catch (Network::Error&) { }
 
                         //return this thread/client slot to the free pool
                         if (client[cid].used == true) {
@@ -971,19 +994,18 @@ public:
                     //reply: ok, you are disconnected
                     log("sent disconnect that client %i initiated..", cid);
                     client[cid].disconnect_reason = disconnect_client_initiated;    // client initiated disconnection
-                    data_c* reply = new_data_c();
-                    reply->addlong(0);      //"special packet"
-                    reply->addlong(2);      //"you are now disconnected"
-                    reply->addlong(client[cid].disconnect_reason);
-                    client[cid].station->send_raw_packet(reply);
-                    delete reply;
+                    BinaryBuffer<32> msg;
+                    msg.U32(0);      //"special packet"
+                    msg.U32(2);      //"you are now disconnected"
+                    msg.U32(client[cid].disconnect_reason);
+                    client[cid].station->send_raw_packet(msg);
 
                 }
                 break;
 
             default:
                 //FIXME: unknown code!
-                log("WTF!?!? %lu", code);
+                log("WTF!?!? %u", (unsigned)code);
                 break;
             }
         }
@@ -1011,12 +1033,11 @@ public:
 
                     // make a favour for the client
                     log("client %i datapacket - replying 'disconnected already'", cid);
-                    data_c* reply = new_data_c();
-                    reply->addlong(0);      //"special packet"
-                    reply->addlong(2);      //"you are now disconnected"
-                    reply->addlong(client[cid].disconnect_reason);
-                    client[cid].station->send_raw_packet(reply);
-                    delete reply;
+                    BinaryBuffer<32> msg;
+                    msg.U32(0);      //"special packet"
+                    msg.U32(2);      //"you are now disconnected"
+                    msg.U32(client[cid].disconnect_reason);
+                    client[cid].station->send_raw_packet(msg);
                 }
                 else {
 
@@ -1029,12 +1050,12 @@ public:
                         client[cid].connected_knows = true;
 
                         //call gameserver "client connected" callback
-                        connectedCallback(customp, cid);
+                        connectedCallback(customp, cid, client[cid].customStoredData);
                     }
 
                     // send the data to the gameserver
                     // call SFUNC_CLIENT_DATA callback
-                    dataCallback(customp, cid, data, len);
+                    dataCallback(customp, cid, ConstDataBlockRef(data, len));
                 }
             }
         }
@@ -1043,14 +1064,14 @@ public:
         return 1;
     }
 
-    NLaddress get_client_address(int client_id) const {
+    Network::Address get_client_address(int client_id) const throw () {
         return client[client_id].addr;
     }
 
     //-------- internal functions --------
 
     //free slave thread
-    void free_slave(int id) {
+    void free_slave(int id) throw () {
         //if disconnector alive, join with it
         if (client[id].discthread.isRunning()) {
             client[id].discleft = 0;    //paranoia
@@ -1088,7 +1109,7 @@ public:
     //------------------------
 
     //ctor
-    server_ci(int thread_priority, int minLocalPort_, int maxLocalPort_) :
+    server_ci(int thread_priority, int minLocalPort_, int maxLocalPort_) throw () :
         #ifdef LEETNET_LOG
         logp(g_leetnetLog ?
              static_cast<Log*>(new FileLog((wheregamedir + "log" + directory_separator + "leetserverlog.txt").c_str(), true)) :
@@ -1096,6 +1117,9 @@ public:
         log(*logp),
         #else
         log(),
+        #endif
+        #ifdef LEETNET_DATA_LOG
+        datalogMutex("server_ci::datalogMutex"),
         #endif
         minLocalPort(minLocalPort_),
         maxLocalPort(maxLocalPort_)
@@ -1123,7 +1147,7 @@ public:
     }
 
     //dtor
-    virtual ~server_ci() {
+    virtual ~server_ci() throw () {
         //stop if was running - isso deve garantir que nao tem mais nenhuma
         //thread maluca mexendo com os objetos tipo client[i].station
         stop(3);
@@ -1143,21 +1167,25 @@ public:
 
 
 //reader (master) thread - one per server
-#define THREAD_READER_BUFSIZE 8192
-void thread_master_f(server_ci* server)
+#define THREAD_READER_BUFSIZE 1024 // to protect bad code in later stages from too long packets, packets this long won't be sent anyway
+void thread_master_f(server_ci* server) throw ()
 {
-    logThreadStart("Leet server thread_master_f", server->log);
     //get socket to read from
-    NLsocket servsock = server->get_server_socket();
+    Network::UDPSocket& servsock = server->get_server_socket();
 
     //read buffer
     char    buffer[THREAD_READER_BUFSIZE];
-    NLint amount; //amount read
 
     //loop
     while (1) {
         //read from socket
-        amount = nlRead(servsock, buffer, THREAD_READER_BUFSIZE);
+        Network::UDPSocket::ReadResult result;
+        try {
+            result = servsock.read(buffer, THREAD_READER_BUFSIZE);
+        } catch (const Network::Error& e) {
+            result.length = -1;
+            server->log("Master thread: trouble reading socket: %s", e.str().c_str());
+        }
 
         //HACK (a better one): think for the server
         server->server_think();
@@ -1167,39 +1195,30 @@ void thread_master_f(server_ci* server)
             break;
 
         // if no data, keep reading
-        if (amount == 0) {
+        if (result.length == 0) {
             platSleep(2);
             continue;
         }
 
         // check for error
-        if (amount == NL_INVALID) {
-            //DEBUG FIXME: error in nlGetError
-        }
-        // process packet
-        else {
-
-            //SLEP(50); // lag
-
-            server->process_incoming_datagram(buffer, amount);
-        }
+        if (result.length < 0)
+            platSleep(100);
+        else
+            server->process_incoming_datagram(result.source, ConstDataBlockRef(buffer, result.length));
     }
-    logThreadExit("Leet server thread_master_f", server->log);
 }
 
 //client message processor (slave) thread - one for each client
 //arg: pointer to thread_client_arg_t
-void thread_slave_f(client_t* mydata)
+void thread_slave_f(client_t* mydata) throw ()
 {
     //server
     server_ci *server = mydata->server;
 
-    logThreadStart("Leet server thread_slave_f", server->log);
-
     //my id
     int myid = mydata->id;
 
-    mydata->station_mutex.acquire();    // timedWait releases it for the waiting period
+    mydata->station_mutex.lock();    // timedWait releases it for the waiting period
 
     //loop
     while (mydata->quitflag == false) {
@@ -1213,8 +1232,7 @@ void thread_slave_f(client_t* mydata)
         //wait for "work now!" signal from master
         //pthread_cond_wait ( &mydata->station_cond_hasdata, &mydata->station_mutex );
 
-        //timedwait, so it does not deadlock if something goes wrong (only the paranoids will survive! ha ha ha!)
-        mydata->station_cond_hasdata.timedWait(1000);
+        mydata->station_cond_hasdata.wait(mydata->station_mutex);
 
         //SLEEP(5);  // IMPROVED WITH CONDITION VARIABLE! THANKS TO GNE!
 
@@ -1235,17 +1253,14 @@ void thread_slave_f(client_t* mydata)
             //pthread_mutex_unlock( &mydata->station_mutex );
         }
     }
-    mydata->station_mutex.release();
-    logThreadExit("Leet server thread_slave_f", server->log);
+    mydata->station_mutex.unlock();
 }
 
 //client disconnector auxiliary thread. bombards
 // client with "disconnect now!" packets
-void thread_disconnector_f(client_t* mydata) {
+void thread_disconnector_f(client_t* mydata) throw () {
     //server
     server_ci *server = mydata->server;
-
-    logThreadStart("Leet server thread_disconnector_f", server->log);
 
     //loop
     while (1) {
@@ -1257,13 +1272,10 @@ void thread_disconnector_f(client_t* mydata) {
         //sleep a bit
         platSleep(100);    //*** NO CPU PROBLEM HERE ***
     }
-
-    logThreadExit("Leet server thread_disconnector_f", server->log);
 }
 
 
 // server factory
-server_c *new_server_c(int thread_priority, int minLocalPort, int maxLocalPort) {
+server_c *new_server_c(int thread_priority, int minLocalPort, int maxLocalPort) throw () {
     return new server_ci(thread_priority, minLocalPort, maxLocalPort);
 }
-

@@ -1,0 +1,1 @@
+obj/gui/client_menus.o obj/text/client_menus.o :	client_menus.cpp	$(incalleg_h_inc)	$(debugconfig_h_inc)	$(graphics_h_inc)	$(language_h_inc)	$(menu_h_inc)	$(network_h_inc)	$(sounds_h_inc)	$(utility_h_inc)	$(version_h_inc)	$(client_menus_h_inc)

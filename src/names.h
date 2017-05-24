@@ -1,10 +1,10 @@
 /*
  *  names.h
  *
- *  Copyright (C) 2002 - Renato Hentschke <renato@amok.com.br>
+ *  Copyright (C) 2002 - Renato Hentschke
  *  Copyright (C) 2002 - Fabio Reis Cecin
  *  Copyright (C) 2003, 2004 - Niko Ritari
- *  Copyright (C) 2004 - Jani Rivinoja
+ *  Copyright (C) 2004, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -24,11 +24,13 @@
  *
  */
 
-#ifndef NAMES_H
-#define NAMES_H
+#ifndef NAMES_H_INC
+#define NAMES_H_INC
 
 #include <string>
 
-std::string RandomName(int npal=-1);
+std::string RandomName(int npal = -1) throw ();
+
+std::string finnish_name(std::string::size_type max_length) throw ();
 
 #endif

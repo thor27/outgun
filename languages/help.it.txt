@@ -1,0 +1,52 @@
+Per maggiori informazioni accedere a queste risorse:
+ Documentazione gioco        directory 'doc'
+ Outgun website              http://koti.mbnet.fi/outgun/
+ Outgun website Brasiliano   http://outgun.sf.net/
+ 
+Controlli
+ 
+ Movimento             freccie
+ Sparo                 Control
+ Correre               Shift
+ Scivolare (di lato)   Alt o Alt Gr
+ 
+Altri controlli
+ 
+ Parlare               Scrivi il messaggio e premi invio.
+ Parlare a squadra     Inizia il messaggio con un punto ('.').
+ Cambia squadra        Fine
+ Suicidio              Canc
+ Lascia bandiera       PGGIù
+ Lista Mappe           F2
+ Statistiche squadre   F3
+ Statistiche giocatori F4
+ info Server           F5
+ Cambio mappa          F8 (esprime solo una votazione)
+ Screenshot            F11
+ Mostra alti messaggi  Insert
+ 
+Scopo del gioco
+ 
+ Sei membro di una squadra, blu o rossa, assegnata a caso quando ti connetti. Lo scopo è aiutare la tua squadra a vincere, catturando la bandiera dell squadra avversaria. Per fare ciò, un membro della tua squadra deve rubare la bandiera avversaria e portarla alla tua base, senza che la tua bandiera venga rubata.
+ 
+Salute e energia
+ 
+ Se la tua saluta va a zero tu muori. L'energia è usata per correre, sparare e proteggere la salute quando hai dei potenziamenti. Salute ed energia possono essere rigenerate fino a 200 col tempo.
+ 
+Minimappa
+ 
+ Nell'angolo in alto a destra dello schermo c'è la minimappa. Sulla minimappa sono indicati i tuoi compagni di squadra e gli avversari visti da loro. Se hai il potenziamento shadow, puoi vedere anche tutti gli avversari che non abbiano anche loro lo shadow.
+ 
+Potenziamenti
+ 
+ Se vedi qualche oggetto a terra, raccoglilo. E' uno speciale potenziamento.
+                  
+ aggiunta arma   un altro flusso di colpi e più energia
+ turbo           maggiore velocità
+ ombra           sei invisibile e vedi gli avversari sulla minimappa,
+                 se non hanno l'ombra anche loro
+ potenza arma    i tuoi colpi fanno più danno
+ megasalute      più salute e energia
+ scudo           sei protetto da uno scudo
+ esplosivo       quando muori, si genera un onda d'urto
+                 che può colpire gli avversari nella stanza.

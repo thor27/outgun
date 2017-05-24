@@ -1,0 +1,129 @@
+;
+; ongelma.txt
+;
+; By Joonas
+;
+
+V 1
+P width 5
+P height 5
+P title Ongelma
+P author Joonas
+
+; punainen lippu ja syntym‰paikat
+flag  0 2 2 0.25 0.5
+spawn 0 2 1 0.3 0.4
+spawn 0 2 1 0.4 0.4
+spawn 0 2 1 0.5 0.4
+spawn 0 2 1 0.6 0.4
+spawn 0 2 1 0.7 0.4
+spawn 0 2 1 0.4 0.6
+spawn 0 2 1 0.5 0.6
+spawn 0 2 1 0.6 0.6
+
+; sininen lippu ja syntym‰paikat
+flag  1 2 2 0.75 0.5
+spawn 1 2 3 0.3 0.6
+spawn 1 2 3 0.4 0.6
+spawn 1 2 3 0.5 0.6
+spawn 1 2 3 0.6 0.6
+spawn 1 2 3 0.7 0.6
+spawn 1 2 3 0.4 0.4
+spawn 1 2 3 0.5 0.4
+spawn 1 2 3 0.6 0.4
+
+X def 0 0 1 4
+X def 3 0 4 4
+X def 2 0
+X def 2 4
+
+X cl 0 0 0 1
+X cl 3 0 3 1
+X cl 4 1 4 2
+X cl 1 2 1 3
+X cl 0 3 0 4
+X cl 2 3 2 4
+
+X cr 2 0 2 1
+X cr 4 0 4 1
+X cr 3 1 3 2
+X cr 0 2 0 3
+X cr 1 3 1 4
+X cr 4 3 4 4
+
+X cu 0 0 1 0
+X cu 3 0 4 0
+X cu 1 1 2 1
+X cu 0 2 1 2
+X cu 3 3 4 3
+X cu 2 4 3 4
+
+X cd 1 0 2 0
+X cd 0 1 1 1
+X cd 3 2 4 2
+X cd 2 3 3 3
+X cd 0 4 1 4
+X cd 3 4 4 4
+
+; keskihuone
+X mr 2 2
+
+; keskihuoneen yl‰- ja alapuoliset huoneet
+X mru 2 1
+X mrd 2 3
+
+; oletushuone, jossa on nelj‰ kulkuaukkoa
+:def
+W 0      0      0.25   0.05
+W 0      0      0.05   0.25
+W 0.75   0      1      0.05
+W 0.95   0      1      0.25
+W 0      0.95   0.25   1
+W 0      0.75   0.05   1
+W 0.75   0.95   1      1
+W 0.95   0.75   1      1
+
+; huoneen vasen sein‰
+:cl
+W 0      0      0.05   1
+
+; huoneen oikea sein‰
+:cr
+W 0.95   0      1      1
+
+; huoneen yl‰sein‰
+:cu
+W 0      0      1      0.05
+; huoneen alasein‰
+:cd
+W 0      0.95   1      1
+
+; keskihuoneelle oma m‰‰rittely
+:mr
+; pystysuora sein‰ keskell‰ huonetta
+W 0.45   0      0.55   1
+; vaakasuora sein‰ vasemmalla alakulmassa
+W 0      0.95   0.55   1
+; vaakasuora sein‰ oikealla yl‰kulmassa
+W 0.45   0      1      0.05
+; pienet sein‰t kulmissa
+W 0      0      0.05   0.25
+W 0.95   0      1      0.25
+W 0      0.75   0.05   1
+W 0.95   0.75   1      1
+
+; huone keskihuoneen yl‰puolella
+:mru
+W 0      0      1      0.05
+W 0      0      0.05   0.25
+W 0.95   0      1      1
+W 0      0.75   0.05   1
+W 0.45   0.95   1      1
+
+; huone keskihuoneen alapuolella
+:mrd
+W 0      0      0.05   1
+W 0      0      0.55   0.05
+W 0      0.95   1      1
+W 0.95   0      1      0.25
+W 0.95   0.75   1      1

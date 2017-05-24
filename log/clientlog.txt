@@ -1,0 +1,17 @@
+     1,11: Setting video mode: 1152×864×32 windowed
+     1,13: Switch_background set ok.
+     1,13: Loaded graphics theme 'Colors'.
+     1,14: Loaded font 'Katapultti'.
+     1,14: Initializing sound.
+     1,19: Install_sound ok.
+     1,20: Loaded sound theme 'Visa'.
+     2,20: Successfully sent query to master: 'GET /servers/?simple&branch=base&master=57749&protocol=1.0 HTTP/1.0\r\nHost: outgun.mbnet.fi\r\nUser-Agent: Outgun/base-1.0.3r336E\r\nConnection: close\r\n\r\n'
+     2,96: Full response: 'HTTP/1.1 200 OK\r\nDate: Wed, 24 May 2017 01:03:09 GMT\r\nServer: Apache\r\nX-Powered-By: PHP/5.4.45\r\nConnection: close\r\nContent-Type: text/plain; charset=ISO-8859-1\r\n\r\n1.0.3\n0\n4\n54.94.181.138\n54.94.181.138:25001\n54.94.225.147\n54.94.225.147:25001\n'
+     2,96: Successfully sent broadcast query.
+    12,20: Client exiting: stop() called
+    12,20: Saving client configuration in /home/thomaz/projetos/outgun/config/client.cfg
+    12,20: Client configuration saved
+    12,20: Saving password file...
+    12,20: Client stop() completed
+    12,20: Exiting client: destructor
+    12,20: Exiting client: destructor exiting

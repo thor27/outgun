@@ -1,0 +1,6 @@
+; This file is automatically rewritten whenever the ban list changes.
+; To reserve a name add a row:
+; user <name> <tab> <password>  or  admin <name> [<tab> <password>]
+; where <tab> is a tabulator character.
+; Passwordless admins need to authenticate by logging in to the tournament
+

@@ -21,11 +21,8 @@
  *
  */
 
-#include <vector>
-#include <list>
 #include <algorithm>
 #include <cmath>
-#include "nassert.h"
 #include "world.h"
 
 #include "antialias_internal.h"
@@ -38,12 +35,12 @@ using std::max;
 using std::pair;
 using std::swap;
 
-double CurveFunction::operator()(double y) const {
-    numAssert3(r2 - (y - cy)*(y - cy) >= 0, int(r2*1000.), int(y*1000.), int(cy*1000.));
+double CurveFunction::operator()(double y) const throw () {
+    numAssert3(r2 - (y - cy)*(y - cy) >= 0, r2 * 1000., y * 1000., cy * 1000.);
     return cx + sqrt(r2 - (y - cy)*(y - cy)) * sideMul;
 }
 
-ChangePoints CurveFunction::getChangePoints(double x) const {
+ChangePoints CurveFunction::getChangePoints(double x) const throw () {
     ChangePoints ret;
     if ((x - cx) * sideMul < 0) {   // x is on the undefined side
         ret.startSide = sideMul>0 ? ChangePoints::S_Right : ChangePoints::S_Left;
@@ -65,31 +62,31 @@ ChangePoints CurveFunction::getChangePoints(double x) const {
     return ret;
 }
 
-double CurveFunction::spanLeftSideIntegral(double x0, double y0, double y1) const {
+double CurveFunction::spanLeftSideIntegral(double x0, double y0, double y1) const throw () {
     // this function computes the integral from y0 to y1 of (x(y) - x0)dy ; derive the expression yourself ;)
     y0 -= cy; y1 -= cy;
-    numAssert3(fabs(y0) <= r, int(y0), int(r), int((y0-r)*1e20));
-    numAssert3(fabs(y1) <= r, int(y1), int(r), int((y1-r)*1e20));
+    numAssert3(fabs(y0) <= r, y0, r, (y0 - r) * 1e20);
+    numAssert3(fabs(y1) <= r, y1, r, (y1 - r) * 1e20);
     const double val = (y1 - y0)*(cx - x0) + .5*sideMul*( y1*sqrt(r2 - y1*y1) - y0*sqrt(r2 - y0*y0) + r2*(asin(y1/r) - asin(y0/r)) );
-    numAssert(val >= -.00001 && val <= 1.00001, int(val*10000.));
+    numAssert(val >= -.00001 && val <= 1.00001, val * 10000.);
     return val;
 }
 
-bool CurveFunction::operator==(const BorderFunctionBase& o) {
+bool CurveFunction::operator==(const BorderFunctionBase& o) throw () {
     const CurveFunction* cfp = dynamic_cast<const CurveFunction*>(&o);
     if (!cfp)
         return false;
     return cx == cfp->cx && cy == cfp->cy && r == cfp->r && sideMul == cfp->sideMul;
 }
 
-void CurveFunction::debug() const {
+void CurveFunction::debug() const throw () {
     #ifdef CERR_DEBUG
     cerr.precision(12);
     cerr << "Curve @" << cx << ',' << cy << " R=" << r << (sideMul>0 ? " right\n" : " left\n");
     #endif
 }
 
-double LineFunction::operator()(double y) const {
+double LineFunction::operator()(double y) const throw () {
     if (py1 == py2) {   // in this case, ratio is invalid
         nAssert(y == py1);
         return px1;
@@ -97,7 +94,7 @@ double LineFunction::operator()(double y) const {
     return px1 + (y - py1) * ratio;
 }
 
-ChangePoints LineFunction::getChangePoints(double x) const {
+ChangePoints LineFunction::getChangePoints(double x) const throw () {
     ChangePoints ret;
     // change point is where x = px1 + (px2 - px1)*(y - py1)/(py2 - py1) ; y = py1 + (py2 - py1)*(x - px1)/(px2 - px1)
     if (py1 == py2) {   // in this case, ratio is invalid
@@ -116,18 +113,18 @@ ChangePoints LineFunction::getChangePoints(double x) const {
     return ret;
 }
 
-double LineFunction::spanLeftSideIntegral(double x0, double y0, double y1) const {
+double LineFunction::spanLeftSideIntegral(double x0, double y0, double y1) const throw () {
     // this function computes the integral from y0 to y1 of (x(y) - x0)dy ; derive the expression yourself ;)
     if (py1 == py2) {   // in this case, ratio is invalid
         nAssert(y0 == y1 && y0 == py1);
         return 0;
     }
     const double val = (y1 - y0)*(px1 - x0 - py1 * ratio) + .5*(y1*y1 - y0*y0)*ratio;
-    numAssert(val >= -.0001 && val <= 1.00001, int(val*1000000.));
+    numAssert(val >= -.0001 && val <= 1.00001, val * 1000000.);
     return val;
 }
 
-bool LineFunction::operator==(const BorderFunctionBase& o) {
+bool LineFunction::operator==(const BorderFunctionBase& o) throw () {
     if (!dynamic_cast<const LineFunction*>(&o))
         return false;
     if (fabs(px1 - o(py1)) > .0001 || fabs(px2 - o(py2)) > .0001)
@@ -135,7 +132,7 @@ bool LineFunction::operator==(const BorderFunctionBase& o) {
     return true;
 }
 
-void LineFunction::debug() const {
+void LineFunction::debug() const throw () {
     #ifdef CERR_DEBUG
     cerr.precision(12);
     cerr << "Line (" << px1 << ',' << py1 << ") - (" << px2 << ',' << py2 << ")\n";
@@ -143,9 +140,9 @@ void LineFunction::debug() const {
 }
 
 // swap used by pixelLeftSideIntegral (and elsewhere) ; ideally s = !s;
-void swap(ChangePoints::Side& s) { s = (s == ChangePoints::S_Left) ? ChangePoints::S_Right : ChangePoints::S_Left; }
+void swap(ChangePoints::Side& s) throw () { s = (s == ChangePoints::S_Left) ? ChangePoints::S_Right : ChangePoints::S_Left; }
 
-double pixelLeftSideIntegral(double x0, double y0, double y1, const BorderFunctionBase& fn) {
+double pixelLeftSideIntegral(double x0, double y0, double y1, const BorderFunctionBase& fn) throw () {
     const ChangePoints lc = fn.getChangePoints(x0 + X_EXTREMECUT), rc = fn.getChangePoints(x0 + 1. - X_EXTREMECUT); // leave outer edges off to make sure the result is within [0,1]
     ChangePoints::Side ls = lc.startSide, rs = rc.startSide;
     const double* lcpi = lc.points, * rcpi = rc.points;
@@ -180,12 +177,12 @@ double pixelLeftSideIntegral(double x0, double y0, double y1, const BorderFuncti
             totalPixel += fn.spanLeftSideIntegral(x0, y, *rcpi);
             y = *rcpi++; swap(rs);
         }
-        numAssert(totalPixel >= -.0001 && totalPixel <= 1.0001, int(totalPixel*100000.));
+        numAssert(totalPixel >= -.0001 && totalPixel <= 1.0001, totalPixel * 100000.);
     }
 }
 
 template<class Texturizer>
-void renderLine(double y0, double y1, const BorderFunctionBase& fl, const BorderFunctionBase& fr, Texturizer& tex) {
+void renderLine(double y0, double y1, const BorderFunctionBase& fl, const BorderFunctionBase& fr, Texturizer& tex) throw () {
     double minxl = min(fl(y0), fl(y1)), minxr = min(fr(y0), fr(y1));
     double maxxl = max(fl(y0), fl(y1)), maxxr = max(fr(y0), fr(y1));
     if (fl.centerExtremes() && fl.extremeY() > y0 && fl.extremeY() < y1) {
@@ -219,7 +216,7 @@ void renderLine(double y0, double y1, const BorderFunctionBase& fl, const Border
 }
 
 template<class Texturizer>
-void renderBlock(double y0, double y1, const BorderFunctionBase& fl, const BorderFunctionBase& fr, Texturizer& tex) {
+void renderBlock(double y0, double y1, const BorderFunctionBase& fl, const BorderFunctionBase& fr, Texturizer& tex) throw () {
     tex.setLine(static_cast<int>(floor(y0)));
     if (ceil(y0) >= y1) {
         if (y1 > y0)
@@ -236,7 +233,7 @@ void renderBlock(double y0, double y1, const BorderFunctionBase& fl, const Borde
     renderLine(y1f, y1, fl, fr, tex);
 }
 
-DrawElement::DrawElement(BorderFunctionBase* flp, BorderFunctionBase* frp, double y0_, double y1_, vector<int> tex) :
+DrawElement::DrawElement(BorderFunctionBase* flp, BorderFunctionBase* frp, double y0_, double y1_, vector<int> tex) throw () :
     fLeft(flp),
     fRight(frp),
     y0(y0_),
@@ -246,11 +243,11 @@ DrawElement::DrawElement(BorderFunctionBase* flp, BorderFunctionBase* frp, doubl
     nAssert(flp && frp);
 }
 
-bool DrawElement::isJoinable(const DrawElement& o) const {
+bool DrawElement::isJoinable(const DrawElement& o) const throw () {
     return o.y0 > y0 && fabs(y1 - o.y0) < JOIN_TRESHOLD && *fLeft == *o.fLeft && *fRight == *o.fRight && texid == o.texid;
 }
 
-bool YSegment::BorderCompare::operator()(const BorderFunctionBase* o1, const BorderFunctionBase* o2) {
+bool YSegment::BorderCompare::operator()(const BorderFunctionBase* o1, const BorderFunctionBase* o2) throw () {
     double c = (*o1)(my1) - (*o2)(my1);
     if (c != 0.)
         return c < 0;
@@ -260,7 +257,7 @@ bool YSegment::BorderCompare::operator()(const BorderFunctionBase* o1, const Bor
     return     (*o1)(my3) < (*o2)(my3);
 }
 
-void YSegment::debug(bool verbose) const {
+void YSegment::debug(bool verbose) const throw () {
     #ifdef CERR_DEBUG
     cerr.precision(12);
     cerr << y0 << " -> " << y1 << ": " << build.size() << " (" << final.size() << ")\n";
@@ -279,14 +276,14 @@ void YSegment::debug(bool verbose) const {
     #endif
 }
 
-double getIntersection(LineFunction* f1, LineFunction* f2) {
+double getIntersection(LineFunction* f1, LineFunction* f2) throw () {
     // f1->px1 + (y - f1->py1) * f1->ratio = f2->px1 + (y - f2->py1) * f2->ratio
     if (f2->ratio == f1->ratio)
         return 1e99;    // no intersection
     return (f1->px1 - f2->px1 - f1->py1 * f1->ratio + f2->py1 * f2->ratio) / (f2->ratio - f1->ratio);
 }
 
-double getIntersection(LineFunction* f1, CurveFunction* f2, double miny) {
+double getIntersection(LineFunction* f1, CurveFunction* f2, double miny) throw () {
     // | f1->(px1,py1) + t * f1->(px2-px1,py2-py1) - f2->(cx,cy) |^2 = f2->r2
     // (x - f2->cx) * f2->sideMul > 0
     // t is calculated from the first equation just like in bounceFromPoint in world.cpp (code is copied from there)
@@ -318,7 +315,7 @@ double getIntersection(LineFunction* f1, CurveFunction* f2, double miny) {
     return besty;
 }
 
-double getIntersection(CurveFunction* f1, CurveFunction* f2, double miny) {
+double getIntersection(CurveFunction* f1, CurveFunction* f2, double miny) throw () {
     // | (x,y) - f1->(cx,cy) |^2 = f1->r2
     // | (x,y) - f2->(cx,cy) |^2 = f2->r2
     // it's a tricky one; the solution is from http://mathforum.org/library/drmath/view/51836.html
@@ -366,7 +363,7 @@ double getIntersection(CurveFunction* f1, CurveFunction* f2, double miny) {
 
 // getFirstIntersection gets the first y coordinate within the segment, with an intersection between bfn and a border in the final list
 // extreme values of y (that might [would the math be exact] actually be at the extreme coordinate or even outside the segment) are ignored
-bool YSegment::getFirstIntersection(BorderFunctionBase* bfn, double* splity) {
+bool YSegment::getFirstIntersection(BorderFunctionBase* bfn, double* splity) throw () {
     *splity = 1e99;
     const double miny = y0 + INTERSECTION_TRESHOLD;
     LineFunction* lfp1 = dynamic_cast<LineFunction*>(bfn);
@@ -409,7 +406,7 @@ bool YSegment::getFirstIntersection(BorderFunctionBase* bfn, double* splity) {
     return *splity < y1 - INTERSECTION_TRESHOLD;
 }
 
-YSegment YSegment::split(double midy) {
+YSegment YSegment::split(double midy) throw () {
     nAssert(midy > y0 && midy < y1);
     YSegment ret(midy, y1);
     ret.build = build;
@@ -418,12 +415,12 @@ YSegment YSegment::split(double midy) {
     return ret;
 }
 
-void YSegment::sort() { // sorts the build list borders in increasing x-order
+void YSegment::sort() throw () { // sorts the build list borders in increasing x-order
     nAssert((build.size() & 1) == 0);
     std::sort(build.begin(), build.end(), BorderCompare(y0, y1));
 }
 
-void YSegment::simplify() { // removes double borders from build list (assuming it's sorted)
+void YSegment::simplify() throw () { // removes double borders from build list (assuming it's sorted)
     nAssert((build.size() & 1) == 0);
     if (build.empty())
         return;
@@ -444,7 +441,7 @@ void YSegment::simplify() { // removes double borders from build list (assuming 
     }
 }
 
-void YSegment::moveElements(int texid) {    // moves all borders from build list to final list (use only when the final list is empty)
+void YSegment::moveElements(int texid) throw () {    // moves all borders from build list to final list (use only when the final list is empty)
     nAssert(final.empty());
     for (BorderListT::iterator bi = build.begin(); bi != build.end(); ) {
         final.push_back(TexBorder(*bi, texid));
@@ -467,7 +464,7 @@ void YSegment::moveElements(int texid) {    // moves all borders from build list
  * - add the new left border
  * - remove old borders while they are left from the new right border
  */
-void YSegment::moveElementsWithOverlap(int texid, bool overlay) {   // moves all borders from build list to final list overlapping the old walls (or overlay)
+void YSegment::moveElementsWithOverlap(int texid, bool overlay) throw () {   // moves all borders from build list to final list overlapping the old walls (or overlay)
     nAssert((build.size() & 1) == 0);
     BorderCompare bcmp(y0, y1);
     for (BorderListT::iterator sbi = build.begin(); sbi != build.end(); ) {
@@ -542,7 +539,7 @@ void YSegment::moveElementsWithOverlap(int texid, bool overlay) {   // moves all
     nAssert(final.empty() || final.back().getBaseTex() == -1);
 }
 
-void YSegment::extractDrawElements(list<DrawElement>& dst) const {
+void YSegment::extractDrawElements(list<DrawElement>& dst) const throw () {
     nAssert(build.empty());
     if (final.empty())
         return;
@@ -562,7 +559,7 @@ void YSegment::extractDrawElements(list<DrawElement>& dst) const {
 // splitOnIntersect splits *si (which must be part of list "segs") to two parts if bfn intersects some of the borders in si's final array
 // the split is done in the first intersection y-wise, and to handle multiple intersections, splitOnIntersect must also be called on the new segment
 // returns true if si was split
-bool splitOnIntersect(SegListT::iterator si, BorderFunctionBase* bfn, SegListT& segs) {
+bool splitOnIntersect(SegListT::iterator si, BorderFunctionBase* bfn, SegListT& segs) throw () {
     double splity;
     if (!si->getFirstIntersection(bfn, &splity))    // relies on getFirstIntersection not to return an intersection at the segment's extremes
         return false;
@@ -572,7 +569,7 @@ bool splitOnIntersect(SegListT::iterator si, BorderFunctionBase* bfn, SegListT& 
     return true;
 }
 
-void assembleSegments(const vector<WallBorderSegment>& borders, SegListT& segDest) {
+void assembleSegments(const vector<WallBorderSegment>& borders, SegListT& segDest) throw () {
     nAssert(!segDest.empty());  // it must be pre-filled with (possibly empty) segments that cover all possible y's (one seg from -1e99 to 1e99 is good)
 //  nAssert(borders.size() >= 2);   // using clipping with objects wholly outside the clip area (or otherwise invisible) will violate this; disable this line if that's possible
 
@@ -660,7 +657,7 @@ void assembleSegments(const vector<WallBorderSegment>& borders, SegListT& segDes
     #endif
 }
 
-void joinElements(list<DrawElement>& els) {
+void joinElements(list<DrawElement>& els) throw () {
     for (list<DrawElement>::iterator i1 = els.begin(); i1 != els.end(); ++i1) {
         list<DrawElement>::iterator i2 = i1;
         ++i2;
@@ -677,7 +674,7 @@ void joinElements(list<DrawElement>& els) {
     }
 }
 
-list<DrawElement> assembleWall(const vector<WallBorderSegment>& borders, int texid) {
+list<DrawElement> assembleWall(const vector<WallBorderSegment>& borders, int texid) throw () {
     SegListT segs;
     segs.push_back(YSegment(-1e99, 1e99));  // this makes the splitting routine simpler, since the new borders will always be within an existing segment
 
@@ -698,7 +695,7 @@ list<DrawElement> assembleWall(const vector<WallBorderSegment>& borders, int tex
     return ret;
 }
 
-list<DrawElement> assembleScene(const vector<ObjectSource>& objects) {
+list<DrawElement> assembleScene(const vector<ObjectSource>& objects) throw () {
     SegListT segs;
     segs.push_back(YSegment(-1e99, 1e99));  // this makes the splitting routine simpler, since the new borders will always be within an existing segment
 
@@ -723,13 +720,13 @@ list<DrawElement> assembleScene(const vector<ObjectSource>& objects) {
     return ret;
 }
 
-void PartialPixelSegment::draw(BITMAP* buf, int y) const {
+void PartialPixelSegment::draw(BITMAP* buf, int y) const throw () {
     for (size_t i = 0; i < pixels.size(); ++i)
         if (pixels[i].draw())
             putpixel(buf, startx + i, y, pixels[i].flexColor());
 }
 
-void Texturizer::render(const vector<int>& textures, const DrawElement* elp) {
+void Texturizer::render(const vector<int>& textures, const DrawElement* elp) throw () {
     if (textures.size() == 1) {
         const int texid = textures[0];
         numAssert2(texid >= 0 && texid < (int)texTab.size(), texid, texTab.size());
@@ -764,17 +761,17 @@ void Texturizer::render(const vector<int>& textures, const DrawElement* elp) {
     }
 }
 
-inline void Texturizer::setLine(int y) {
+inline void Texturizer::setLine(int y) throw () {
     nAssert(y >= 0 && y < buf->h);  // can't rely on Allegro's clipping since PartialPixelSegment-containers are only allocated for on-screen rows
     by = by0 + y;
 }
 
-inline void Texturizer::nextLine() {
+inline void Texturizer::nextLine() throw () {
     ++by;
     nAssert(by < buf->h);   // can't rely on Allegro's clipping since PartialPixelSegment-containers are only allocated for on-screen rows
 }
 
-void Texturizer::startPixSpan(int x) {
+void Texturizer::startPixSpan(int x) throw () {
     bx = bx0 + x;
     list<PartialPixelSegment>& row = partials[by];
     for (list<PartialPixelSegment>::iterator si = row.begin();; ++si) {
@@ -811,7 +808,7 @@ void Texturizer::startPixSpan(int x) {
     }
 }
 
-inline void Texturizer::putPix(int color, int alpha) {
+inline void Texturizer::putPix(int color, int alpha) throw () {
     if (spanIndex == partSpan->len()) {
         if (spanIndex < spanEnd)
             partSpan->extend(color, alpha);
@@ -831,7 +828,7 @@ inline void Texturizer::putPix(int color, int alpha) {
     ++bx;
 }
 
-void Texturizer::finalize() {
+void Texturizer::finalize() throw () {
     for (int y = 0; y < buf->h; ++y) {
         list<PartialPixelSegment>& row = partials[y];
         for (list<PartialPixelSegment>::const_iterator si = row.begin(); si != row.end(); ++si)
@@ -840,15 +837,15 @@ void Texturizer::finalize() {
     }
 }
 
-pair<int, int> SolidPixelSource::getPixel() {
-    return pair<int, int>(color, 255);
+pair<int, int> SolidPixelSource::getPixel() throw () {
+    return pair<int, int>(color, alpha);
 }
 
-void SolidTexturizer::putPix(double alpha) {
+void SolidTexturizer::putPix(double alpha) throw () {
     putPixI(static_cast<int>(ldexp(alpha, PartialPixelSegment::scale)));
 }
 
-void SolidTexturizer::putSpan(int x0, int x1, double alpha) { // fills the range [x0,x1[
+void SolidTexturizer::putSpan(int x0, int x1, double alpha) throw () { // fills the range [x0,x1[
     nAssert(x0 < x1);   // empty spans aren't tolerated
     if (alpha >= .999)
         hline(host.getBuf(), x0 + host.getbx0(), host.getby(), x1 + host.getbx0() - 1, color);
@@ -860,38 +857,38 @@ void SolidTexturizer::putSpan(int x0, int x1, double alpha) { // fills the range
     }
 }
 
-void TexturePixelSource::setLine(int y) {
+void TexturePixelSource::setLine(int y) throw () {
     ty = (y - ty0) % tex->h;
 }
 
-void TexturePixelSource::nextLine() {
+void TexturePixelSource::nextLine() throw () {
     if (++ty == tex->h)
         ty = 0;
 }
 
-void TexturePixelSource::startPixSpan(int x) {
+void TexturePixelSource::startPixSpan(int x) throw () {
     tx = (x - tx0) % tex->w;
 }
 
-pair<int, int> TexturePixelSource::getPixel() {
+pair<int, int> TexturePixelSource::getPixel() throw () {
     const int col = getpixel(tex, tx, ty);
     if (++tx == tex->w)
         tx = 0;
-    return pair<int, int>(col, 255);
+    return pair<int, int>(col, alpha);
 }
 
-void TextureTexturizer::setLine(int y) {
+void TextureTexturizer::setLine(int y) throw () {
     host.setLine(y);
     ty = (y - ty0) % tex->h;
 }
 
-void TextureTexturizer::nextLine() {
+void TextureTexturizer::nextLine() throw () {
     host.nextLine();
     if (++ty == tex->h)
         ty = 0;
 }
 
-void TextureTexturizer::putSpan(int x0, int x1, double alpha) {   // fills the range [x0,x1[
+void TextureTexturizer::putSpan(int x0, int x1, double alpha) throw () {   // fills the range [x0,x1[
     nAssert(x0 < x1);   // empty spans aren't tolerated
     if (alpha >= .999) {
         drawing_mode(DRAW_MODE_COPY_PATTERN, tex, tx0, ty0);
@@ -906,22 +903,22 @@ void TextureTexturizer::putSpan(int x0, int x1, double alpha) {   // fills the r
     }
 }
 
-void TextureTexturizer::startPixSpan(int x) {
+void TextureTexturizer::startPixSpan(int x) throw () {
     host.startPixSpan(x);
     tx = (x - tx0) % tex->w;
 }
 
-void TextureTexturizer::putPix(double alpha) {
+void TextureTexturizer::putPix(double alpha) throw () {
     putPixI(static_cast<int>(ldexp(alpha, PartialPixelSegment::scale)));
 }
 
-void TextureTexturizer::putPixI(int alpha) {
+void TextureTexturizer::putPixI(int alpha) throw () {
     host.putPix(getpixel(tex, tx, ty), alpha);
     if (++tx == tex->w)
         tx = 0;
 }
 
-FlagmarkerPixelSource::FlagmarkerPixelSource(const FlagmarkerTexdata& td) :
+FlagmarkerPixelSource::FlagmarkerPixelSource(const FlagmarkerTexdata& td) throw () :
     color(td.color),
     markRadius(td.radius),
     intensityMul(300 / td.radius),
@@ -929,21 +926,21 @@ FlagmarkerPixelSource::FlagmarkerPixelSource(const FlagmarkerTexdata& td) :
     cy(td.cy)
 { }
 
-void FlagmarkerPixelSource::setLine(int y) {
+void FlagmarkerPixelSource::setLine(int y) throw () {
     dy = y - cy;
     dy2 = dy * dy;
 }
 
-void FlagmarkerPixelSource::nextLine() {
+void FlagmarkerPixelSource::nextLine() throw () {
     ++dy;
     dy2 = dy * dy;
 }
 
-void FlagmarkerPixelSource::startPixSpan(int x) {
+void FlagmarkerPixelSource::startPixSpan(int x) throw () {
     dx = x - cx;
 }
 
-pair<int, int> FlagmarkerPixelSource::getPixel() {
+pair<int, int> FlagmarkerPixelSource::getPixel() throw () {
     const double intensity = markRadius - sqrt(dx * dx + dy2);
     ++dx;
     if (intensity <= 0)
@@ -952,36 +949,36 @@ pair<int, int> FlagmarkerPixelSource::getPixel() {
         return pair<int, int>(color, min(256, static_cast<int>(intensity * intensityMul)));
 }
 
-MultiLayerTexturizer::~MultiLayerTexturizer() {
+MultiLayerTexturizer::~MultiLayerTexturizer() throw () {
     for (vector<PixelSource*>::iterator li = layers.begin(); li != layers.end(); ++li)
         delete *li;
 }
 
-void MultiLayerTexturizer::setLine(int y) {
+void MultiLayerTexturizer::setLine(int y) throw () {
     host.setLine(y);
     for (vector<PixelSource*>::iterator li = layers.begin(); li != layers.end(); ++li)
         (*li)->setLine(y);
 }
 
-void MultiLayerTexturizer::nextLine() {
+void MultiLayerTexturizer::nextLine() throw () {
     host.nextLine();
     for (vector<PixelSource*>::iterator li = layers.begin(); li != layers.end(); ++li)
         (*li)->nextLine();
 }
 
-void MultiLayerTexturizer::putSpan(int x0, int x1, double alpha) {  // fills the range [x0,x1[
+void MultiLayerTexturizer::putSpan(int x0, int x1, double alpha) throw () {  // fills the range [x0,x1[
     startPixSpan(x0);
     for (int x = x0; x < x1; ++x)
         putPix(alpha);
 }
 
-void MultiLayerTexturizer::startPixSpan(int x) {
+void MultiLayerTexturizer::startPixSpan(int x) throw () {
     host.startPixSpan(x);
     for (vector<PixelSource*>::iterator li = layers.begin(); li != layers.end(); ++li)
         (*li)->startPixSpan(x);
 }
 
-void MultiLayerTexturizer::putPix(double alpha) {   // draws at current x coord and increases it
+void MultiLayerTexturizer::putPix(double alpha) throw () {   // draws at current x coord and increases it
     vector<PixelSource*>::iterator li = layers.begin();
     const int color1 = (*li)->getPixel().first;
     int r = getr(color1), g = getg(color1), b = getb(color1);
@@ -997,19 +994,19 @@ void MultiLayerTexturizer::putPix(double alpha) {   // draws at current x coord 
     host.putPix(makecol(r, g, b), static_cast<int>(ldexp(alpha, PartialPixelSegment::scale)));
 }
 
-SceneAntialiaser::~SceneAntialiaser() {
+SceneAntialiaser::~SceneAntialiaser() throw () {
     for (vector<BorderFunctionBase*>::iterator bi = bfns.begin(); bi != bfns.end(); ++bi)
         delete *bi;
 }
 
-void SceneAntialiaser::setScaling(double x0_, double y0_, double scale_) {  // call before add*
+void SceneAntialiaser::setScaling(double x0_, double y0_, double scale_) throw () {  // call before add*
     x0 = x0_;
     y0 = y0_;
     scale = scale_;
 }
 
-void SceneAntialiaser::addRectangle(double x1, double y1, double x2, double y2, int texture, bool overlay) {
-    numAssert2(y1 <= y2, int(y1*10.), int(y2*10.));
+void SceneAntialiaser::addRectangle(double x1, double y1, double x2, double y2, int texture, bool overlay) throw () {
+    numAssert2(y1 <= y2, y1 * 10., y2 * 10.);
 
     objects.push_back(ObjectSource());
     objects.back().texid = texture;
@@ -1028,12 +1025,12 @@ void SceneAntialiaser::addRectangle(double x1, double y1, double x2, double y2, 
     borders.push_back(WallBorderSegment(bfns.back(), y1, y2));
 }
 
-void SceneAntialiaser::addRectWall(const RectWall& wall, int texture) {
-    numAssert2(wall.y1() <= wall.y2(), int(wall.y1()*10.), int(wall.y2()*10.));
+void SceneAntialiaser::addRectWall(const RectWall& wall, int texture) throw () {
+    numAssert2(wall.y1() <= wall.y2(), wall.y1() * 10., wall.y2() * 10.);
     addRectangle(wall.x1(), wall.y1(), wall.x2(), wall.y2(), texture);
 }
 
-void SceneAntialiaser::addTriWall (const  TriWall& wall, int texture) {
+void SceneAntialiaser::addTriWall (const  TriWall& wall, int texture) throw () {
     objects.push_back(ObjectSource());
     objects.back().texid = texture;
     objects.back().overlay = false;
@@ -1056,7 +1053,7 @@ void SceneAntialiaser::addTriWall (const  TriWall& wall, int texture) {
     borders.push_back(WallBorderSegment(bfns.back(), y2, y3));
 }
 
-void SceneAntialiaser::addCircWall(const CircWall& wall, int texture) {
+void SceneAntialiaser::addCircWall(const CircWall& wall, int texture) throw () {
     objects.push_back(ObjectSource());
     objects.back().texid = texture;
     objects.back().overlay = false;
@@ -1154,7 +1151,7 @@ void SceneAntialiaser::addCircWall(const CircWall& wall, int texture) {
     borders.push_back(WallBorderSegment(bfns.back(), y1, y2));
 }
 
-void SceneAntialiaser::addWall(const WallBase* wall, int texture) {
+void SceneAntialiaser::addWall(const WallBase* wall, int texture) throw () {
     const RectWall* rwp = dynamic_cast<const RectWall*>(wall);
     if (rwp) {
         addRectWall(*rwp, texture);
@@ -1170,7 +1167,7 @@ void SceneAntialiaser::addWall(const WallBase* wall, int texture) {
     addCircWall    (*cwp, texture);
 }
 
-void SceneAntialiaser::setClipping(double x1, double y1, double x2, double y2) {
+void SceneAntialiaser::setClipping(double x1, double y1, double x2, double y2) throw () {
     nAssert(x1 < x2 && y1 < y2);
     clipx1 = x0 + x1 * scale;
     clipy1 = y0 + y1 * scale;
@@ -1179,7 +1176,7 @@ void SceneAntialiaser::setClipping(double x1, double y1, double x2, double y2) {
     clipFunctionsValid = false;
 }
 
-void SceneAntialiaser::createClipFns() {
+void SceneAntialiaser::createClipFns() throw () {
     if (!clipFunctionsValid) {
         clipLeft = new LineFunction(clipx1, clipy1, clipx1, clipy2);
         clipRight = new LineFunction(clipx2, clipy1, clipx2, clipy2);
@@ -1189,7 +1186,7 @@ void SceneAntialiaser::createClipFns() {
     }
 }
 
-void SceneAntialiaser::clip(int i0) {
+void SceneAntialiaser::clip(int i0) throw () {
     for (vector<ObjectSource>::iterator object = objects.begin() + i0; object != objects.end(); ++object) {
         int handleBorders = object->borders.size(); // must save this since new borders may be added that don't need clipping
         for (int bi = 0; bi < handleBorders; ++bi) {
@@ -1268,31 +1265,31 @@ void SceneAntialiaser::clip(int i0) {
     }
 }
 
-void SceneAntialiaser::addRectWallClipped(const RectWall& wall, int texture) {
+void SceneAntialiaser::addRectWallClipped(const RectWall& wall, int texture) throw () {
     const int startNew = objects.size();
     addRectWall(wall, texture);
     clip(startNew);
 }
 
-void SceneAntialiaser::addTriWallClipped (const  TriWall& wall, int texture) {
+void SceneAntialiaser::addTriWallClipped (const  TriWall& wall, int texture) throw () {
     const int startNew = objects.size();
     addTriWall (wall, texture);
     clip(startNew);
 }
 
-void SceneAntialiaser::addCircWallClipped(const CircWall& wall, int texture) {
+void SceneAntialiaser::addCircWallClipped(const CircWall& wall, int texture) throw () {
     const int startNew = objects.size();
     addCircWall(wall, texture);
     clip(startNew);
 }
 
-void SceneAntialiaser::addWallClipped    (const WallBase* wall, int texture) {
+void SceneAntialiaser::addWallClipped    (const WallBase* wall, int texture) throw () {
     const int startNew = objects.size();
     addWall(wall, texture);
     clip(startNew);
 }
 
-void SceneAntialiaser::render(Texturizer& tex) const {
+void SceneAntialiaser::render(Texturizer& tex) const throw () {
     const list<DrawElement> drawEls = assembleScene(objects);
     #ifdef DEBUG_RENDER
     if (drawEls.size() < 50) {

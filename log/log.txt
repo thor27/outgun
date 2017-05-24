@@ -1,0 +1,15 @@
+     0,04: Outgun log file. 2017-05-23 22:03:07. Game string: Outgun, protocol: 1.0, version: 1.0.3 r336E
+     0,04: Local address 127.0.1.1 ignored
+     0,04: No public address found
+     0,04: Reading config/master.txt
+     0,04: Resolving master server address...
+     1,07: Can't resolve bug report server DNS name to IP.
+     1,07: Master server address set: outgun.mbnet.fi/77.240.20.102 -> 77.240.20.102:80.
+     1,07: Bug report server address set: nix.dnsalias.net/- -> none.
+     1,07: Thread priorities:
+     1,07:    rc = 0 policy = 0 (0)
+     1,07:    pmin 0 pmax 0 pdef = 0
+     1,07: Couldn't set a higher priority. Using default.
+     1,07: Priority set for server: 0
+     1,07: See clientlog.txt for client's log messages
+    12,20: Exiting

@@ -30,7 +30,7 @@ namespace GNE {
 #endif
 
 //##ModelId=3B0753820036
-Time Timer::getCurrentTime() {
+Time Timer::getCurrentTime() throw () {
   Time ret;
 #ifdef WIN32
   LARGE_INTEGER t, freq;
@@ -48,7 +48,7 @@ Time Timer::getCurrentTime() {
 }
 
 //##ModelId=3B0753820065
-Time Timer::getAbsoluteTime() {
+Time Timer::getAbsoluteTime() throw () {
 #ifdef WIN32
   Time ret;
   _timeb t;

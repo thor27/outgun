@@ -14,7 +14,7 @@ Outras Teclas
  
  Falar              Apenas digite sua mensagem e aperte enter.
  Falar para o Time  Inicie sua mensagem com um ponto ('.').
- Mudar de time      End (se seu time estiver com mais jogadores)
+ Mudar de time      End
  Suicidar           Delete
  Largar a bandeira  Page Down
  Lista de mapas     F2

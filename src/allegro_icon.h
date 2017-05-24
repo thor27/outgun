@@ -54,13 +54,13 @@ static const char *allegico_xpm[] = {
 };
 extern void *allegro_icon;
 
-inline void setAllegroIcon() {
+inline void setAllegroIcon() throw () {
     allegro_icon = allegico_xpm;
 }
 
 #else   // ALLEGRO_WITH_XWINDOWS
 
-inline void setAllegroIcon() {
+inline void setAllegroIcon() throw () {
 }
 
 #endif  // ALLEGRO_WITH_XWINDOWS

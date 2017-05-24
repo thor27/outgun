@@ -1,0 +1,1 @@
+obj/gui/client.o obj/text/client.o :	client.cpp	$(incalleg_h_inc)	$(binaryaccess_h_inc)	$(leetnet_client_h_inc)	$(commont_h_inc)	$(debug_h_inc)	$(debugconfig_h_inc)	$(language_h_inc)	$(names_h_inc)	$(nassert_h_inc)	$(network_h_inc)	$(platform_h_inc)	$(protocol_h_inc)	$(timer_h_inc)	$(utility_h_inc)	$(version_h_inc)	$(client_h_inc)

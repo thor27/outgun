@@ -1,0 +1,67 @@
+; 28/04/2017
+
+P width 4
+P height 3
+P title Sisso
+P author Kiss & Nosferatu
+S 16 12
+
+flag 0 0 1 8 6
+spawn 0 0 1 2 4
+spawn 0 0 1 6 4
+spawn 0 0 1 10 4
+spawn 0 0 1 14 4
+spawn 0 0 1 2 8
+spawn 0 0 1 6 8
+spawn 0 0 1 10 8
+spawn 0 0 1 14 8
+
+flag  1 3 1 8 6
+spawn 1 3 1 2 4
+spawn 1 3 1 6 4
+spawn 1 3 1 10 4
+spawn 1 3 1 14 4
+spawn 1 3 1 2 8
+spawn 1 3 1 6 8
+spawn 1 3 1 10 8
+spawn 1 3 1 14 8
+
+X room 0 0 3 2
+X top 0 0 3 0
+X bottom 0 2 3 2
+X left 0 0 0 2
+X left 1 1
+X left 3 1
+X right 3 0 3 2
+X right 0 1
+X right 2 1
+X rfloor 0 1
+X bfloor 3 1
+
+:room
+  W  0  0  1  3
+  W  0  0  3  1
+  W 16  0 15  3
+  W 16  0 13  1
+  W  0 12  1  9
+  W  0 12  3 11
+  W 16 12 15  9
+  W 16 12 13 11
+
+:top
+  W  0  0 16  1
+
+:bottom
+  W  0 12 16 11
+
+:left
+  W  0  3  1  9
+
+:right
+  W 16  3 15  9
+
+:rfloor
+  G  0  0 16 12  3
+
+:bfloor
+  G  0  0 16 12  4

@@ -5,7 +5,7 @@
  A 2D-graphics, 32-player multiplayer, fast-paced capture-the-flag game!
 
 *******************************************************************************
-                                                           [ 1.0.3 2006-02-14 ]
+                                                      [ 1.0.3 r336 2008-03-18 ]
 
 
 -------------------------
@@ -41,10 +41,11 @@ game. Especially good ones. ;)
 This game is free software under GNU GPL. See the file 'COPYING' for more
 details. Download the sources from http://koti.mbnet.fi/outgun/
 
-There most certainly are bugs in this program, but at the time of release we
-aren't aware of any. See http://koti.mbnet.fi/outgun/1.0/known_issues.html for
-a list of known problems, including bugs when they are found. If you find a
-new bug, please report it! The quality of future versions depends on you.
+There most certainly are at least some bugs in this program, but when a
+non-testing version is released we aren't aware of any verified ones. See
+http://koti.mbnet.fi/outgun/1.0/known_issues.html for a list of known problems,
+including bugs when they are found. If you find a new bug, please report it!
+The quality of future versions depends on you.
 
 
 -------------------------
@@ -53,26 +54,29 @@ CREDITS:
 
 Programming for 0.5.0 by
    Fabio "Spinal" Cecin <fcecin@inf.ufrgs.br>
-   Random Name Routine(TM) by Renato Hentschke <renato@amok.com.br>
+   Random Name Routine(TM) by Renato Hentschke
 
 Programming for 1.0 by
    Niko Ritari (Nix) <npr1@suomi24.fi>
    Jani Rivinoja (Huntta) <janir@mbnet.fi>
-   Special player collision effects by Fabio "Spinal" Cecin
+   Special player collision effects by Fabio Cecin
+   Bots by Peter Kosyh (Gloomy), with modifications by Nix
 
 Graphics themes by
-   Jani Rivinoja (Huntta)
+   Jani Rivinoja
    Joonas Rivinoja
+   Thomaz de Oliveira dos Reis (ThOR27) <thommy@globo.com>
 
 Fonts by
-   Jani Rivinoja (Huntta)
+   Jani Rivinoja
 
 Sound theme by
-   Visa-Valtteri Pimi√§ <visa.pimia@www.fi>
+   Visa-Valtteri Pimi‰ <visa.pimia@www.fi>
 
 Translations by
-   Finnish - Jani Rivinoja (Huntta) and Niko Ritari (Nix)
-   Portuguese (BR) - Thomaz de Oliveira dos Reis (ThOR27) <thommy@globo.com>
+   Finnish - Jani Rivinoja and Niko Ritari
+   Portuguese (BR) - Thomaz de Oliveira dos Reis
+   Italian - Alessandro Ferrentino "Lo Scassatore"
 
 Maps by
    Huntta, Joonas, PHiN, evilKaioh, Flyer, Juggis, Luque, :(, MK-HeadShot, Nix,
@@ -82,9 +86,6 @@ Maps by
    ThOR27 (very much deserving of his own line),
    Spinal, Caio Monteiro "Nosferatu", Joonas, PHiN, MM-coiote, rFrota,
    Detonador, K4(Maicon), Zigue, Syrus-DH, Miague-DH, SnoOpY
-   You. Get your name here by reporting a new bug. :)
-   
-2017 new site: http://mlimasolucoes.com.br/
 
 This game uses these libraries:
  * Allegro - http://alleg.sourceforge.net/

@@ -1,7 +1,7 @@
 /*
  *  mutex.h
  *
- *  Copyright (C) 2004 - Niko Ritari
+ *  Copyright (C) 2004, 2008 - Niko Ritari
  *
  *  This file is part of Outgun.
  *
@@ -24,57 +24,172 @@
 #ifndef MUTEX_H_INC
 #define MUTEX_H_INC
 
-#include <pthread.h>
-#include "debugconfig.h"    // for LOG_MUTEX_LOCKUNLOCK
-#include "nassert.h"
+#include <errno.h>
+#include "incpthread.h"
+#include "debugconfig.h" // for DEBUG_SYNCHRONIZATION
 #include "utility.h"
+#include "nassert.h"
 
-// note: don't use exit() (_exit() is OK) when a global MutexHolder may be locked
-class MutexHolder {
+// note: don't use exit() (_exit() is OK) when a global Mutex may be locked
+
+// BareMutex is only intended for mutexes referenced by Mutex code itself, or test cases wanting to avoid linking a heap of objects.
+// Normally, use Mutex instead.
+class BareMutex : private NoCopying, public Lockable {
     pthread_mutex_t mutex;
+    friend class ConditionVariable;
 
 public:
-    MutexHolder()  { nAssert(0 == pthread_mutex_init(&mutex, 0)); }
-    ~MutexHolder() { nAssert(0 == pthread_mutex_destroy(&mutex)); }
-    void lock()    { logAction('L'); nAssert(0 == pthread_mutex_lock(&mutex)); logAction('G'); }
-    void unlock()  { logAction('U'); nAssert(0 == pthread_mutex_unlock(&mutex)); }
+    enum LoggingDisabler { NoLogging };
+    BareMutex(LoggingDisabler) throw ()                     { nAssert(0 == pthread_mutex_init(&mutex, 0)); }
+    BareMutex(const char* identifier, bool = true) throw () { nAssert(0 == pthread_mutex_init(&mutex, 0)); nAssert(identifier); }
+    ~BareMutex() throw () { nAssert(0 == pthread_mutex_destroy(&mutex)); }
+
+    void lock() throw () { nAssert(0 == pthread_mutex_lock(&mutex)); }
+    void unlock() throw () { nAssert(0 == pthread_mutex_unlock(&mutex)); }
+};
+
+#if DEBUG_SYNCHRONIZATION == 0
+
+typedef BareMutex Mutex;
+
+#elif DEBUG_SYNCHRONIZATION == 1
+
+class Mutex : private NoCopying, public Lockable {
+public:
+    // Use Mutex m(NoLogging); rather than Mutex m("some-id", false); so that unlogged mutexes can be quicky found by text search (besides, identifier is never used in the latter case).
+    // The logging_ parameter is intended to be used like Mutex m("some-id", SOME_SUBSYSTEM_EXTRA_LOGGING);.
+    enum LoggingDisabler { NoLogging };
+    Mutex(LoggingDisabler) throw ();
+    Mutex(const char* identifier, bool logging_ = true) throw ();
+    ~Mutex() throw ();
+
+    void lock() throw ();
+    void unlock() throw ();
 
 private:
-    void doLogAction(char operation);   // defined in debug.cpp
-    void logAction(char operation) {
-        if (LOG_MUTEX_LOCKUNLOCK)
-            doLogAction(operation);
-    }
+    pthread_mutex_t mutex;
+    bool logging;
+    bool locked;
+    pthread_t owner; // only if locked
+    int nWaiters;
+
+    void logId(const char* identifier) throw ();
+    void logAction(char operation) throw ();
+
+    friend class ConditionVariable;
 };
 
-class MutexLock {
-    MutexHolder& mutex;
+#else
+
+#error DEBUG_SYNCHRONIZATION not properly set
+
+#endif // DEBUG_SYNCHRONIZATION
+
+#ifdef EXTRA_DEBUG
+
+/** Assert mutual exclusion (only with EXTRA_DEBUG).
+ * Verify mutual exclusion where it's supposed to be actually provided by other means (e.g. a real Mutex).
+ * Trying to lock an AssertMutex while it's already locked will trigger an assertion.
+ */
+class AssertMutex : private NoCopying, public Lockable {
+    Mutex mutex;
+    bool locked;
+    pthread_t owner;
 
 public:
-    MutexLock(MutexHolder& mutex_) : mutex(mutex_) { mutex.lock(); }
-    ~MutexLock() { mutex.unlock(); }
+    AssertMutex() throw () : mutex(Mutex::NoLogging), locked(false) { }
+    void lock() throw ();
+    void unlock() throw ();
 };
+
+#else
+
+class AssertMutex : private NoCopying, public Lockable {
+public:
+    void lock() throw () { }
+    void unlock() throw () { }
+};
+
+#endif // EXTRA_DEBUG
+
+#if DEBUG_SYNCHRONIZATION == 0
+
+class ConditionVariable : private NoCopying {
+    pthread_cond_t cond;
+
+public:
+    enum LoggingDisabler { NoLogging };
+    ConditionVariable(LoggingDisabler) throw ()                     { nAssert(0 == pthread_cond_init(&cond, 0)); }
+    ConditionVariable(const char* identifier, bool = true) throw () { nAssert(0 == pthread_cond_init(&cond, 0)); nAssert(identifier); }
+    ~ConditionVariable() throw () { nAssert(0 == pthread_cond_destroy(&cond)); }
+
+    void wait(Mutex& mutex) throw () { nAssert(0 == pthread_cond_wait(&cond, &mutex.mutex)); }
+    bool timedWait(Mutex& mutex, const struct timespec& abstime) throw ();
+
+    void signal   () throw () { nAssert(0 == pthread_cond_signal   (&cond)); }
+    void broadcast() throw () { nAssert(0 == pthread_cond_broadcast(&cond)); }
+
+    // note: these aren't generally needed even if you haven't already locked the mutex
+    void signal   (Mutex& mutex) throw () { Lock ml(mutex); signal   (); }
+    void broadcast(Mutex& mutex) throw () { Lock ml(mutex); broadcast(); }
+};
+
+#elif DEBUG_SYNCHRONIZATION == 1
+
+class ConditionVariable : private NoCopying {
+public:
+    enum LoggingDisabler { NoLogging };
+    ConditionVariable(LoggingDisabler) throw ();
+    ConditionVariable(const char* identifier, bool logging_ = true) throw ();
+    ~ConditionVariable() throw ();
+
+    void wait(Mutex& mutex) throw ();
+    bool timedWait(Mutex& mutex, const struct timespec& abstime) throw ();
+
+    void signal() throw ();
+    void broadcast() throw ();
+
+    // note: these aren't generally needed even if you haven't already locked the mutex
+    void signal   (Mutex& mutex) throw () { Lock ml(mutex); signal   (); }
+    void broadcast(Mutex& mutex) throw () { Lock ml(mutex); broadcast(); }
+
+private:
+    pthread_cond_t cond;
+    bool logging;
+    int nWaiting;
+    Mutex* waitingMutex; // only if nWaiting
+
+    void debugPreWait(Mutex& mutex) throw ();
+    void debugPostWait(Mutex& mutex) throw ();
+
+    void logId(const char* identifier) throw ();
+    void logAction(char operation) throw ();
+};
+
+#else
+
+#error DEBUG_SYNCHRONIZATION not properly set
+
+#endif // DEBUG_SYNCHRONIZATION
 
 // Threadsafe: Wrapper of an object of type ObjT providing a thread safe very limited interface.
-template<class ObjT>
-class Threadsafe {
-    mutable MutexHolder mutex;
-    volatile ObjT obj;
+template<class ObjT> class Threadsafe : private NoCopying, public ConstLockable {
+    mutable Mutex mutex;
+    ObjT obj;
 
 public:
-    Threadsafe() { }
-    Threadsafe(const ObjT& o) : obj(o) { }
+    Threadsafe(const char* identifier) throw () : mutex(identifier) { }
+    Threadsafe(const ObjT& o) throw () : obj(o) { }
+    ~Threadsafe() throw () { }
 
-    Threadsafe& operator=(const ObjT& o) { mutex.lock(); volatile_ref_cast<ObjT>(obj) = o; mutex.unlock(); return *this; }
-    ObjT read() const { mutex.lock(); ObjT o = volatile_ref_cast<const ObjT>(obj); mutex.unlock(); return o; }  // Get a *copy* of the object
+    Threadsafe& operator=(const ObjT& o) throw () { mutex.lock(); obj = o; mutex.unlock(); return *this; }
+    ObjT read() const throw () { mutex.lock(); ObjT o = obj; mutex.unlock(); return o; }  // Get a *copy* of the object
 
     // for more complex operations, use lock(), access() and unlock()
-    void lock() const { mutex.lock(); }
-    void unlock() const { mutex.unlock(); }
-          ObjT& access()       { return obj; }  // use obj only between lock() and unlock()
-    const ObjT& access() const { return obj; }  // use obj only between lock() and unlock()
+    void lock() const throw () { mutex.lock(); }
+    void unlock() const throw () { mutex.unlock(); }
+          ObjT& access() throw ()       { return obj; }  // use obj only between lock() and unlock()
+    const ObjT& access() const throw () { return obj; }  // use obj only between lock() and unlock()
 };
-
-extern MutexHolder nlOpenMutex;
 
 #endif

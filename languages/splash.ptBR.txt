@@ -1,4 +1,4 @@
-Outgun 1.0.3, copyright © 2002-2006 diversos autores.
+Outgun @VERSION@, copyright © 2002-@YEAR@ diversos autores.
  
 Outgun é um software livre sobre a GNU GPL, e você está bem-vindo a redistribuir sobre certas condições. Outgun vem com ABSOLUTAMENTE NENHUMA GARANTIA. Para mais detalhes, veja o arquivo acompanhante COPYING.
  

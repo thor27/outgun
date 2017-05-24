@@ -1,0 +1,4 @@
+This file is an important part of the make system,
+used to work around a bug in some versions of gmake.
+If this file is removed, files in the obj and dep
+directories will be always remade, wasting time.

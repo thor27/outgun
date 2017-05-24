@@ -1,10 +1,13 @@
 ; This is an Outgun translation file.
-; Original copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
-; Translation copyright © 2004, 2005, 2006 Jani Rivinoja, Niko Ritari
+; Original copyright © 2004, 2005, 2006, 2008 Jani Rivinoja, Niko Ritari
+; Translation copyright © 2004, 2005, 2006, 2008 Jani Rivinoja, Niko Ritari
 
 
 ; Language of the translation, in the target language.
 suomi
+
+; Locale to decide the correct decimal separator (e.g. fi_FI or pt_BR).
+fi_FI
 
 
 ; You should not modify en.txt, it is the English reference file. Outgun uses
@@ -28,14 +31,16 @@ Outgun
 
 ; Used in the window title bar, like: Connected to Server name (127.0.0.1)
 Yhteydessä - $1 ($2)
+Uusinta - $1
+Katselu - $1
 
 ; Used in the window title bar when server is running, like:
-; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 ESC:quit
+; ERRORS:2  1/16p 1.4k/s v1.0.0 port:25000 Esc:quit
 ; Values are $1/$2: number of players, $3: amount of traffic, $4: Outgun
 ; version. First and/or last part are added conditionally.
 VIRHEET:$1
 $1/$2p $3k/s v$4 portti:$5
-ESC:sulje
+Esc:sulje
 
 ; Time units. These should be formed so that "duration: # <unit>" makes sense.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -57,13 +62,20 @@ vuotta
 $1 s
 $1 min
 
+; Expressing percentages. Most likely you might want to add a space depending
+; on the language conventions. Two characters maximum in addition to the $1,
+; since this is used in the tightly packed player statistics screen.
+$1 %
+
 ; Generic terms. Currently, 'unknown' is used in the graphics menu for a
 ; refresh rate and in the local server menu for IP address; 'private' and
 ; 'invalid' are also for IP address; 'default' is used in font selection;
 ; 'none' (meaning "not set"), 'on', and 'off' in the server settings dialog
 ; (F5), as well as 'special' which is used for the player collisions setting.
 ; 'Disabled', 'minimal', and 'complete' are currently values of the automatic
-; bug reporting policy setting. OK and Cancel are used in the menus, in their
+; bug reporting policy setting. 'Never', 'always', 'in same room',
+; 'single-roomed' and 'multi-roomed' are currently used in multiple settings
+; in the graphics menu. OK and Cancel are used in the menus, in their
 ; usual UI meaning. All may be used elsewhere in a similar context in the
 ; future.
 ; Lengths up to 25 characters are ok, but short is preferred.
@@ -80,6 +92,11 @@ erikoinen
 pois päältä
 minimaalinen
 täysi
+ei koskaan
+aina
+samassa huoneessa
+yhden huoneen näkymässä
+monen huoneen näkymässä
 
 
 ; - - - - - - - - - - - - - - - - menu texts  - - - - - - - - - - - - - - - -
@@ -123,20 +140,22 @@ Insert = lisää suosikkeihin    Delete = poista listalta
 IP-osoite            Pingi D Pelaajat Vers. Palvelimen nimi
 ;00.000.000.000:00000 0000 D 00/00 <--7--> <-----------...
 
-Nimi ja salasanat
+Pelaaja
 Nimi
 Arvo satunnainen nimi
+Suosikkivärit
 Turnauksen salasana
 Kirjautumisen tila
 Osallistu turnaukseen
 Poista palvelinkohtaiset pelaajasalasanat
 
 Peliasetukset
-Näytä pelaajien nimet
-Suosikkivärit
 Viive-ennustus
 Viive-ennustuksen määrä
+Kaista pelaajille eri huoneessa (t/s)
 Tallenna viestit
+Näytä lippuviestit
+Näytä tappoviestit
 Tallenna tilastot
 Näytä tilastot pelin jälkeen
 Näytä palvelimen tiedot yhdistämisen jälkeen
@@ -149,6 +168,10 @@ Ohjaimet
 Näppäimistön asettelu
 Käytä numeronäppäimistöä liikkumiseen
 Nuolinäppäimet tilastoruuduissa
+Käytä nuolinäppäimiä viestien kirjoituksessa
+Tähtäys ensisijaisesti
+Liikkuminen hiiritähtäyksen kanssa
+Kääntymisnopeus näppäimistöllä
 Käytä peliohjainta
 Liikuttava sauva
 Ohjaimen napit (0 = ei käytössä)
@@ -159,7 +182,12 @@ Ampuminen
 Juokseminen 
 Sivusiirtymä
 
+Hiiriohjaus (napit: 0 = ei käytössä)
+Herkkyys
+
 Aktiviiset ohjaimet
+Aktiiviset joystick-napit
+Aktiiviset hiirennapit
 
 Näyttötila
 Värisyvyys
@@ -173,15 +201,32 @@ Virkistystaajuus
 $1 Hz
 Vaihda tähän tilaan
 
-Grafiikka
+Teema ja fontti
 Teema
 Taustakuva teemasta
 Käytä ensisijaisesti pääteeman taustakuvaa
+Väriteema
+Käytä ensisijaisesti pääteeman värejä
 Fontti
+
+Grafiikka
+Näytä pelaajien nimet
+Näkyviä huoneita/suunta pelissä
+Näkyviä huoneita/suunta uusinnassa
+Vieritys
 Reunanpehmennys
 Vähemmän läpinäkyvyystehosteita
 Tekstuurien jatkuvuus huoneesta toiseen
 Kadonneiden pelaajien näyttö kartalla
+Korosta palautetut ja pudotetut liput
+Korosta lippujen näkyvyyttä
+Näytä lipun katoamispaikka
+Korosta syntyminen
+Lähistön pelaajien ja lippujen merkit pelissä
+Lähistön pelaajien ja lippujen merkit uusinnassa
+Reunusta näkyvä alue kartalla
+Vieritys kentän reunan yli
+Salli kentän osien toistua näytölla
 Tilastoruudun läpinäkymättömyys
 FPS-rajoitus
 Ylimääräisten karttatietojen näyttö
@@ -190,8 +235,7 @@ Ylimääräisten karttatietojen näyttö
 Äänet päällä
 Voimakkuus
 
-Vaihda kieltä
-Kieli
+Valitse kieli
 
 Bugiraportointi
 Automaattinen bugiraportointi
@@ -205,7 +249,10 @@ Käynnistä palvelin
 Pelaa palvelimella
 Sulje palvelin
 
-; Used in name and passwords menu as registration status.
+Uusinnat
+Päivämäärä - Palvelin - Kartta
+
+; Used in player options menu as registration status.
 Ei salasanaa
 Alustan...
 Socket-virhe
@@ -226,6 +273,7 @@ Virhe: palvelin ei hyväksynyt
 Ryöstöraja
 Aikaraja
 Jatkoaika
+Lipunpalautusviive
 Pelaajien törmäykset
 Omiin osuminen
 Joukkueiden tasoitus
@@ -247,6 +295,7 @@ $1 % huoneista
 
 ; Used in the connection progress dialog. No limit; over 76 chars gets wrapped.
 Yhdistän...
+Odotetaan pelin alkamista.
 Palvelin ei vastannut.
 Palvelin hylkäsi.
 Ei selitystä.
@@ -309,6 +358,15 @@ joukkueet
 vaihtavat näytettäviä tilastoja
 liikuttavat pelaajaa
 
+; Used as values for 'preferrably aim with' in the controls menu.
+näppäimistöllä (8 suuntaa)
+näppäimistöllä (sulava kääntyminen)
+hiirellä
+
+; Used as values for 'with mouse aim move relative to' in the controls menu.
+huoneen mukaan (ylös = ylös)
+tähtäyksen mukaan (ylös = eteenpäin)
+
 ; Used in the controls menu 'active controls' display.
 ylös
 alas
@@ -322,6 +380,11 @@ sivusiirtymä
 häivytys
 nopea poisto
 hidas poisto
+
+; Used as values for 'Let view follow over map border" in the graphics menu,
+; along with 'never' and 'always'.
+kun koko kenttä ei ole näkyvillä
+jos kentän reunalla on aukkoja
 
 ; Used in the error collection dialogs. The last two are only used in the main
 ; program error dialog which is shown for example when invalid command line
@@ -340,7 +403,7 @@ Tämä johtuu Outgunissa olevasta bugista. Auta meitä korjaamaan se: Lähetä assert
 ; Used in an external dialog as title. No length restriction.
 Vakava virhe
 
-; Used in a simple dialog, started from the name and passwords menu.
+; Used in a simple dialog, started from the player options menu.
 Poistin 1 salasanan.
 Poistin $1 salasanaa.
 Salasanoja ei ole.
@@ -432,6 +495,7 @@ $1 vaihtoi nimekseen $2.
 
 ; Used like: This map is mapname (5 of 13)
 Tämä kartta on $1 ($2/$3).
+Tämä kartta on $1.
 
 PELI PÄÄTTYI - PISTEET: PUNAINEN $1 - SININEN $2
 PELIN VOITTAA RYÖSTÄMÄLLÄ $1 LIPPUA.
@@ -460,6 +524,7 @@ Liikaa puhetta. Rauhoitu...
 Yhteys katkaistaan - $1...
 Tämä kartta on rikki, koska lipun voi ryöstää välittömästi.
 Turnauspisteidesi päivitys epäonnistui!
+Varoitus: Tällä palvelimella on käytössä laajennoksia, joita käyttävillä pelaajilla on etu sinua vastaan.
 
 Kuvankaappaus tallentui tiedostoon $1.
 Virhe kuvankaappauksen tallennuksessa tiedostoon $1.
@@ -528,6 +593,10 @@ Varjo
 ; The shorter the better; test it.
 Ase $1
 
+; Extra-time abbreviation prepending the game clock. Try to use only one or
+; two letters.
+JA
+
 ; No limit really, but small and discreet is good.
 FPS:$1
 
@@ -589,7 +658,7 @@ otetut pudot. palaut.   kantajat   aika
 
    Tarkkuus
 Lauk.   | Saadut   Matka      Nopeus
-;0000 100% 0000  000000 u  00.00 u/s    |
+;0000  100% 0000  000000 u  00.00 u/s   |
 
           Keskim.         Turnaus
 Peliaika elinaika    sija vahvuus pisteet
@@ -603,6 +672,20 @@ Palvelimen karttalista
 ; over the comment mark ';'. The title text should end before the '|'.
 Nro Äänet Nimi                Koko  Tekijä
 ;00 00 * <--------20--------> 00×00 <-----------26----------->|
+
+; Used in the map list dialog (F2), replacing map name. Maximum length 20
+; characters.
+<Satunnainen>
+
+; Used in the map list dialog (F2). Can be quite long but needs to fit with any
+; of the given replacements for $1.
+Järjestys (välilyönti vaihtaa): $1
+Kartan numero
+Äänet
+Nimi
+Koko
+Tekijä
+Suosikit
 
 ; Used as a prompt in the map list dialog (F2). Can be quite long.
 Äänestä karttaa nro
@@ -634,7 +717,8 @@ IP-osoitteet:
 Outgun - Tallennan karttakuvia
 
 ; Used in an external dialog message.
-Karttakuvat tallentuneet hakemistoon "mappic".
+Karttakuvat luotu hakemistoon "mappic".
+Oletusvärit luotu tiedostoon $1.
 
 
 ; - - - - - - - - - - - - - - - error messages  - - - - - - - - - - - - - - -
@@ -644,6 +728,7 @@ Karttakuvat tallentuneet hakemistoon "mappic".
 ; No length restrictions.
 
 ; Command line errors.
+$1 - tätä parametria ei voi käyttää muiden parametrien kanssa.
 -cport - perässä täytyy olla välilyönti ja portin numero tai minimiportti:maksimiportti.
 -cport X tai -cport X:Y: X:n ja Y:n täytyy olla 1 - 65535.
 -cport X:Y: Y:n täytyy olla suurempi kuin X.
@@ -653,11 +738,13 @@ Karttakuvat tallentuneet hakemistoon "mappic".
 -fps X: X:n täytyy olla 1 - 1000.
 -ip - perässä täytyy olla välilyönti ja IP-osoite.
 -ip X: X:n pitää olla kelvollinen IP-osoite ilman porttia.
--mappic - tätä parametria ei voi käyttää muiden parametrien kanssa.
 -maxp - perässä täytyy olla välilyönti ja pelaajien lukumäärä.
 -maxp X: X:n täytyy olla parillinen luku väliltä 2 - $1.
+-play - perässä täytyy olla verkkonimi ja valinnaisesti portti.
 -port - perässä täytyy olla välilyönti ja portin numero.
 -port X: X:n täytyy olla 1 - 65535.
+-replay - perässä täytyy olla tiedostonimi.
+-spectate - perässä täytyy olla verkkonimi ja portti.
 -sport - perässä täytyy olla välilyönti ja minimiportti:maksimiportti.
 -sport X:Y: X:n ja Y:n täytyy olla 1 - 65535.
 -sport X:Y: Y:n täytyy olla suurempi kuin X.
@@ -671,6 +758,7 @@ Palvelin ei käynnisty.
 Asiakasohjelma ei käynnisty.
 Palvelin ei käynnisty.
 Karttakuvat eivät tallentuneet hakemistoon "mappic".
+Katselun aloitus epäonnistui.
 
 ; Graphic mode errors.
 Näyttötila $1×$2×$3 ei alustu.
@@ -684,6 +772,7 @@ ikkuna
 ; Missing files.
 Palvelimen asetustiedosto ei aukea: "$1".
 Tiedostoa "$1" ei voi lukea.
+Uusinta "$1" ei aukea.
 
 ; Gamemod format errors.
 Tuntematon palvelinasetus: "$1"
@@ -706,6 +795,8 @@ reaaliluku, enintään $1
 reaaliluku $1 - $2
 reaaliluku tai "x %", missä x on vähintään 0
 IP-osoite ilman porttia
+epätyhjä merkkijono
+kaksi positiivista kokonaislukua ja valinnaisesti reaaliluku väliltä 0 - 1 väleillä erotettuina
 
 ; Added to some of the above, where outside the normal range, 0 is allowed.
 , tai 0
@@ -722,6 +813,7 @@ Kartan leveys toiseen kertaan.
 Huoneriviä ei saa olla nimilohkossa: $1
 Joukkue $1, lippu $2 seinän päällä.
 Joukkue $1, aloituspaikka $2 seinän päällä.
+Joukkue $1, uudelleensyntymisalueella $2 ei ole tarpeeksi tilaa.
 Kahta samaa lohkon nimeä ei saa olla: $1
 Tuntematon karttarivi: $1
 
@@ -729,15 +821,22 @@ Tuntematon karttarivi: $1
 Tämä kartta on viallinen, koska lipun voi ryöstää välittömästi.
 
 ; Other file format errors.
+$1 ei ole Outgunin uusinta.
 "$1" master.txt:ssä ei ole kelvollinen IP-osoite.
 Ylläpitoyhteys: virheellisiä merkkejä, viesti ohitettu.
 Alfakuvien täytyy olla 8-bittisiä harmaasävykuvia; $1 on $2-bittinen.
+Luokkakomento ilman luokan nimeä auth.txt:ssä.
+Virhe uusintatiedostossa.
+Virheellinen oikeusluokkamäärittely auth.txt:ssä: "$1"
 Virheellinen ban-komento (IP-osoite) tiedostossa auth.txt: "$1"
 Virheellinen rivi (ei nimeä) tiedostossa auth.txt: "$1"
 Virheellinen syntaksi tiedostossa client.cfg ("$1")
 Virheellinen user-komento (ei salasanaa) tiedostossa auth.txt: "$1"
 Karttakuvien tallennin: Tiedosto "$1" ei ole kelvollinen karttatiedosto.
-Syntaksivirhe tiedostossa gfxmodes.txt, rivillä "$1".
+Uusinta $1 on uudempaa versiota ($2).
+Syntaksivirhe tiedostossa $1, rivillä "$2".
+Tämä uusinta on uudempaa versiota ($1).
+Tämä ei ole Outgun-uusinta.
 Käännöstä $1 ei voi lukea.
 Tuntematonta dataa tiedostossa client.cfg ("$1")
 Tuntematon komento "$1" tiedostossa auth.txt
@@ -745,37 +844,57 @@ Kelvoton näyttötila tiedostossa gfxmodes.txt: $1×$2×$3 (pitäisi olla vähintään 3
 Tekstuurin leveyden ja korkeuden pitää olla kahden potensseja; lattiatekstuuri $1 on $2×$3.
 Tekstuurin leveyden ja korkeuden pitää olla kahden potensseja; seinätekstuuri $1 on $2×$3.
 
+; Generic data format errors. Usually occur when the user has entered something
+; invalid one way or another.
+"$1" ei ole kelvollinen IP-osoite.
+Portti puuttuu: $1.
+
 ; Miscellaneous errors.
 Asetusta max_players ei voi vaihtaa, kun palvelimella on pelaajia.
 Säikeen luonti ei onnistu. Järjestelmän resurssit eivät riitä.
 Palvelin ei pysty toimimaan taustalla.
-Pääpalvelinyhteys: Sinulla on vanhentunut Outgun-versio. Palvelimesi ei pääse palvelinlistalle. Päivitä ihmeessä.
 Karttoja ei ole.
+Muisti loppu.
+
+; Generic subsystem error messages. $1 is a more detailed error error message,
+; often from the list of network errors, and normally includes the ending '.'.
+Ylläpitoyhteys: $1
+Ylläpitoyhteys: $1
+Ylläpitoyhteys: Koko viestin lähetys epäonnistui.
+Ottaessa yhteyttä välipalvelimeen: $1
+Hakiessa palvelinlistaa: $1
+Pääpalvelinyhteys: $1
+Pääpalvelinyhteys: Sinulla on vanhentunut Outgun-versio. Palvelimesi ei pääse palvelinlistalle. Päivitä ihmeessä.
+Pääpalvelinyhteys: (Sulkeutumassa) $1
+Verkkovirhe: $1
+WWW-säie: $1
+WWW-säie: (Sulkeutumassa) $1
 
 ; Network errors. Most of these can occur in normal operation when there's
 ; something wrong with the network or a remote server. Where it's not clear
-; what $1 is, it is a message in English, telling what went wrong within the
-; network subsystem.
-HawkNL:n alustus epäonnistui. $1
-Ei IP-verkkoa.
-Ylläpitoyhteys: Portti $1 ei aukea.
-Ylläpitoyhteys: Soketin asetus listen-tilaan epäonnistui.
-Ylläpitoyhteys: Yhteyden vastaanotto epäonnistui.
-Ylläpitoyhteys: luku epäonnistui. Syy: $1
-Ylläpitoyhteys: vastauksen lähetys epäonnistui. Syy: $1
-Pääpalvelimelle ei ole yhteyttä. $1
+; what $1 (or $2) is, it is a message either in English or one of the
+; translated ones, telling what went wrong within the network subsystem,
+; and normally includes the ending '.'.
 Soketin avaus ei onnistu.
 Soketti ei aukea palvelinten tietojen päivitystä varten. $1
-Soketti ei aukea pääpalvelimelle yhdistämistä varten. $1
 Verkkopalvelin ei käynnisty portissa $1.
-Pääpalvelinyhteys: Soketti ei aukea pääpalvelimelle yhdistämistä varten.
-Pääpalvelinyhteys: (Sulkeutumassa) Pääpalvelimelle ei ole yhteyttä.
-Pääpalvelinyhteys: (Sulkeutumassa) Soketti ei aukea pääpalvelimelle yhdistämistä varten.
-Pääpalvelinyhteys: (Sulkeutumassa) Virhe tiedon lähetyksessä: $1
-Pääpalvelinyhteys: (Sulkeutumassa) Virhe vastauksen odotuksen aikana: $1
-WWW-säie: Soketti ei aukea palvelinsivulle yhdistämistä varten.
-WWW-säie: (Sulkeutumassa) Palvelinsivulle ei ole yhteyttä.
-WWW-säie: (Sulkeutumassa) Soketti ei aukea palvelinsivulle yhdistämistä varten.
+Yhteys palvelimeen katkesi.
+Yhteys palvelimeen katkesi: $1
+Virhe yhdistäessä osoitteeseen "$1": $2
+Virhe verkkojärjestelmän alustuksessa: $1
+Virhe avatessa mitä tahansa UDP-porttia yleislähetystä varten: $1
+Virhe avatessa UDP-porttia $1 yleislähetystä varten: $2
+Virhe avatessa mitä tahansa TCP-porttia: $1
+Virhe avatessa mitä tahansa UDP-porttia: $1
+Virhe avatessa TCP-porttia $1: $2
+Virhe avatessa UDP-porttia $1: $2
+Virhe soketista lukiessa: $1
+Virhe soketista lukiessa: Aikakatkaisu.
+Virhe IP-osoitteen haussa verkkonimelle "$1": $2
+Virhe asettaessa sokettia kuuntelutilaan: $1
+Virhe sokettiin kirjoittaessa: $1
+Virhe sokettiin kirjoittaessa: Aikakatkaisu.
+Palvelimelta tuli virheellistä dataa.
 
 ; Rare external network errors. These may happen but there's rarely anything
 ; the user can do to fix them.
@@ -802,9 +921,11 @@ Hakemistoa "$1" ei ole eikä sitä pysty luomaan.
 ; the server is shutting down. In rare cases they take longer to disappear.
 Sammutus: KESKEYTETÄÄN $1 turnauspäivitystä
 Sammutus: ylläpitoyhteyssäie
+Sammutus: bottisäie
 Sammutus: pääsäie
 Sammutus: pääpalvelinsäie
 Sammutus: verkkopalvelin
+Sammutus: välipalvelinsäie
 Sammutus: odotan $1 turnauspäivitystä
 Sammutus: WWW-säie
 

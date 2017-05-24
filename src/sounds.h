@@ -28,29 +28,30 @@
 #include "incalleg.h"
 #include "commont.h"
 #include "log.h"
-#include "utility.h"
+
+class LineReceiver;
 
 class Sounds {
 public:
-    Sounds(LogSet logs);
-    ~Sounds();
+    Sounds(LogSet logs) throw ();
+    ~Sounds() throw ();
 
-    void play(int s) const;
+    void play(int s, int f) const throw ();
 
-    bool sampleExists(int s) const { return sample[s] != 0; }
+    bool sampleExists(int s) const throw () { return sample[s] != 0; }
 
-    void search_themes(LineReceiver& dst) const;
-    void select_theme(const std::string& dir);
+    void search_themes(LineReceiver& dst) const throw ();
+    void select_theme(const std::string& dir) throw ();
 
-    bool setEnable(bool enable);
-    void setVolume(int vol) { nAssert(vol >= 0 && vol <= 255); volume = vol; }
+    bool setEnable(bool enable) throw ();
+    void setVolume(int vol) throw () { nAssert(vol >= 0 && vol <= 255); volume = vol; }
 
 private:
-    bool try_init();
+    bool try_init() throw ();
 
-    void load_samples(const std::string& path);
-    SAMPLE* load_outgun_sample(const std::string& path, const std::string& fname, int slot, bool try_redirect = true);
-    void unload_samples();
+    void load_samples(const std::string& path) throw ();
+    SAMPLE* load_outgun_sample(const std::string& path, const std::string& fname, int slot, bool try_redirect = true) throw ();
+    void unload_samples() throw ();
 
     mutable LogSet log;
     SAMPLE* sample[NUM_OF_SAMPLES];

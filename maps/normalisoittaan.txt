@@ -1,0 +1,78 @@
+;
+; normalisoittaan.txt
+;
+; By Huntta (aka JR Oja) 2003
+;
+
+V 1
+P width 4
+P height 4
+P title Normalisoittaan
+P author Huntta
+
+; punainen lippu ja syntymäpaikat
+flag  0 0 0 0.5 0.5
+spawn 0 0 0 0.3 0.4
+spawn 0 0 0 0.4 0.4
+spawn 0 0 0 0.5 0.4
+spawn 0 0 0 0.6 0.4
+spawn 0 0 0 0.7 0.4
+spawn 0 0 0 0.4 0.6
+spawn 0 0 0 0.5 0.6
+spawn 0 0 0 0.6 0.6
+
+; sininen lippu ja syntymäpaikat
+flag  1 3 3 0.5 0.5
+spawn 1 3 3 0.3 0.6
+spawn 1 3 3 0.4 0.6
+spawn 1 3 3 0.5 0.6
+spawn 1 3 3 0.6 0.6
+spawn 1 3 3 0.7 0.6
+spawn 1 3 3 0.4 0.4
+spawn 1 3 3 0.5 0.4
+spawn 1 3 3 0.6 0.4
+
+X perus 0 0 3 3
+
+X vasen 0 0
+X vasen 2 1 2 2
+X vasen 0 3
+
+X oikea 3 0
+X oikea 1 1 1 2
+X oikea 3 3
+
+X yla 0 0 3 0
+X yla 0 2
+X yla 3 2
+
+X ala 0 1
+X ala 3 1
+X ala 0 3 3 3
+
+; perushuone, jossa on neljä kulkuaukkoa
+:perus
+W 0      0      0.25   0.05
+W 0      0      0.05   0.25
+W 0.75   0      1      0.05
+W 0.95   0      1      0.25
+W 0      0.95   0.25   1
+W 0      0.75   0.05   1
+W 0.75   0.95   1      1
+W 0.95   0.75   1      1
+
+; huoneen vasen seinä
+:vasen
+W 0      0      0.05   1
+
+; huoneen oikea seinä
+:oikea
+W 0.95   0      1      1
+
+; huoneen yläseinä
+:yla
+W 0      0      1      0.05
+
+; huoneen alaseinä
+:ala
+W 0      0.95   1      1

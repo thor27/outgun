@@ -1,0 +1,1 @@
+obj/text/tools/relay.o :	tools/relay.cpp	$(binaryaccess_h_inc)	$(commont_h_inc)	$(function_utility_h_inc)	$(network_h_inc)	$(platform_h_inc)	$(protocol_h_inc)	$(timer_h_inc)	$(version_h_inc)	$(tools_relay_h_inc)

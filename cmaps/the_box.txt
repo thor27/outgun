@@ -1,0 +1,107 @@
+; 
+;
+;the_box.txt
+;
+;
+;Feito por JoL-PHIN
+;
+
+V 1
+P width 5
+P height 5
+P title The Box
+P author JoL-PHIN
+
+flag 0 0 4 0.3 0.7
+spawn 0 0 4 0.7 0.2
+spawn 0 0 4 0.7 0.3
+spawn 0 0 4 0.7 0.4
+spawn 0 0 4 0.7 0.5
+spawn 0 0 4 0.7 0.7
+spawn 0 0 4 0.7 0.8
+spawn 0 0 4 0.6 0.8
+spawn 0 0 4 0.7 0.6
+
+flag 1 4 0 0.7 0.3
+spawn 1 4 0 0.3 0.2
+spawn 1 4 0 0.3 0.3
+spawn 1 4 0 0.3 0.4
+spawn 1 4 0 0.3 0.5
+spawn 1 4 0 0.3 0.6
+spawn 1 4 0 0.3 0.7
+spawn 1 4 0 0.3 0.8
+spawn 1 4 0 0.4 0.8
+
+X box 0 0 4 4
+
+X horiz 1 2
+X horiz 3 2 
+
+X vert 2 1
+X vert 2 3
+
+X q20 0 2
+
+X q24 4 2
+
+X q02 2 0
+
+X q04 2 4
+
+X q22 2 2 
+
+X cu 0 0 4 0
+
+X cd 0 4 4 4 
+
+X cr 4 4
+X cr 4 3
+X cr 4 2
+X cr 4 1
+X cr 4 0
+
+X cl 0 0
+X cl 0 1
+X cl 0 2
+X cl 0 3
+X cl 0 4
+
+:box
+W 0.4 0.4 0.6 0.6
+
+:vert
+W 0.4 0 0.6 1
+
+:horiz
+W 0 0.4 1 0.6
+
+:q20
+W 0.4 0.4 1 0.6
+
+:q02
+W 0.4 0.4 0.6 1
+
+:q24
+W 0 0.4 0.6 0.6
+
+:q04
+W 0.4 0 0.6 0.6
+
+:q22
+W 0 0.4 0.2 0.6
+W 0.4 0 0.6 0.2
+W 0.8 0.4 1 0.6
+W 0.4 0.8 0.6 1
+
+
+:cl
+W 0      0      0.0625 1
+
+:cr
+W 0.9375 0      1      1
+
+:cu
+W 0      0      1      0.0625
+
+:cd
+W 0      0.9375 1      1 

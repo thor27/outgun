@@ -1,0 +1,80 @@
+;
+; 2x2.txt
+;
+; By Huntta 2003
+;
+
+V 1
+P width 2
+P height 2
+P title 2x2
+P author Huntta
+
+; punainen lippu ja syntymäpaikat
+flag  0 0 0 0.5 0.25
+spawn 0 0 0 0.5 0.75
+spawn 0 0 0 0.4 0.75
+spawn 0 0 0 0.6 0.75
+spawn 0 0 0 0.7 0.75
+spawn 0 0 0 0.3 0.75
+spawn 0 0 0 0.2 0.75
+spawn 0 0 0 0.8 0.75
+spawn 0 0 0 0.9 0.75
+spawn 0 0 0 0.1 0.75
+
+; sininen lippu ja syntymäpaikat
+flag  1 1 0 0.5 0.25
+spawn 1 1 0 0.5 0.75
+spawn 1 1 0 0.6 0.75
+spawn 1 1 0 0.4 0.75
+spawn 1 1 0 0.3 0.75
+spawn 1 1 0 0.7 0.75
+spawn 1 1 0 0.8 0.75
+spawn 1 1 0 0.2 0.75
+spawn 1 1 0 0.1 0.75
+spawn 1 1 0 0.9 0.75
+
+X perus 0 0 1 1
+
+X yla   0 0 1 0
+
+X ala   0 1 1 1
+
+X vasen 0 0 0 1
+X vasen 1 0
+
+X oikea 0 0 1 0
+X oikea 1 1
+
+X vaaka 0 0 1 0
+
+; perushuone, jossa on neljä kulkuaukkoa
+:perus
+W 0      0      0.25   0.05
+W 0      0      0.05   0.25
+W 0.75   0      1      0.05
+W 0.95   0      1      0.25
+W 0      0.95   0.25   1
+W 0      0.75   0.05   1
+W 0.75   0.95   1      1
+W 0.95   0.75   1      1
+
+; huoneen vasen seinä
+:vasen
+W 0      0      0.05   1
+
+; huoneen oikea seinä
+:oikea
+W 0.95   0      1      1
+
+; huoneen yläseinä
+:yla
+W 0      0      1      0.05
+
+; huoneen alaseinä
+:ala
+W 0      0.95   1      1
+
+; vaakasuora seina keskellä huonetta
+:vaaka
+W 0.25   0.45   0.75   0.55

@@ -1,0 +1,1 @@
+obj/gui/network.o obj/text/network.o :	network.cpp	$(commont_h_inc)	$(language_h_inc)	$(mutex_h_inc)	$(nassert_h_inc)	$(protocol_h_inc)	$(utility_h_inc)	$(timer_h_inc)	$(version_h_inc)	$(network_h_inc)

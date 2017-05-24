@@ -1,0 +1,130 @@
+;
+; pallohuoneet.txt
+;
+; By Joonas 2004
+;
+
+V 1
+P width 4
+P height 4
+P title Pallohuoneet
+P author Joonas
+S 16 12
+
+; punaiset liput ja syntymäpaikat
+flag  0 1 1  8 10
+flag  0 2 1  8 10
+spawn 0 1 1  8  2
+spawn 0 2 1  8  2
+spawn 0 1 1  4  6
+spawn 0 2 1 12  6
+spawn 0 1 1 12  6
+spawn 0 2 1  4  6
+spawn 0 1 1  5  3
+spawn 0 2 1 11  3
+spawn 0 1 1 11  3
+spawn 0 2 1  5  3
+
+; sininen lippu ja syntymäpaikat
+flag  1 1 2  8  2
+flag  1 2 2  8  2
+spawn 1 1 2  8 10
+spawn 1 2 2  8 10
+spawn 1 1 2  4  6
+spawn 1 2 2 12  6
+spawn 1 1 2 12  6
+spawn 1 2 2  4  6
+spawn 1 1 2  5  9
+spawn 1 2 2 11  9
+spawn 1 1 2 11  9
+spawn 1 2 2  5  9
+
+X alayla 0 1 0 2
+X alayla 3 1 3 2
+
+X alaoikea 0 0
+X ylaoikea 0 3
+X alavasen 3 0
+X ylavasen 3 3
+
+X alavasenoikea 1 0 2 0
+X ylavasenoikea 1 3 2 3
+
+X ala    1 2 2 2
+X yla    1 1 2 1
+X tolppa 1 1 2 2
+
+:tolppa
+C W  8  6  2
+
+:alayla
+C W  8  6 10 5.5  20 160
+C W  8  6 10 5.5 200 340
+W    5  0  6.1  0.83
+W   11  0  9.9  0.83
+W    5 12  6.1 11.17
+W   11 12  9.9 11.17
+
+:alaoikea
+C W  8  6 10 5.5 110 160
+C W  8  6 10 5.5 200  70
+W    5 12  6.1 11.17
+W   11 12  9.9 11.17
+W   13.2 4.1 16  2
+W   13.2 7.9 16 10
+
+:ylaoikea
+C W  8  6 10 5.5  20  70
+C W  8  6 10 5.5 110 340
+W    5  0  6.1  0.83
+W   11  0  9.9  0.83
+W   13.2 4.1 16  2
+W   13.2 7.9 16 10
+
+:alavasen
+C W  8  6 10 5.5 -70 160
+C W  8  6 10 5.5 200 250
+W    5 12  6.1 11.17
+W   11 12  9.9 11.17
+W    2.9 4.1  0  2
+W    2.9 7.9  0 10
+
+:ylavasen
+C W  8  6 10 5.5  20 250
+C W  8  6 10 5.5 290 340
+W    5  0  6.1  0.83
+W   11  0  9.9  0.83
+W    2.9 4.1  0  2
+W    2.9 7.9  0 10
+
+:alavasenoikea
+C W  8  6 10 5.5 -70  70
+C W  8  6 10 5.5 110 160
+C W  8  6 10 5.5 200 250
+W    5 12  6.1 11.17
+W   11 12  9.9 11.17
+W   13.2 4.1 16  2
+W   13.2 7.9 16 10
+W    2.9 4.1  0  2
+W    2.9 7.9  0 10
+
+:ylavasenoikea
+C W  8  6 10 5.5  20  70
+C W  8  6 10 5.5 110 250
+C W  8  6 10 5.5 290 340
+W    5  0  6.1  0.83
+W   11  0  9.9  0.83
+W   13.2 4.1 16  2
+W   13.2 7.9 16 10
+W    2.9 4.1  0  2
+W    2.9 7.9  0 10
+
+:ala
+C W  8  6 10 5.5 200 160
+W    5 12  6.1 11.17
+W   11 12  9.9 11.17
+
+:yla
+C W  8  6 10 5.5  20 340
+W    5  0  6.1  0.83
+W   11  0  9.9  0.83

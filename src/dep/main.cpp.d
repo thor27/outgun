@@ -1,0 +1,1 @@
+obj/gui/main.o obj/text/main.o :	main.cpp	$(incalleg_h_inc)	$(allegro_icon_h_inc)	$(debug_h_inc)	$(debugconfig_h_inc)	$(gameserver_interface_h_inc)	$(log_h_inc)	$(language_h_inc)	$(network_h_inc)	$(platform_h_inc)	$(protocol_h_inc)	$(thread_h_inc)	$(timer_h_inc)	$(utility_h_inc)	$(version_h_inc)	$(loadpng_loadpng_h_inc)	$(client_interface_h_inc)	$(colour_h_inc)	$(mappic_h_inc)

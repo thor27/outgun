@@ -35,32 +35,32 @@
 class Graphics;
 class BITMAP;
 
-void scrollbar(BITMAP* buffer, int x, int y, int height, int bar_y, int bar_h, int col1, int col2);
-void drawKeySymbol(BITMAP* buffer, int x, int y, const std::string& text);
+void scrollbar(BITMAP* buffer, int x, int y, int height, int bar_y, int bar_h, int col1, int col2) throw ();
+void drawKeySymbol(BITMAP* buffer, int x, int y, const std::string& text) throw ();
 
 // Base class of menu components
 class Component {
 public:
-    Component(const std::string& caption_): caption(caption_), enabled(true) { }
-    virtual ~Component() { };
+    Component(const std::string& caption_) throw () : caption(caption_), enabled(true) { }
+    virtual ~Component() throw () { };
 
-    void setCaption(const std::string& text) { caption = text; }
+    void setCaption(const std::string& text) throw () { caption = text; }
 
-    void setEnable(bool state) { enabled = state; }
+    void setEnable(bool state) throw () { enabled = state; }
 
-    virtual bool canBeEnabled() const { return true; }
-    virtual bool isEnabled() const { return enabled; }
-    virtual bool needsNumberKeys() const { return false; }
+    virtual bool canBeEnabled() const throw () { return true; }
+    virtual bool isEnabled() const throw () { return enabled; }
+    virtual bool needsNumberKeys() const throw () { return false; }
 
-    virtual void draw(BITMAP* buffer, int x, int y, int height, bool active) const = 0;
-    virtual int width() const = 0;
-    virtual int height() const = 0;
-    virtual int minHeight() const { return height(); }
-    virtual bool handleKey(char, unsigned char) { return false; }   // an object should either have an active handleKey() or override so that !isEnabled()
-    virtual void shortcutActivated() { }
+    virtual void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw () = 0;
+    virtual int width() const throw () = 0;
+    virtual int height() const throw () = 0;
+    virtual int minHeight() const throw () { return height(); }
+    virtual bool handleKey(char, unsigned char) throw () { return false; }   // an object should either have an active handleKey() or override so that !isEnabled()
+    virtual void shortcutActivated() throw () { }
 
 protected:
-    int captionColor(bool active) const;    // decides a color based on isEnabled() and active
+    int captionColor(bool active, const Colour_manager& col) const throw ();    // decides a color based on isEnabled() and active
 
     std::string caption;
     bool enabled;
@@ -77,18 +77,18 @@ class KeyHookable {
     // can't privately inherit KeyHookable from Hookable3 because the compiler still makes ambiguities of the functions when inheriting from KeyHookable!
     class Helper : public Hookable3<bool, CallerT&, char, unsigned char> {
     public:
-        bool callHook_helper(CallerT& a1, char a2, unsigned char a3) { return callHook(a1, a2, a3); }
+        bool callHook_helper(CallerT& a1, char a2, unsigned char a3) throw () { return callHook(a1, a2, a3); }
     };
     Helper helper;
 
 public:
     typedef typename Hookable3<bool, CallerT&, char, unsigned char>::HookFunctionT HookFunctionT;
 
-    void setKeyHook(HookFunctionT* fn) { helper.setHook(fn); }  // the ownership is transferred
-    bool isKeyHooked() const { return helper.isHooked(); }
+    void setKeyHook(HookFunctionT* fn) throw () { helper.setHook(fn); }  // the ownership is transferred
+    bool isKeyHooked() const throw () { return helper.isHooked(); }
 
 protected:
-    bool callKeyHook(CallerT& a1, char a2, unsigned char a3) { return helper.callHook_helper(a1, a2, a3); }
+    bool callKeyHook(CallerT& a1, char a2, unsigned char a3) throw () { return helper.callHook_helper(a1, a2, a3); }
 };
 
 template<class CallerT>
@@ -98,40 +98,43 @@ class KeyHook : public Hook3<bool, CallerT&, char, unsigned char> { };
 class Menu : public Component, public MenuHookable<Menu> {
 public:
     // visible_items to 20 is there to prevent scrollbar when starting the game and pressing down arrow same time
-    Menu(const std::string& caption_, bool useShortcuts): Component(caption_), start(0), selected_item(0), visible_items(20), shortcuts(useShortcuts) { }
+    Menu(const std::string& caption_, bool useShortcuts) throw () : Component(caption_), start(0), selected_item(0), visible_items(20), shortcuts(useShortcuts) { }
+    ~Menu() throw () { }
 
-    void clear_components() { selected_item = 0; components.clear(); }
-    void add_component(Component* comp) { components.push_back(comp); }
+    void clear_components() throw () { selected_item = 0; components.clear(); }
+    void add_component(Component* comp) throw () { components.push_back(comp); }
 
-    int selection() const { return selected_item; }
-    void setSelection(int selection);
+    int selection() const throw () { return selected_item; }
+    void setSelection(int selection) throw ();
 
-    void open() { openHook.call(*this); home(); }
-    void close() { closeHook.call(*this); }
+    void open() throw () { openHook.call(*this); ensure_valid_selection(); }
+    void close() throw () { closeHook.call(*this); }
 
-    void draw(BITMAP* buffer);  // no const because drawHook might modify the menu
-    bool handleKeypress(char scan, unsigned char chr);
+    void draw(BITMAP* buffer, const Colour_manager& col) throw ();  // no const because drawHook might modify the menu
+    bool handleKeypress(char scan, unsigned char chr) throw ();
 
-    void  setDrawHook(MenuHook<Menu>::FunctionT* fn) {  drawHook.set(fn); } // called before drawing
-    void  setOpenHook(MenuHook<Menu>::FunctionT* fn) {  openHook.set(fn); } // called by open()
-    void setCloseHook(MenuHook<Menu>::FunctionT* fn) { closeHook.set(fn); } // called by close()
-    void    setOkHook(MenuHook<Menu>::FunctionT* fn) {    okHook.set(fn); } // called when enter is pressed (and not handled by active entry)
+    void  setDrawHook(MenuHook<Menu>::FunctionT* fn) throw () {  drawHook.set(fn); } // called before drawing
+    void  setOpenHook(MenuHook<Menu>::FunctionT* fn) throw () {  openHook.set(fn); } // called by open()
+    void setCloseHook(MenuHook<Menu>::FunctionT* fn) throw () { closeHook.set(fn); } // called by close()
+    void    setOkHook(MenuHook<Menu>::FunctionT* fn) throw () {    okHook.set(fn); } // called when enter is pressed (and not handled by active entry)
 
     // inherited interface
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char, unsigned char);
-    void shortcutActivated();
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char, unsigned char) throw ();
+    void shortcutActivated() throw ();
 
 private:
-    int total_width() const;
-    int total_height() const;
+    int total_width() const throw ();
+    int total_height() const throw ();
 
-    void home();    // moves the cursor to topmost selectable item
-    void end();     // moves the cursor to the last selectable item
-    bool prev();
-    bool next();
+    void ensure_valid_selection() throw (); /// If preselection is valid, stay there, else go home.
+
+    void home() throw ();    // moves the cursor to topmost selectable item
+    void end() throw ();     // moves the cursor to the last selectable item
+    bool prev() throw ();
+    bool next() throw ();
 
     std::vector<Component*> components;
     int start;
@@ -144,15 +147,15 @@ private:
 
 class MenuStack {
 public:
-    bool empty() const { return st.empty(); }
-    Menu* top() const { nAssert(!st.empty()); return st.back(); }
-    Menu* safeTop() const { if (st.empty()) return 0; return st.back(); }
-    void open(Menu* menu) { close(menu); menu->open(); st.push_back(menu); }
-    bool close(Menu* menu); // from anywhere in the stack; returns true if found (and closed)
-    void close() { nAssert(!empty()); Menu* menu = st.back(); st.pop_back(); menu->close(); }
-    void clear() { while (!empty()) close(); }
-    void draw(BITMAP* buf) { nAssert(!empty()); st.back()->draw(buf); }
-    bool handleKeypress(char scan, unsigned char chr) { nAssert(!empty()); return st.back()->handleKeypress(scan, chr); }
+    bool empty() const throw () { return st.empty(); }
+    Menu* top() const throw () { nAssert(!st.empty()); return st.back(); }
+    Menu* safeTop() const throw () { if (st.empty()) return 0; return st.back(); }
+    void open(Menu* menu) throw () { close(menu); menu->open(); st.push_back(menu); }
+    bool close(Menu* menu) throw (); // from anywhere in the stack; returns true if found (and closed)
+    void close() throw () { nAssert(!empty()); Menu* menu = st.back(); st.pop_back(); menu->close(); }
+    void clear() throw () { while (!empty()) close(); }
+    void draw(BITMAP* buf, const Colour_manager& col) throw () { nAssert(!empty()); st.back()->draw(buf, col); }
+    bool handleKeypress(char scan, unsigned char chr) throw () { nAssert(!empty()); return st.back()->handleKeypress(scan, chr); }
 
 private:
     std::vector<Menu*> st;  // a "real" std::stack can't be used because it doesn't allow removal from the middle by close(Menu*)
@@ -160,14 +163,14 @@ private:
 
 class Spacer : public Component {
 public:
-    Spacer(int space_) : Component(""), space(space_) { }   // space in tenths of line height
+    Spacer(int space_) throw () : Component(""), space(space_) { }   // space in tenths of line height
 
     // inherited interface
-    bool canBeEnabled() const { return false; }
-    bool isEnabled() const { return false; }
-    void draw(BITMAP*, int, int, int, bool) const { }
-    int width() const { return 0; }
-    int height() const;
+    bool canBeEnabled() const throw () { return false; }
+    bool isEnabled() const throw () { return false; }
+    void draw(BITMAP*, int, int, int, bool, const Colour_manager&) const throw () { }
+    int width() const throw () { return 0; }
+    int height() const throw ();
 
 private:
     int space;
@@ -175,83 +178,89 @@ private:
 
 class TextfieldBase : public Component {
 public:
-    TextfieldBase(const std::string& caption_, const std::string& init_text, int fieldLength, char mask = 0, int reserveTailLength = 0): Component(caption_), value(init_text), maxlen(fieldLength), tailSpace(reserveTailLength), maskChar(mask) { }
-    virtual ~TextfieldBase() { }
-    void set(const std::string& text) { value = text; }
-    const std::string& operator()() const { return value; }
+    TextfieldBase(const std::string& caption_, const std::string& init_text, int fieldLength, char mask = 0, int reserveTailLength = 0) throw ()
+        : Component(caption_), value(init_text), maxlen(fieldLength), tailSpace(reserveTailLength), maskChar(mask), cursor_pos(0) { unblink(); }
+    virtual ~TextfieldBase() throw () { }
+    virtual void set(const std::string& text) throw () { value = text; cursor_pos = text.length(); unblink(); }
+    virtual const std::string& operator()() const throw () { return value; }
 
-    void setTail(const std::string& text) { tail = text; }
-    void limitToCharacters(const std::string& chars) { charset = chars; } // set to empty to accept all printable characters
+    void setTail(const std::string& text) throw () { tail = text; }
+    void limitToCharacters(const std::string& chars) throw () { charset = chars; } // set to empty to accept all printable characters
 
     // inherited interface
-    bool needsNumberKeys() const { return true; }
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    virtual bool needsNumberKeys() const throw () { return true; }
+    virtual int width() const throw ();
+    virtual int height() const throw ();
+    virtual void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    virtual bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     std::string value, tail;
     std::string charset; // characters that are allowed to be input
     int maxlen, tailSpace;
     char maskChar;  // 0 for no masking
+    int cursor_pos;
+    double blinkTime;
 
-    virtual void virtualCallHook() = 0;
-    virtual bool virtualCallKeyHook(char scan, unsigned char chr) = 0;
+    void unblink() throw ();
+    virtual void virtualCallHook() throw () = 0;
+    virtual bool virtualCallKeyHook(char scan, unsigned char chr) throw () = 0;
 };
 
 // a keyhook is only called with keys not handled otherwise (= non-printables other than backspace, plus those outside limited characters [if set])
 class Textfield : public TextfieldBase, public MenuHookable<Textfield>, public KeyHookable<Textfield> {
 public:
-    Textfield(const std::string& caption_, const std::string& init_text, int fieldLength, char mask = 0, int reserveTailLength = 0): TextfieldBase(caption_, init_text, fieldLength, mask, reserveTailLength) { }
+    Textfield(const std::string& caption_, const std::string& init_text, int fieldLength, char mask = 0, int reserveTailLength = 0) throw ()
+        : TextfieldBase(caption_, init_text, fieldLength, mask, reserveTailLength) { }
 
     // the public interface is entirely defined in TextfieldBase
 
 private:
-    void virtualCallHook() { callHook(*this); }
-    bool virtualCallKeyHook(char scan, unsigned char chr) { return callKeyHook(*this, scan, chr); }
+    void virtualCallHook() throw () { callHook(*this); }
+    bool virtualCallKeyHook(char scan, unsigned char chr) throw () { return callKeyHook(*this, scan, chr); }
 };
 
 // a keyhook is only called with keys not handled otherwise (= non-printables other than backspace, plus those outside limited characters)
 class IPfield : public TextfieldBase, public MenuHookable<IPfield>, public KeyHookable<IPfield> {
 public:
-    IPfield(const std::string& caption_, bool acceptPort_, bool printUnknown_);
-    void set(const std::string& text) { TextfieldBase::set(text); updateTail(); }
-    void setFixedPortString(const std::string& text) { portStr = text; updateTail(); } // this is intended for :port, space for 6 characters is allocated (only if !acceptPort)
-    const std::string& operator()() const { return TextfieldBase::operator()(); }
+    IPfield(const std::string& caption_, bool acceptPort_, bool printUnknown_) throw ();
+    ~IPfield() throw () { }
+    void set(const std::string& text) throw () { TextfieldBase::set(text); updateTail(); }
+    void setFixedPortString(const std::string& text) throw () { portStr = text; updateTail(); } // this is intended for :port, space for 6 characters is allocated (only if !acceptPort)
+    const std::string& operator()() const throw () { return TextfieldBase::operator()(); }
 
     // inherited interface (what's overridden from TextfieldBase)
-    bool handleKey(char scan, unsigned char chr);
+    bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     std::string portStr;
     bool acceptPort;
     bool printUnknown;
 
-    void updateTail();
+    void updateTail() throw ();
 
-    void virtualCallHook() { callHook(*this); }
-    bool virtualCallKeyHook(char scan, unsigned char chr) { return callKeyHook(*this, scan, chr); }
+    void virtualCallHook() throw () { callHook(*this); }
+    bool virtualCallKeyHook(char scan, unsigned char chr) throw () { return callKeyHook(*this, scan, chr); }
 };
 
 class SelectBase : public Component {
 public:
-    virtual ~SelectBase() { }
-    int size() const { return options.size(); }
+    virtual ~SelectBase() throw () { }
+    int size() const throw () { return options.size(); }
 
     // inherited interface
-    bool needsNumberKeys() const { return open; }
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    bool needsNumberKeys() const throw () { return open; }
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
 
-    virtual void virtualCallHook() = 0;
+    virtual void virtualCallHook() throw () = 0;
 
 protected:
-    SelectBase(const std::string caption_): Component(caption_), selected(0), open(false), pendingSelection(0) { }
+    SelectBase(const std::string caption_) throw () : Component(caption_), selected(0), open(false), pendingSelection(0) { }
 
-    int maxSelLength() const;
+    int maxSelLength() const throw ();
 
     std::vector<std::string> options;
     int selected;
@@ -262,34 +271,36 @@ protected:
 template<class ValueT>
 class Select : public SelectBase, public MenuHookable< Select<ValueT> > {
 public:
-    Select(const std::string caption_): SelectBase(caption_) { }
-    void clearOptions() { options.clear(); values.clear(); selected = 0; open = false; }
-    void addOption(const std::string& text, const ValueT& value) { options.push_back(text); values.push_back(value); }
-    bool set(const ValueT& value);  // returns false if there is no value in the options
-//  void set(int selection) { nAssert(selection >= 0 && selection < static_cast<int>(options.size())); selected = selection; }
-    const ValueT& operator()() const { return values[selected]; }
+    Select(const std::string caption_) throw () : SelectBase(caption_) { }
+    ~Select() throw () { }
+    void clearOptions() throw () { options.clear(); values.clear(); selected = 0; open = false; }
+    void addOption(const std::string& text, const ValueT& value) throw () { options.push_back(text); values.push_back(value); }
+    bool set(const ValueT& value) throw ();  // returns false if there is no value in the options
+//  void set(int selection) throw () { nAssert(selection >= 0 && selection < static_cast<int>(options.size())); selected = selection; }
+    const ValueT& operator()() const throw () { return values[selected]; }
 
 private:
-    void virtualCallHook() { callHook(*this); }
+    void virtualCallHook() throw () { callHook(*this); }
     std::vector<ValueT> values; // should always be in sync with options
 };
 
 class Colorselect : public Component, public MenuHookable<Colorselect> {
 public:
-    Colorselect(const std::string caption_): Component(caption_), selected(0), graphics(0) { }
-    void setGraphicsCallBack(const Graphics& graph) { graphics = &graph; }
-    void clearOptions() { options.clear(); selected = 0; }
-    void addOption(int col) { options.push_back(col); }
-    void set(int selection) { nAssert(selection >= 0 && selection < static_cast<int>(options.size())); selected = selection; }
-    int operator()() const { return selected; }
-    int asInt() const { return options[selected]; }
-    const std::vector<int>& values() const { return options; }
+    Colorselect(const std::string caption_) throw () : Component(caption_), selected(0), graphics(0) { }
+    ~Colorselect() throw () { }
+    void setGraphicsCallBack(const Graphics& graph) throw () { graphics = &graph; }
+    void clearOptions() throw () { options.clear(); selected = 0; }
+    void addOption(int col) throw () { options.push_back(col); }
+    void set(int selection) throw () { nAssert(selection >= 0 && selection < static_cast<int>(options.size())); selected = selection; }
+    int operator()() const throw () { return selected; }
+    int asInt() const throw () { return options[selected]; }
+    const std::vector<int>& values() const throw () { return options; }
 
     // inherited interface
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     std::vector<int> options;
@@ -299,17 +310,17 @@ private:
 
 class Checkbox : public Component, public MenuHookable<Checkbox> {
 public:
-    Checkbox(const std::string& caption_, bool init_value = false): Component(caption_), checked(init_value) { }
-    void toggle() { checked = !checked; }
-    void set(bool value) { checked = value; }
-    bool operator()() const { return checked; }
+    Checkbox(const std::string& caption_, bool init_value = false) throw () : Component(caption_), checked(init_value) { }
+    void toggle() throw () { checked = !checked; }
+    void set(bool value) throw () { checked = value; }
+    bool operator()() const throw () { return checked; }
 
     // inherited interface
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
-    void shortcutActivated();
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
+    void shortcutActivated() throw ();
 
 private:
     bool checked;
@@ -317,43 +328,43 @@ private:
 
 class Slider : public Component, public MenuHookable<Slider> {
 public:
-    Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_)
-        : Component(caption_), vmin(vmin_), vmax(vmax_), val(vmin_), step(1), graphic(graphic_) { }
-    Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_, int init_value, int step_ = 1)  // a step of 0 results in a logarithmic behavior
-        : Component(caption_), vmin(vmin_), vmax(vmax_), val(init_value), step(step_), graphic(graphic_) { nAssert(init_value >= vmin_ && init_value <= vmax_); nAssert(step >= 0); }
+    Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_) throw ();
+    Slider(const std::string caption_, bool graphic_, int vmin_, int vmax_, int init_value, int step_ = 1, bool lockToStep_ = false) throw ();
+    // a step of 0 results in a logarithmic behavior
+    // lockToStep means that the value can never be between the steps (this can't be set with logarithmic stepping)
 
-    void set(int value) { nAssert(value >= vmin && value <= vmax); val = value; }
-    void boundSet(int value);
-    int operator()() const { return val; }
+    void set(int value) throw () { nAssert(value >= vmin && value <= vmax); val = value; }
+    void boundSet(int value) throw ();
+    int operator()() const throw () { return val; }
 
     // inherited interface
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     int vmin, vmax, val, step;
-    bool graphic;
+    bool graphic, lockToStep;
 };
 
 class NumberEntry : public Component, public MenuHookable<NumberEntry> {
 public:
-    NumberEntry(const std::string caption_, int vmin_, int vmax_)   // currently limited to positive numbers!
+    NumberEntry(const std::string caption_, int vmin_, int vmax_) throw ()   // currently limited to positive numbers!
         : Component(caption_), vmin(vmin_), vmax(vmax_), val(vmin_), entry(vmin_) { nAssert(vmin_ >= 0 && vmax_ >= vmin_); }
-    NumberEntry(const std::string caption_, int vmin_, int vmax_, int init_value)   // currently limited to positive numbers!
+    NumberEntry(const std::string caption_, int vmin_, int vmax_, int init_value) throw ()   // currently limited to positive numbers!
         : Component(caption_), vmin(vmin_), vmax(vmax_), val(init_value), entry(init_value) { nAssert(vmin_ >= 0 && vmax_ >= vmin_ && init_value >= vmin_ && init_value <= vmax_); }
 
-    void set(int value) { nAssert(value >= vmin && value <= vmax); val = entry = value; }
-    void boundSet(int value);
-    int operator()() const { return val; }
+    void set(int value) throw () { nAssert(value >= vmin && value <= vmax); val = entry = value; }
+    void boundSet(int value) throw ();
+    int operator()() const throw () { return val; }
 
     // inherited interface
-    bool needsNumberKeys() const { return true; }
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    bool needsNumberKeys() const throw () { return true; }
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     int vmin, vmax, val, entry; // entry is the current state of editing; it differs from val exactly when it's smaller than vmin
@@ -361,30 +372,31 @@ private:
 
 class Textarea : public Component, public MenuHookable<Textarea>, public KeyHookable<Textarea> {
 public:
-    Textarea(const std::string& caption_): Component(caption_) { }
+    Textarea(const std::string& caption_) throw () : Component(caption_) { }
 
     // inherited interface
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
-    void shortcutActivated();
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
+    void shortcutActivated() throw ();
 
     // override isEnabled() : can't be enabled if not hooked
-    bool isEnabled() const { return Component::isEnabled() && isHooked(); }
+    bool isEnabled() const throw () { return Component::isEnabled() && isHooked(); }
 };
 
 class StaticText : public Component {
 public:
-    StaticText(const std::string& caption_, const std::string& text_ = std::string()) : Component(caption_), text(text_) { }
-    void set(const std::string& val) { text = val; }
+    StaticText(const std::string& caption_, const std::string& text_ = std::string()) throw () : Component(caption_), text(text_) { }
+    ~StaticText() throw () { }
+    void set(const std::string& val) throw () { text = val; }
 
     // inherited interface
-    bool canBeEnabled() const { return false; }
-    bool isEnabled() const { return false; }
-    int width() const;
-    int height() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
+    bool canBeEnabled() const throw () { return false; }
+    bool isEnabled() const throw () { return false; }
+    int width() const throw ();
+    int height() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
 
 private:
     std::string text;
@@ -392,16 +404,17 @@ private:
 
 class Textobject : public Component {
 public:
-    Textobject(): Component(""), start(0), visible_lines(0), old_linew(-1) { }
-    void addLine(const std::string& text) { lines.push_back(text); }
+    Textobject() throw () : Component(""), start(0), visible_lines(0), old_linew(-1) { }
+    ~Textobject() throw () { }
+    void addLine(const std::string& text) throw () { lines.push_back(text); }
 
     // inherited interface
-    int width() const;
-    int height() const;
-    int minHeight() const { return objLineHeight(); }    // one line
-    int objLineHeight() const;
-    void draw(BITMAP* buffer, int x, int y, int height, bool active) const;
-    bool handleKey(char scan, unsigned char chr);
+    int width() const throw ();
+    int height() const throw ();
+    int minHeight() const throw () { return objLineHeight(); }    // one line
+    int objLineHeight() const throw ();
+    void draw(BITMAP* buffer, int x, int y, int height, bool active, const Colour_manager& col) const throw ();
+    bool handleKey(char scan, unsigned char chr) throw ();
 
 private:
     std::vector<std::string> lines;
@@ -423,9 +436,9 @@ public:
     template<class ArgT, void (CallClassT::*memFun)(ArgT&)>
     class A : public HookFunctionBase1<void, ArgT&> {
     public:
-        A(CallClassT* host_) : host(host_) { }
-        void operator()(ArgT& obj) { (host->*memFun)(obj); }
-        A* clone() { return new A(host); }
+        A(CallClassT* host_) throw () : host(host_) { }
+        void operator()(ArgT& obj) const throw () { (host->*memFun)(obj); }
+        A* clone() const throw () { return new A(host); }
 
     private:
         CallClassT* host;
@@ -434,9 +447,9 @@ public:
     template<class ArgT, void (CallClassT::*memFun)()>
     class N : public HookFunctionBase1<void, ArgT&> {
     public:
-        N(CallClassT* host_) : host(host_) { }
-        void operator()(ArgT&) { (host->*memFun)(); }
-        N* clone() { return new N(host); }
+        N(CallClassT* host_) throw () : host(host_) { }
+        void operator()(ArgT&) const throw () { (host->*memFun)(); }
+        N* clone() const throw () { return new N(host); }
 
     private:
         CallClassT* host;
@@ -449,9 +462,9 @@ public:
     template<class ArgT, bool (CallClassT::*memFun)(ArgT&, char, unsigned char)>
     class A : public HookFunctionBase3<bool, ArgT&, char, unsigned char> {
     public:
-        A(CallClassT* host_) : host(host_) { }
-        bool operator()(ArgT& obj, char scan, unsigned char chr) { return (host->*memFun)(obj, scan, chr); }
-        A* clone() { return new A(host); }
+        A(CallClassT* host_) throw () : host(host_) { }
+        bool operator()(ArgT& obj, char scan, unsigned char chr) const throw () { return (host->*memFun)(obj, scan, chr); }
+        A* clone() const throw () { return new A(host); }
 
     private:
         CallClassT* host;
@@ -460,9 +473,9 @@ public:
     template<class ArgT, bool (CallClassT::*memFun)(char, unsigned char)>
     class N : public HookFunctionBase3<bool, ArgT&, char, unsigned char> {
     public:
-        N(CallClassT* host_) : host(host_) { }
-        bool operator()(ArgT&, char scan, unsigned char chr) { return (host->*memFun)(scan, chr); }
-        N* clone() { return new N(host); }
+        N(CallClassT* host_) throw () : host(host_) { }
+        bool operator()(ArgT&, char scan, unsigned char chr) const throw () { return (host->*memFun)(scan, chr); }
+        N* clone() const throw () { return new N(host); }
 
     private:
         CallClassT* host;
@@ -472,7 +485,7 @@ public:
 // template implementation
 
 template<class ValueT>
-bool Select<ValueT>::set(const ValueT& value) {
+bool Select<ValueT>::set(const ValueT& value) throw () {
     for (int i = 0; i < (int)values.size(); ++i)
         if (values[i] == value) {
             selected = i;

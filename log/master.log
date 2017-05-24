@@ -1,0 +1,17 @@
+This file contains the server's latest successfully completed communications
+with the server list master server
+
+--- Query ---
+bots=0&dedicated=1&id=217151872&link&long_version=1.0.3+r336E&map=2x2x2&max_players=16&name=Anonymous+host&players=0&port=25000&powerups=1&protocol=1.0&uptime=4901&version=1.0.3%2b
+
+--- Response ---
+HTTP/1.1 200 OK
+Date: Tue, 23 May 2017 04:10:03 GMT
+Server: Apache
+X-Powered-By: PHP/5.4.45
+Connection: close
+Content-Type: text/plain
+
+[OK] Outgun server data succesfully posted.
+The server list can be seen in
+http://koti.mbnet.fi/outgun/servers/

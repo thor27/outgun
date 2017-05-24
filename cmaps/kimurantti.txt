@@ -1,0 +1,130 @@
+;
+; kimurantti.txt
+;
+; By Huntta (aka JR Oja) 2003
+;
+
+V 1
+P width 4
+P height 4
+P title Kimurantti
+P author Huntta
+
+; punainen lippu ja syntymäpaikat
+flag  0 0 0 0.5 0.5
+spawn 0 0 0 0.3 0.4
+spawn 0 0 0 0.4 0.4
+spawn 0 0 0 0.5 0.4
+spawn 0 0 0 0.6 0.4
+spawn 0 0 0 0.7 0.4
+spawn 0 0 0 0.4 0.6
+spawn 0 0 0 0.5 0.6
+spawn 0 0 0 0.6 0.6
+
+; sininen lippu ja syntymäpaikat
+flag  1 3 3 0.5 0.5
+spawn 1 3 3 0.3 0.6
+spawn 1 3 3 0.4 0.6
+spawn 1 3 3 0.5 0.6
+spawn 1 3 3 0.6 0.6
+spawn 1 3 3 0.7 0.6
+spawn 1 3 3 0.4 0.4
+spawn 1 3 3 0.5 0.4
+spawn 1 3 3 0.6 0.4
+
+X tilava 0 0 0 1
+X tilava 1 2
+X tilava 2 3 3 3
+X tilava 3 0
+
+X ahdas 1 0 2 1
+X ahdas 3 1
+X ahdas 2 2 3 2
+
+X paksu_yla 1 0 2 0
+X paksu_ala 2 0
+X paksu_vasen 3 1
+X paksu_oikea 3 1 3 2
+
+X ohut_yla 0 0
+X ohut_yla 3 0
+X ohut_yla 2 1
+X ohut_ala 2 3 3 3
+X ohut_vasen 0 0 0 2
+X ohut_oikea 3 0
+X ohut_oikea 2 1
+X ohut_oikea 3 3
+
+X keskinelio 0 1
+X keskinelio 2 3
+
+X vasen_alakulma 0 3
+X ylahaara 0 2
+X vasenhaara 1 3
+
+R 3 0
+W 0.2    0.6    0.4    0.8
+
+:tilava
+W 0.0    0.0    0.4    0.2
+W 0.0    0.2    0.2    0.4
+W 0.6    0.0    1.0    0.2
+W 0.8    0.2    1.0    0.4
+W 0.0    0.8    0.4    1.0
+W 0.0    0.6    0.2    0.8
+W 0.6    0.8    1.0    1.0
+W 0.8    0.6    1.0    0.8
+
+:ahdas
+W 0.0    0.0    0.4    0.4
+W 0.6    0.0    1.0    0.4
+W 0.0    0.6    0.4    1.0
+W 0.6    0.6    1.0    1.0
+
+:paksu_yla
+W 0.4    0.0    0.6    0.4
+
+:paksu_ala
+W 0.4    0.6    0.6    1.0
+
+:paksu_vasen
+W 0.0    0.4    0.4    0.6
+
+:paksu_oikea
+W 0.6    0.4    1.0    0.6
+
+:ohut_yla
+W 0.4    0.0    0.6    0.2
+
+:ohut_ala
+W 0.4    0.8    0.6    1.0
+
+:ohut_vasen
+W 0.0    0.4    0.2    0.6
+
+:ohut_oikea
+W 0.8    0.4    1.0    0.6
+
+:keskinelio
+W 0.4    0.4    0.6    0.6
+
+:vasen_alakulma
+W 0.0    0.0    0.2    1.0
+W 0.2    0.8    1.0    1.0
+W 0.4    0.0    0.6    0.6
+W 0.6    0.4    1.0    0.6
+W 0.8    0.0    1.0    0.2
+
+:ylahaara
+W 0.0    0.0    0.4    0.4
+W 0.6    0.0    1.0    0.4
+W 0.0    0.4    0.2    1.0
+W 0.4    0.6    0.6    1.0
+W 0.8    0.6    1.0    1.0
+
+:vasenhaara
+W 0.0    0.0    0.4    0.2
+W 0.0    0.4    0.4    0.6
+W 0.0    0.8    0.6    1.0
+W 0.6    0.0    1.0    0.4
+W 0.6    0.6    1.0    1.0

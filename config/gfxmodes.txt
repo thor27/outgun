@@ -1,0 +1,4 @@
+; You can add graphics modes by adding lines to this file, with the syntax:
+; width height colordepth
+; See doc/gfxmodes.html for more information.
+

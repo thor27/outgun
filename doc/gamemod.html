@@ -10,16 +10,18 @@
 <H1>Gamemod settings</H1>
 
 <P>
-The server configuration is all in one file: the &lsquo;gamemod&rsquo; file located at <CODE>config/gamemod.txt</CODE>. Apart from empty lines and comments, which are lines that begin with a semicolon &lsquo;;&rsquo;, every line is a command followed by a value, separated by a space or a tab. The commands and their effect is described in this document.
+The server configuration is all in one file: the &lsquo;gamemod&rsquo; file located at <CODE>config/gamemod.txt</CODE>. Apart from empty lines and comments, which are lines that begin with a semicolon &lsquo;;&rsquo;, every line is a command followed by one or several values, separated by spaces or tabs. The commands and their effect is described in this document.
 </P>
 
 <H2 ID="contents">Contents</H2>
 
 <UL>
  <LI><A HREF="#general">General settings</A>
+ <LI><A HREF="#bots">Bots</A>
  <LI><A HREF="#website">Server web site</A>
  <LI><A HREF="#maprot">Map rotation</A>
  <LI><A HREF="#game">Game config</A>
+ <LI><A HREF="#health_energy_shooting">Health, energy and shooting</A>
  <LI><A HREF="#powerups">Powerups</A>
  <LI><A HREF="#physics">Physics</A>
 </UL>
@@ -47,6 +49,12 @@ These are settings that don&rsquo;t affect the gameplay at all.
  <LI><A HREF="#private_server"><CODE>private_server</CODE></A>
  <LI><A HREF="#join_start"><CODE>join_start</CODE></A>
  <LI><A HREF="#join_end"><CODE>join_end</CODE></A>
+ <LI><A HREF="#join_limit_message"><CODE>join_limit_message</CODE></A>
+ <LI><A HREF="#srvmonit_port"><CODE>srvmonit_port</CODE></A>
+ <LI><A HREF="#recording"><CODE>recording</CODE></A>
+ <LI><A HREF="#relay_server"><CODE>relay_server</CODE></A>
+ <LI><A HREF="#spectating_delay"><CODE>spectating_delay</CODE></A>
+ <LI><A HREF="#log_player_chat"><CODE>log_player_chat</CODE></A>
 </UL>
 
 <H3 ID="server_name"><CODE>server_name</CODE></H3>
@@ -152,7 +160,7 @@ If enabled, players that are idle (don&rsquo;t move or shoot) for the given amou
 <H3 ID="idlekick_playerlimit"><CODE>idlekick_playerlimit</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>1 to 32
+<TR><TH>Range<TD>1&ndash;32
 <TR><TH>Default<TD>4
 </TABLE>
 <P>
@@ -162,7 +170,7 @@ This setting is used to limit the application of <A HREF="#idlekick_time"><CODE>
 <H3 ID="server_port"><CODE>server_port</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>1 to 65535
+<TR><TH>Range<TD>1&ndash;65535
 <TR><TH>Default<TD>25000
 </TABLE>
 <P>
@@ -192,7 +200,7 @@ If enabled, the server will not be posted on the master list. Use it if you don&
 <H3 ID="join_start"><CODE>join_start</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>seconds, 0 to 86399
+<TR><TH>Range<TD>seconds, 0&ndash;86399
 <TR><TH>Default<TD>0
 </TABLE>
 <P>
@@ -202,11 +210,139 @@ The time when the server starts accepting players, in seconds after midnight. If
 <H3 ID="join_end"><CODE>join_end</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>seconds, 0 to 86399
+<TR><TH>Range<TD>seconds, 0&ndash;86399
 <TR><TH>Default<TD>0
 </TABLE>
 <P>
 The time when the server stops accepting players, in seconds after midnight. If <A HREF="#join_start"><CODE>join_start</CODE></A> is set to a different value than <CODE>join_end</CODE>, players can only join in the time between them, or if there already are players on the server.
+</P>
+
+<H3 ID="join_limit_message"><CODE>join_limit_message</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>any string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+This message is sent to clients that try to join the server when joining is not allowed.
+</P>
+
+<H3 ID="srvmonit_port"><CODE>srvmonit_port</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1&ndash;65535
+<TR><TH>Default<TD><A HREF="#server_port"><CODE>server_port</CODE></A> - 500
+</TABLE>
+<P>
+The TCP port number to listen on for connection by the <A HREF="srvmonit.html">server monitor</A> program. If <CODE>server_port</CODE> is 500 or less (not recommendable), the default is <CODE>server_port</CODE> + 65035.
+</P>
+
+<H3 ID="recording"><CODE>recording</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of players, 1 or more, or 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If this is set non-zero, the server records a game to the <CODE>replay</CODE> directory, provided that there are at least as many players as this number.
+</P>
+
+<H3 ID="relay_server"><CODE>relay_server</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>a valid host name or IP address with port
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+If set, the game server sends the spectator data to this address and port.
+</P>
+
+<H3 ID="spectating_delay"><CODE>spectating_delay</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;
+<TR><TH>Default<TD>120
+</TABLE>
+<P>
+The amount of seconds data sent to <A HREF="#relay_server"><CODE>relay_server</CODE></A> is delayed. The intent is to avoid cheating by spectating the same game one is playing.
+</P>
+
+<H3 ID="log_player_chat"><CODE>log_player_chat</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, players&rsquo; chat messages are saved to <CODE>log/adminactionlog.txt</CODE> in addition to admin actions.
+</P>
+
+<H2 ID="bots">Bots</H2>
+
+<P>
+These settings allow you to add bots (computer players) on the server.
+</P>
+
+<P>
+Notice that sadly the bots aren&rsquo;t clever with complicated maps yet. Especially rooms where a part is accessible only by exiting the room first (e.g. rooms split in half by a straight slim wall in the middle) are problematic. If you want to use bots, it might make sense to limit the maps in rotation.
+</P>
+
+<UL>
+ <LI><A HREF="#min_bots"><CODE>min_bots</CODE></A>
+ <LI><A HREF="#bots_fill"><CODE>bots_fill</CODE></A>
+ <LI><A HREF="#balance_bot"><CODE>balance_bot</CODE></A>
+ <LI><A HREF="#bot_ping"><CODE>bot_ping</CODE></A>
+ <LI><A HREF="#bot_name_lang"><CODE>bot_name_lang</CODE></A>
+</UL>
+
+<H3 ID="min_bots"><CODE>min_bots</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of bots, 0&ndash;32
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+The minimum number of bots when there is enough room for them.
+</P>
+
+<H3 ID="bots_fill"><CODE>bots_fill</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of players, 0&ndash;32
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+The server adds bots so that there are always at least <CODE>bots_fill</CODE> players.
+</P>
+
+<H3 ID="balance_bot"><CODE>balance_bot</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+The balance bot is used to keep the number of players even.
+</P>
+
+<H3 ID="bot_ping"><CODE>bot_ping</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>milliseconds, 0&ndash;500
+<TR><TH>Default<TD>300
+</TABLE>
+<P>
+This is the bots&rsquo; ping. The smaller it is, the quicker the bots react.
+</P>
+
+<H3 ID="bot_name_lang"><CODE>bot_name_lang</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>string
+<TR><TH>Default<TD>none
+</TABLE>
+<P>
+If set to <CODE>fi</CODE>, bots will have generated names that are more or less Finnish.
 </P>
 
 <H2 ID="website">Server web site</H2>
@@ -281,6 +417,7 @@ These settings choose which maps are played in which order, and control map voti
 
 <UL>
  <LI><A HREF="#map"><CODE>map</CODE></A>
+ <LI><A HREF="#random_map"><CODE>random_map</CODE></A>
  <LI><A HREF="#random_maprot"><CODE>random_maprot</CODE></A>
  <LI><A HREF="#vote_block_time"><CODE>vote_block_time</CODE></A>
  <LI><A HREF="#require_specific_map_vote"><CODE>require_specific_map_vote</CODE></A>
@@ -306,6 +443,45 @@ If you want the maps to appear in the exact order the map commands are given, re
 <P>
 If there aren&rsquo;t any <CODE>map</CODE> commands in the gamemod, Outgun will use all maps in the maps directory. Unless the order is randomized, they will be played in the file system order which often depends on the order in which the map files were created.
 </P>
+
+<H3 ID="random_map"><CODE>random_map</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Argument<TH>Range<TH>Default
+<TR><TD>width<TD>number of rooms, 1&ndash;<TD>&ndash;
+<TR><TD>height<TD>number of rooms, 1&ndash;<TD>&ndash;
+<TR><TD>edge passages<TD>probability, 0&ndash;1<TD>0.2
+</TABLE>
+<P>
+The <CODE>random_map</CODE> command takes two or three arguments. It adds a symmetrically generated map with specified width and height to the map list. The server generates a map at the start of every random map game. By default, there is a probability of 0.2 for the map to have passages at the edges. This example adds maps sized 3×3 and 5×4 to the map list:
+</P>
+<PRE><CODE>random_map 3 3
+random_map 5 4 0</CODE></PRE>
+<P>
+The room template files are in the <CODE>mapgen</CODE> directory, named as <CODE>*.txt</CODE>, and one of them is randomly chosen for each generated map. The template must specify blocks for basic room and also for top, bottom, left and right walls. An example for a room template:
+</P>
+
+<PRE><CODE>:room
+W  0  0  4  1
+W 16  0 12  1
+W  0  1  1  4
+W 16  1 15  4
+W  0 12  4 11
+W 16 12 12 11
+W  0 11  1  8
+W 16 11 15  8
+
+:top
+W  4  0  8  1
+
+:bottom
+W  4 12  8 11
+
+:left
+W  0  4  1  8
+
+:right
+W 16  4 15  8</CODE></PRE>
 
 <H3 ID="random_maprot"><CODE>random_maprot</CODE></H3>
 
@@ -340,7 +516,7 @@ If enabled, players must vote for a specific map to have their <EM>map exit</EM>
 <H2 ID="game">Game config</H2>
 
 <P>
-These are miscellaneous gameplay tweaking settings, that don&rsquo;t fall into the categories of <A HREF="#powerups">powerups</A> or <A HREF="#physics">physics</A>.
+These are miscellaneous gameplay tweaking settings, that don&rsquo;t fall into the categories of <A HREF="#health_energy_shooting">health, energy and shooting</A>, <A HREF="#powerups">powerups</A> or <A HREF="#physics">physics</A>.
 </P>
 
 <UL>
@@ -351,17 +527,22 @@ These are miscellaneous gameplay tweaking settings, that don&rsquo;t fall into t
  <LI><A HREF="#sudden_death"><CODE>sudden_death</CODE></A>
  <LI><A HREF="#game_end_delay"><CODE>game_end_delay</CODE></A>
  <LI><A HREF="#flag_return_delay"><CODE>flag_return_delay</CODE></A>
+ <LI><A HREF="#carrying_score_time"><CODE>carrying_score_time</CODE></A>
+ <LI><A HREF="#random_wild_flag"><CODE>random_wild_flag</CODE></A>
  <LI><A HREF="#lock_team_flags"><CODE>lock_team_flags</CODE></A>
  <LI><A HREF="#lock_wild_flags"><CODE>lock_wild_flags</CODE></A>
  <LI><A HREF="#capture_on_team_flag"><CODE>capture_on_team_flag</CODE></A>
  <LI><A HREF="#capture_on_wild_flag"><CODE>capture_on_wild_flag</CODE></A>
  <LI><A HREF="#balance_teams"><CODE>balance_teams</CODE></A>
- <LI><A HREF="#friendly_fire"><CODE>friendly_fire</CODE></A>
- <LI><A HREF="#friendly_deathbringer"><CODE>friendly_deathbringer</CODE></A>
  <LI><A HREF="#respawn_time"><CODE>respawn_time</CODE></A>
+ <LI><A HREF="#extra_respawn_time_alone"><CODE>extra_respawn_time_alone</CODE></A>
  <LI><A HREF="#waiting_time_deathbringer"><CODE>waiting_time_deathbringer</CODE></A>
  <LI><A HREF="#respawn_balancing_time"><CODE>respawn_balancing_time</CODE></A>
- <LI><A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A>
+ <LI><A HREF="#spawn_safe_time"><CODE>spawn_safe_time</CODE></A>
+ <LI><A HREF="#respawn_on_capture"><CODE>respawn_on_capture</CODE></A>
+ <LI><A HREF="#free_turning"><CODE>free_turning</CODE></A>
+ <LI><A HREF="#minimap_send_limit"><CODE>minimap_send_limit</CODE></A>
+ <LI><A HREF="#see_rockets_distance"><CODE>see_rockets_distance</CODE></A>
 </UL>
 
 <H3 ID="capture_limit"><CODE>capture_limit</CODE></H3>
@@ -434,6 +615,26 @@ This sets the delay between game rounds. It offers players a chance to look at t
 When a flag is dropped, it can be returned only after this delay.
 </P>
 
+<H3 ID="carrying_score_time"><CODE>carrying_score_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, integer 1&ndash;, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, the team can score by carrying a wild flag the required time without the enemy touching it.
+</P>
+
+<H3 ID="random_wild_flag"><CODE>random_wild_flag</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, all the flags in the map are removed and one wild flag is placed on a random position.
+</P>
+
 <H3 ID="lock_team_flags"><CODE>lock_team_flags</CODE></H3>
 
 <TABLE BORDER>
@@ -484,26 +685,6 @@ If enabled, players can capture the enemy and wild flags on a wild flag that is 
 This setting can be used to balance and optionally shuffle the teams when the round starts. If it&rsquo;s set to <CODE>balance</CODE>, some players from the larger team are moved to the smaller team. On <CODE>shuffle</CODE>, all players are randomly allocated a team, so that the teams are in balance. In the default setting of no balancing, teams are retained as they were at the end of last round.
 </P>
 
-<H3 ID="friendly_fire"><CODE>friendly_fire</CODE></H3>
-
-<TABLE BORDER>
-<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
-<TR><TH>Default<TD>0
-</TABLE>
-<P>
-If set non-zero, the players&rsquo; shots will damage and kill their teammates. The base damage done is the regular <A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
-</P>
-
-<H3 ID="friendly_deathbringer"><CODE>friendly_deathbringer</CODE></H3>
-
-<TABLE BORDER>
-<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
-<TR><TH>Default<TD>0
-</TABLE>
-<P>
-If set non-zero, the players&rsquo; deathbringer explosions will damage and kill their teammates. The deathbringer effect time is the regular <A HREF="#pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
-</P>
-
 <H3 ID="respawn_time"><CODE>respawn_time</CODE></H3>
 
 <TABLE BORDER>
@@ -512,6 +693,16 @@ If set non-zero, the players&rsquo; deathbringer explosions will damage and kill
 </TABLE>
 <P>
 When a player is killed, they will stay dead for this period.
+</P>
+
+<H3 ID="extra_respawn_time_alone"><CODE>extra_respawn_time_alone</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>0.0
+</TABLE>
+<P>
+When a player dies and everyone in the enemy team is alive, an extra time is added to the waiting time until the respawn.
 </P>
 
 <H3 ID="waiting_time_deathbringer"><CODE>waiting_time_deathbringer</CODE></H3>
@@ -534,6 +725,106 @@ When a player dies using a deathbringer, or commits suicide, they will have this
 When a player in the larger team dies, a time based on this number and the team size difference is added to their normal <A HREF="#respawn_time"><CODE>respawn_time</CODE></A>. The exact formula to determine the time added is <CODE>respawn_balancing_time * (larger team size - smaller team size) / smaller team size</CODE>. This means that if one team is twice the size of the smaller one, this number is used as is. Similarly, if a team is 50% larger (e.g. 3 vs. 2), half of this number is added to the waiting time of all the players in the larger team.
 </P>
 
+<H3 ID="spawn_safe_time"><CODE>spawn_safe_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number 0&ndash;
+<TR><TH>Default<TD>0.0
+</TABLE>
+<P>
+This sets how long players will be safe from damaging after the spawn.
+</P>
+
+<H3 ID="respawn_on_capture"><CODE>respawn_on_capture</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If enabled, all dead players respawn immediately when a flag is captured. This is most useful when combined with long respawn times.
+</P>
+
+<H3 ID="free_turning"><CODE>free_turning</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+Allow free turning (e.g. mouse aiming) to be used on the server. If disabled, all players are restricted to 8-directional keyboard control.
+</P>
+
+<H3 ID="minimap_send_limit"><CODE>minimap_send_limit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>players per frame, 0&ndash;32
+<TR><TH>Default<TD>32
+</TABLE>
+<P>
+Limits the number of off-room player positions a player can be sent per frame. Multiply this number by 10 to get the number per second. The bandwidth consumption is minimal: each position sent consumes only 2 bytes (20 bytes per second) for each receiving player. That means that even with 32 players on the server, sending the data can&rsquo;t add more than 20 kB/s in total server bandwidth (5 kB/s for 16 players). However, decreasing this setting can be used to limit the usefulness of the minimap and multi-roomed display in a game. The most that can be sent to Outgun clients up to 1.0.3 is 2 players per frame, so this gives a slight edge to newer clients.
+</P>
+
+<H3 ID="see_rockets_distance"><CODE>see_rockets_distance</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>number of rooms, 0&ndash;
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This sets the distance that players can see the rockets.
+</P>
+
+<H2 ID="health_energy_shooting">Health, energy and shooting</H2>
+
+<P>
+These are settings, that affect health, energy and shooting.
+</P>
+
+<UL>
+ <LI><A HREF="#friendly_fire"><CODE>friendly_fire</CODE></A>
+ <LI><A HREF="#friendly_deathbringer"><CODE>friendly_deathbringer</CODE></A>
+ <LI><A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A>
+ <LI><A HREF="#start_health"><CODE>start_health</CODE></A>
+ <LI><A HREF="#start_energy"><CODE>start_energy</CODE></A>
+ <LI><A HREF="#health_max"><CODE>health_max</CODE></A>
+ <LI><A HREF="#energy_max"><CODE>energy_max</CODE></A>
+ <LI><A HREF="#health_regeneration_0_to_100"><CODE>health_regeneration_0_to_100</CODE></A>
+ <LI><A HREF="#health_regeneration_100_to_200"><CODE>health_regeneration_100_to_200</CODE></A>
+ <LI><A HREF="#health_regeneration_200_to_max"><CODE>health_regeneration_200_to_max</CODE></A>
+ <LI><A HREF="#energy_regeneration_0_to_100"><CODE>energy_regeneration_0_to_100</CODE></A>
+ <LI><A HREF="#energy_regeneration_100_to_200"><CODE>energy_regeneration_100_to_200</CODE></A>
+ <LI><A HREF="#energy_regeneration_200_to_max"><CODE>energy_regeneration_200_to_max</CODE></A>
+ <LI><A HREF="#min_health_for_run_penalty"><CODE>min_health_for_run_penalty</CODE></A>
+ <LI><A HREF="#run_health_degradation"><CODE>run_health_degradation</CODE></A>
+ <LI><A HREF="#run_energy_degradation"><CODE>run_energy_degradation</CODE></A>
+ <LI><A HREF="#shooting_energy_base"><CODE>shooting_energy_base</CODE></A>
+ <LI><A HREF="#shooting_energy_per_extra_rocket"><CODE>shooting_energy_per_extra_rocket</CODE></A>
+ <LI><A HREF="#hit_stun_time"><CODE>hit_stun_time</CODE></A>
+ <LI><A HREF="#shoot_interval"><CODE>shoot_interval</CODE></A>
+ <LI><A HREF="#shoot_interval_with_energy"><CODE>shoot_interval_with_energy</CODE></A>
+</UL>
+
+<H3 ID="friendly_fire"><CODE>friendly_fire</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set non-zero, the players&rsquo; shots will damage and kill their teammates. The base damage done is the regular <A HREF="#rocket_damage"><CODE>rocket_damage</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
+</P>
+
+<H3 ID="friendly_deathbringer"><CODE>friendly_deathbringer</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>multiplier, real number 0&ndash;, or percentage
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set non-zero, the players&rsquo; deathbringer explosions will damage and kill their teammates. The deathbringer effect time is the regular <A HREF="#pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></A> multiplied by this value. Generally, this should be disabled (or small) on a public server to avoid grief from players that attack teammates deliberately. The value can also be represented as a percentage, so that e.g. 0.5 and 50% have the same effect.
+</P>
+
 <H3 ID="rocket_damage"><CODE>rocket_damage</CODE></H3>
 
 <TABLE BORDER>
@@ -542,6 +833,186 @@ When a player in the larger team dies, a time based on this number and the team 
 </TABLE>
 <P>
 This sets how much health is lost by a normal rocket. Because of health regeneration, setting it to small values easily makes it impossible to kill others, but do experiment.
+</P>
+
+<H3 ID="start_health"><CODE>start_health</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, 1&ndash;500
+<TR><TH>Default<TD>100
+</TABLE>
+<P>
+This sets the health to start after the spawn.
+</P>
+
+<H3 ID="start_energy"><CODE>start_energy</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, 0&ndash;500
+<TR><TH>Default<TD>100
+</TABLE>
+<P>
+This sets the energy to start after the spawn.
+</P>
+
+<H3 ID="health_max"><CODE>health_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, 1&ndash;500
+<TR><TH>Default<TD>300
+</TABLE>
+<P>
+This sets the maximum health a player can have.
+</P>
+
+<H3 ID="energy_max"><CODE>energy_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, 0&ndash;500
+<TR><TH>Default<TD>300
+</TABLE>
+<P>
+This sets the maximum energy a player can have.
+</P>
+
+<H3 ID="health_regeneration_0_to_100"><CODE>health_regeneration_0_to_100</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>10
+</TABLE>
+<P>
+This is how much players regenerate their health per second when they have less health than 100.
+</P>
+
+<H3 ID="health_regeneration_100_to_200"><CODE>health_regeneration_100_to_200</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+This is how much players regenerate their health per second when their health is between 100 and 200. This happens when energy has reached 200 or the maximum.
+</P>
+
+<H3 ID="health_regeneration_200_to_max"><CODE>health_regeneration_200_to_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This is how much players regenerate their health per second when they have more health than 200. This happens when energy has reached the maximum.
+</P>
+
+<H3 ID="energy_regeneration_0_to_100"><CODE>energy_regeneration_0_to_100</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>10
+</TABLE>
+<P>
+This is how much players regenerate their energy per second when they have less energy than 100. This happens when health has reached 100 or the maximum.
+</P>
+
+<H3 ID="energy_regeneration_100_to_200"><CODE>energy_regeneration_100_to_200</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>5
+</TABLE>
+<P>
+This is how much players regenerate their energy per second when their energy is between 100 and 200. This happens when health has reached 100 or the maximum.
+</P>
+
+<H3 ID="energy_regeneration_200_to_max"><CODE>energy_regeneration_200_to_max</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>real number, 0&ndash;
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This is how much players regenerate their energy per second when they have more energy than 200. This happens when health has reached 200 or the maximum.
+</P>
+
+<H3 ID="min_health_for_run_penalty"><CODE>min_health_for_run_penalty</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, 1&ndash;500
+<TR><TH>Default<TD>40
+</TABLE>
+<P>
+If energy is zero, the player loses health when running but this is the minimum level for that.
+</P>
+
+<H3 ID="run_health_degradation"><CODE>run_health_degradation</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, real number
+<TR><TH>Default<TD>15
+</TABLE>
+<P>
+This is how much health per second player loses when running if energy is zero.
+</P>
+
+<H3 ID="run_energy_degradation"><CODE>run_energy_degradation</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, real number
+<TR><TH>Default<TD>15
+</TABLE>
+<P>
+This is how much energy per second player loses when running.
+</P>
+
+<H3 ID="shooting_energy_base"><CODE>shooting_energy_base</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, real number, -500&ndash;500
+<TR><TH>Default<TD>7
+</TABLE>
+<P>
+This is how much energy player loses for every shot.
+</P>
+
+<H3 ID="shooting_energy_per_extra_rocket"><CODE>shooting_energy_per_extra_rocket</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, real number, -500&ndash;500
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+This is how much energy player loses for every extra rocket shot.
+</P>
+
+<H3 ID="hit_stun_time"><CODE>hit_stun_time</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number, 0&ndash;
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+This is how long the player is not able to shoot when hit by a rocket.
+</P>
+
+<H3 ID="shoot_interval"><CODE>shoot_interval</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number, 0.1&ndash;
+<TR><TH>Default<TD>0.5
+</TABLE>
+<P>
+This is the minimum interval between shots when energy is zero.
+</P>
+
+<H3 ID="shoot_interval_with_energy"><CODE>shoot_interval_with_energy</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, real number, 0.1&ndash;
+<TR><TH>Default<TD>0.5
+</TABLE>
+<P>
+This is the minimum interval between shots when energy is more than zero.
 </P>
 
 <H2 ID="powerups">Powerups</H2>
@@ -563,6 +1034,10 @@ These settings affect how powerup items appear and their effect.
  <LI><A HREF="#pup_power_damage"><CODE>pup_power_damage</CODE></A>
  <LI><A HREF="#pup_deathbringer_time"><CODE>pup_deathbringer_time</CODE></A>
  <LI><A HREF="#pup_deathbringer_switch"><CODE>pup_deathbringer_switch</CODE></A>
+ <LI><A HREF="#pup_deathbringer_health_limit"><CODE>pup_deathbringer_health_limit</CODE></A>
+ <LI><A HREF="#pup_deathbringer_energy_limit"><CODE>pup_deathbringer_energy_limit</CODE></A>
+ <LI><A HREF="#pup_deathbringer_health_degradation"><CODE>pup_deathbringer_health_degradation</CODE></A>
+ <LI><A HREF="#pup_deathbringer_energy_degradation"><CODE>pup_deathbringer_energy_degradation</CODE></A>
  <LI><A HREF="#pup_shadow_invisibility"><CODE>pup_shadow_invisibility</CODE></A>
  <LI><A HREF="#pup_shield_one_hit"><CODE>pup_shield_one_hit</CODE></A>
  <LI><A HREF="#pup_chance_shield"><CODE>pup_chance_shield</CODE></A>
@@ -572,12 +1047,18 @@ These settings affect how powerup items appear and their effect.
  <LI><A HREF="#pup_chance_weapon"><CODE>pup_chance_weapon</CODE></A>
  <LI><A HREF="#pup_chance_megahealth"><CODE>pup_chance_megahealth</CODE></A>
  <LI><A HREF="#pup_chance_deathbringer"><CODE>pup_chance_deathbringer</CODE></A>
+ <LI><A HREF="#pup_start_shield"><CODE>pup_start_shield</CODE></A>
+ <LI><A HREF="#pup_start_turbo"><CODE>pup_start_turbo</CODE></A>
+ <LI><A HREF="#pup_start_shadow"><CODE>pup_start_shadow</CODE></A>
+ <LI><A HREF="#pup_start_power"><CODE>pup_start_power</CODE></A>
+ <LI><A HREF="#pup_start_weapon"><CODE>pup_start_weapon</CODE></A>
+ <LI><A HREF="#pup_start_deathbringer"><CODE>pup_start_deathbringer</CODE></A>
 </UL>
 
 <H3 ID="pups_min"><CODE>pups_min</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>0 to 32, or 0% to any %
+<TR><TH>Range<TD>0&ndash;32, or 0% &ndash; any %
 <TR><TH>Default<TD>20%
 </TABLE>
 <P>
@@ -591,7 +1072,7 @@ If there are more players in the game than there would be powerups according to 
 <H3 ID="pups_max"><CODE>pups_max</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>0 to 32, or 0% to any %
+<TR><TH>Range<TD>0&ndash;32, or 0% &ndash; any %
 <TR><TH>Default<TD>80%
 </TABLE>
 <P>
@@ -615,7 +1096,7 @@ This is the time that a powerup remains out of the game after being picked up by
 <H3 ID="pup_add_time"><CODE>pup_add_time</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>seconds, 1&ndash;
+<TR><TH>Range<TD>seconds, 1&ndash;999
 <TR><TH>Default<TD>40
 </TABLE>
 <P>
@@ -625,7 +1106,7 @@ When a player picks up a turbo, power, or shadow powerup, they will have the pow
 <H3 ID="pup_max_time"><CODE>pup_max_time</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>seconds, 1&ndash;
+<TR><TH>Range<TD>seconds, 1&ndash;999
 <TR><TH>Default<TD>100
 </TABLE>
 <P>
@@ -645,11 +1126,11 @@ If this is enabled, when a player with powerups dies, one of their powerups is d
 <H3 ID="pups_player_max"><CODE>pups_player_max</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>1&ndash;
-<TR><TH>Default<TD>no limit
+<TR><TH>Range<TD>0&ndash;6
+<TR><TH>Default<TD>6
 </TABLE>
 <P>
-This is the maximum number of distinct powerups a player can have at once. When an additional powerup is picked up, one of the player&rsquo;s powerups is removed to make room, in this order of priority:
+This is the maximum number of distinct powerups a player can have at once. When a new powerup is picked up, one of the player&rsquo;s powerups is removed to make room, in this order of priority:
 </P>
 <UL>
  <LI>turbo, power or shadow, whichever has the shortest time left,
@@ -661,7 +1142,7 @@ This is the maximum number of distinct powerups a player can have at once. When 
 <H3 ID="pup_weapon_max"><CODE>pup_weapon_max</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>1 to 9
+<TR><TH>Range<TD>1&ndash;9
 <TR><TH>Default<TD>9
 </TABLE>
 <P>
@@ -708,6 +1189,46 @@ This is the time how long a player will be (on average) under the influence of a
 If this is enabled, players can get rid of deathbringer powerups they picked up by picking up another one. If this is disabled, picking up more than one deathbringer makes no difference.
 </P>
 
+<H3 ID="pup_deathbringer_health_limit"><CODE>pup_deathbringer_health_limit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of health, 1&ndash;500
+<TR><TH>Default<TD>100
+</TABLE>
+<P>
+This is the maximum amount of health a player with deathbringer can have.
+</P>
+
+<H3 ID="pup_deathbringer_energy_limit"><CODE>pup_deathbringer_energy_limit</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>amount of energy, 0&ndash;500
+<TR><TH>Default<TD>100
+</TABLE>
+<P>
+This is the maximum amount of energy a player with deathbringer can have.
+</P>
+
+<H3 ID="pup_deathbringer_health_degradation"><CODE>pup_deathbringer_health_degradation</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>health per second, real number, 0&ndash;
+<TR><TH>Default<TD>2.5
+</TABLE>
+<P>
+This is how quick a player with deathbringer loses health.
+</P>
+
+<H3 ID="pup_deathbringer_energy_degradation"><CODE>pup_deathbringer_energy_degradation</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>energy per second, real number, 0&ndash;
+<TR><TH>Default<TD>2.5
+</TABLE>
+<P>
+This is how quick a player with deathbringer loses energy.
+</P>
+
 <H3 ID="pup_shadow_invisibility"><CODE>pup_shadow_invisibility</CODE></H3>
 
 <TABLE BORDER>
@@ -721,11 +1242,11 @@ If this is enabled, a player with the shadow powerup becomes completely invisibl
 <H3 ID="pup_shield_one_hit"><CODE>pup_shield_one_hit</CODE></H3>
 
 <TABLE BORDER>
-<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Range<TD>number of hits, or 0 for unlimited
 <TR><TH>Default<TD>0
 </TABLE>
 <P>
-If this is enabled, a player with the shield powerup can only sustain one hit before the shield wears off. On the other hand, the hit doesn&rsquo;t take any energy from the player. This setting is a way to make the shield powerup considerably less powerful.
+If this is non-zero, a player with the shield powerup can only sustain the set number of hits before the shield wears off. On the other hand, the hits don&rsquo;t take any energy from the player.
 </P>
 
 <H3 ID="pup_chance_shield"><CODE>pup_chance_shield</CODE></H3>
@@ -796,6 +1317,66 @@ When a powerup is created in the game, its chance of being a megahealth powerup 
 </TABLE>
 <P>
 When a powerup is created in the game, its chance of being a deathbringer powerup is this number divided total of all <CODE>pup_chance</CODE> settings. In the default configuration, the total is 100 so each number represents a percentage of chance.
+</P>
+
+<H3 ID="pup_start_shield"><CODE>pup_start_shield</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set, players will have a shield when they spawn.
+</P>
+
+<H3 ID="pup_start_turbo"><CODE>pup_start_turbo</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;999
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This is the time for the turbo that players have when they spawn.
+</P>
+
+<H3 ID="pup_start_shadow"><CODE>pup_start_shadow</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;999
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This is the time for the shadow that players have when they spawn.
+</P>
+
+<H3 ID="pup_start_power"><CODE>pup_start_power</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>seconds, 0&ndash;999
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+This is the time for the power that players have when they spawn.
+</P>
+
+<H3 ID="pup_start_weapon"><CODE>pup_start_weapon</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1&ndash;9
+<TR><TH>Default<TD>1
+</TABLE>
+<P>
+This is the weapon number that players have when they spawn.
+</P>
+
+<H3 ID="pup_start_deathbringer"><CODE>pup_start_deathbringer</CODE></H3>
+
+<TABLE BORDER>
+<TR><TH>Range<TD>1 to enable, 0 to disable
+<TR><TH>Default<TD>0
+</TABLE>
+<P>
+If set, players will have a deathbringer when they spawn.
 </P>
 
 <H2 ID="physics">Physics</H2>
@@ -928,7 +1509,7 @@ This sets the speed of the players&rsquo; shots. The unit is the same as that of
 <HR>
 
 <DIV>
-Updated 2006-02-13 &ndash; Niko Ritari
+Updated 2008-03-18 &ndash; Niko Ritari, Jani Rivinoja
 </DIV>
 
 </HTML>

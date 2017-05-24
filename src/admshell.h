@@ -28,8 +28,8 @@
 
 */
 
-#ifndef _ADMSHELL_H_
-#define _ADMSHELL_H_
+#ifndef ADMSHELL_H_INC
+#define ADMSHELL_H_INC
 
 //admin terminal-to-server message codes
 enum {

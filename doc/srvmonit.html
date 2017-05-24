@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML LANG="en">
+<TITLE>Outgun &ndash; Server monitor</TITLE>
+<LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
+
+<DIV>
+<A HREF="index.html">Outgun documentation</A> / Server monitor
+</DIV>
+
+<H1>Server monitor</H1>
+
+<P>
+This document describes the use of a server monitor program called srvmonit.
+</P>
+
+<P>
+Beginning with Outgun 1.0.4, srvmonit is included in the source package, but if you don&rsquo;t compile Outgun yourself, you need to download it separately from the <A HREF="http://koti.mbnet.fi/outgun/tools/">tools</A> section (online).
+</P>
+
+<H2 ID="contents">Contents</H2>
+
+<UL>
+ <LI><A HREF="#running">Running</A>
+ <LI><A HREF="#functions">Functions</A>
+ <LI><A HREF="#keys">Keys</A>
+</UL>
+
+<H2 ID="running">Running</H2>
+
+<P>
+If you run your server in port 25000 without setting <A HREF="gamemod.html#srvmonit_port"><CODE>srvmonit_port</CODE></A> in the gamemod, or set <CODE>srvmonit_port</CODE> to 24500, you can just run the srvmonit program without arguments. Otherwise start srvmonit with for the <CODE>srvmonit_port</CODE> setting, which defaults to server port - 500. For example, run &ldquo;<CODE>srvmonit 24501</CODE>&rdquo; for Outgun server in port 25001.
+</P>
+<P>
+Srvmonit will output the same things on screen as it saves to a <CODE>srvmonit.log</CODE> text file.
+</P>
+
+<H2 ID="functions">Functions</H2>
+<P>
+You can send a message to the server by pressing <KBD>S</KBD> and typing the message. That way also commands can be used &ndash; those start with a slash, &lsquo;/&rsquo;.
+</P>
+<P>
+You can also kick, ban and mute players: hit <KBD>K</KBD> for kick or <KBD>B</KBD> for ban, then the player&rsquo;s number, then capital <KBD>Y</KBD> to confirm. Muting a player means that their messages won&rsquo;t show on the server. Pressing <KBD>M</KBD> toggles the modes. Silent means the player won&rsquo;t know they have been muted.
+</P>
+<P>
+Downside of kick, ban and mute commands is that they only work for the first ten players. Better way is to use command messages: <CODE>/kick</CODE>, <CODE>/ban</CODE>, <CODE>/mute</CODE>, <CODE>/smute</CODE>.
+</P>
+<P>
+If you don&rsquo;t want the sayadmin messages as separate message boxes (with their complications), add a <KBD>Q</KBD> as the first command line argument (for example &ldquo;<CODE>srvmonit q</CODE>&rdquo; or &ldquo;<CODE>srvmonit q 24501</CODE>&rdquo;).
+</P>
+<P>
+You can basically see every text message that the players see. Some basic statistics of players can be found by hitting <KBD>0</KBD> to <KBD>9</KBD> (without first pressing <KBD>K</KBD> or <KBD>B</KBD>), for the player of that number.
+</P>
+<P>
+Pressing <KBD>P</KBD> prints everyone&rsquo;s pings. <KBD>R</KBD> makes the server reload the gamemod.
+</P>
+
+<H2 ID="keys">Keys</H2>
+
+<TABLE BORDER>
+ <TR><TH>Key<TH>Function
+ <TR><TD>Esc<TD>quit
+ <TR><TD>0 to 9<TD>print a player&rsquo;s statistics or kick, ban or mute if active
+ <TR><TD>K<TD>toggle kick mode
+ <TR><TD>B<TD>toggle ban mode
+ <TR><TD>M<TD>toggle mute modes
+ <TR><TD>S<TD>send a message
+ <TR><TD>P<TD>print pings
+ <TR><TD>R<TD>reload gamemod
+ <TR><TD>Q<TD>toggle message boxes
+</TABLE>
+
+<HR>
+
+<DIV>
+Updated 2008-03-18 &ndash; Niko Ritari, Jani Rivinoja
+</DIV>
+
+</HTML>

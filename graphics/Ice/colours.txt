@@ -1,0 +1,143 @@
+menu_background              000040
+menu_border_shadow           000030
+menu_border_highlight        4040B0
+menu_caption                 FFFFFF
+menu_caption_bg              000090
+menu_component_caption       9090FF
+menu_active                  00FFFF
+menu_disabled                777777
+menu_value                   FFFFFF
+menu_shortcut_disabled       506050
+menu_shortcut_enabled        B0D0B0
+
+scrollbar                    0000FF
+scrollbar_bg                 000077
+
+team_red_basic               FF0000
+team_red_light               FF5544
+team_red_dark                660000
+team_red_flash               FFC8C8
+team_blue_basic              0000FF
+team_blue_light              4455FF
+team_blue_dark               000066
+team_blue_flash              C8C8FF
+wild_flag                    00FF00
+wild_flag_flash              C8FFC8
+
+aim_line_redteam             F02020
+aim_line_blueteam            2020F0
+aim_dot_redteam              FF0000
+aim_dot_blueteam             0000FF
+
+scoreboard_bg_redteam        1A0000
+scoreboard_bg_blueteam       00001A
+scoreboard_line_redteam      3A3A3A
+scoreboard_line_blueteam     3A3A3A
+scoreboard_caption_redteam   FFFFFF
+scoreboard_caption_blueteam  FFFFFF
+
+screen_background            000015
+flag_pole                    FFFF00
+name                         FFFFFF
+name_highlight               9999FF
+spawn_highlight              9999FF
+timer_border                 303030
+
+ground                       CCCCFF
+wall                         000080
+room_border                  202040
+playfield_fog                FFFFFF
+
+map_ground                   000000
+map_wall                     006060
+map_room_border              303060
+map_pic_room_border          686888
+map_player_me_1              FFFF00
+map_player_me_2              000000
+map_fog                      FFFFFF
+map_info_grid                FFFFFF
+map_info_grid_main           FFFF00
+map_info_grid_room           FF0000
+map_room_highlight           FFFF00
+map_temporary                00FFFF
+
+bar_text                     AAAAFF
+bar_0                        000000
+health_100                   0000FF
+health_200                   6666FF
+health_300                   CCCCFF
+energy_100                   0000FF
+energy_200                   6666FF
+energy_300                   CCCCFF
+
+power                        00AAFF
+turbo                        CCCCFF
+shadow                       3333FF
+weapon                       AAAAFF
+
+change_message_1             0000FF
+change_message_2             FFFFFF
+change_message_delayed       686868
+fps                          686868
+
+pup_turbo_1                  CCCCFF
+pup_turbo_2                  99BBFF
+pup_turbo_3                  00FFFF
+pup_shadow                   0000FF
+pup_power_1                  FFFFFF
+pup_power_2                  00AAFF
+pup_weapon_1                 0000FF
+pup_weapon_2                 0000CC
+pup_weapon_3                 000099
+pup_weapon_4                 000066
+pup_health_bg                FFFFFF
+pup_health_border            000000
+pup_health_cross             0000FF
+pup_shield                   6666FF
+pup_deathbringer             222244
+
+deathbringer_smoke           000022
+deathbringer_carrier_circle  000022
+
+power_rocket                 FFFFFF
+player_power_team            FFFFFF
+player_power_personal        FFFF00
+rocket_shadow                181818
+
+blood_redteam                FF0000
+blood_blueteam               0000FF
+ice_cream_crisp              FFA000
+ice_cream_ball_1             0000FF
+ice_cream_ball_2             0000FF
+ice_cream_ball_3             0000FF
+ice_cream_text               FFFFFF
+
+map_time                     AAAAFF
+map_loading_1                6666FF
+map_loading_2                66A0FF
+game_draw                    686868
+
+stats_caption_bg             000077
+stats_text                   FFFFFF
+stats_selected               00FFFF
+stats_highlight              6666FF
+
+text_border                  000015
+normal_message_redteam       999999
+normal_message_blueteam      999999
+normal_message_unknown       999999
+team_message_redteam         FF9999
+team_message_blueteam        9999FF
+team_message_unknown         FFFF00
+message_info                 00FF00
+message_header               AAFFFF
+message_server               00FFFF
+message_warning              FF5544
+message_highlight            FFFFFF
+message_input                FFFFFF
+
+replay_text                  AAAAFF
+replay_text_border           000015
+replay_symbol                0033FF
+replay_bar                   0000FF
+replay_bar_bg                000077

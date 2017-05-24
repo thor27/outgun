@@ -63,18 +63,18 @@ struct ChangePoints {
 
 class BorderFunctionBase {
 protected:
-    BorderFunctionBase() { }
+    BorderFunctionBase() throw () { }
 
 public:
-    virtual ~BorderFunctionBase() { }
-    virtual double operator()(double y) const = 0;
-    virtual ChangePoints getChangePoints(double x) const = 0;
-    virtual double spanLeftSideIntegral(double x0, double y0, double y1) const = 0;
-    virtual bool centerExtremes() const = 0;    // must return true if the extreme X coordinate of some y-interval is not at either of the borders
-    virtual double extremeY() const = 0;    // if centerExtremes() is true, must return the Y coordinate at which the extreme X is
-    virtual double extremeX() const = 0;    // if centerExtremes() is true, must return the extreme X coordinate
-    virtual bool operator==(const BorderFunctionBase& o) = 0;
-    virtual void debug() const { }
+    virtual ~BorderFunctionBase() throw () { }
+    virtual double operator()(double y) const throw () = 0;
+    virtual ChangePoints getChangePoints(double x) const throw () = 0;
+    virtual double spanLeftSideIntegral(double x0, double y0, double y1) const throw () = 0;
+    virtual bool centerExtremes() const throw () = 0;    // must return true if the extreme X coordinate of some y-interval is not at either of the borders
+    virtual double extremeY() const throw () = 0;    // if centerExtremes() is true, must return the Y coordinate at which the extreme X is
+    virtual double extremeX() const throw () = 0;    // if centerExtremes() is true, must return the extreme X coordinate
+    virtual bool operator==(const BorderFunctionBase& o) throw () = 0;
+    virtual void debug() const throw () { }
 };
 
 class LineFunction;
@@ -83,38 +83,38 @@ class CurveFunction : public BorderFunctionBase {
     double cx, cy, r, r2;
     double sideMul;
 
-    friend double getIntersection(LineFunction* f1, CurveFunction* f2, double miny);
-    friend double getIntersection(CurveFunction* f1, CurveFunction* f2, double miny);
+    friend double getIntersection(LineFunction* f1, CurveFunction* f2, double miny) throw ();
+    friend double getIntersection(CurveFunction* f1, CurveFunction* f2, double miny) throw ();
 
 public:
-    CurveFunction(double cx_, double cy_, double r_, bool rightSide) : cx(cx_), cy(cy_), r(r_), r2(r_*r_), sideMul(rightSide?+1:-1) { }
-    double operator()(double y) const;
-    ChangePoints getChangePoints(double x) const;
-    double spanLeftSideIntegral(double x0, double y0, double y1) const;
-    bool centerExtremes() const { return true; }
-    double extremeY() const { return cy; }
-    double extremeX() const { return cx + sideMul * r; }
-    bool operator==(const BorderFunctionBase& o);
-    void debug() const;
+    CurveFunction(double cx_, double cy_, double r_, bool rightSide) throw () : cx(cx_), cy(cy_), r(r_), r2(r_*r_), sideMul(rightSide?+1:-1) { }
+    double operator()(double y) const throw ();
+    ChangePoints getChangePoints(double x) const throw ();
+    double spanLeftSideIntegral(double x0, double y0, double y1) const throw ();
+    bool centerExtremes() const throw () { return true; }
+    double extremeY() const throw () { return cy; }
+    double extremeX() const throw () { return cx + sideMul * r; }
+    bool operator==(const BorderFunctionBase& o) throw ();
+    void debug() const throw ();
 };
 
 class LineFunction : public BorderFunctionBase {
     double px1, py1, px2, py2;
     double ratio;
 
-    friend double getIntersection(LineFunction* f1, LineFunction* f2);
-    friend double getIntersection(LineFunction* f1, CurveFunction* f2, double miny);
+    friend double getIntersection(LineFunction* f1, LineFunction* f2) throw ();
+    friend double getIntersection(LineFunction* f1, CurveFunction* f2, double miny) throw ();
 
 public:
-    LineFunction(double x1, double y1, double x2, double y2) : px1(x1), py1(y1), px2(x2), py2(y2), ratio((x2 - x1)/(y2 - y1)) { }
-    double operator()(double y) const;
-    ChangePoints getChangePoints(double x) const;
-    double spanLeftSideIntegral(double x0, double y0, double y1) const;
-    bool centerExtremes() const { return false; }
-    double extremeY() const { nAssert(0); return 0; }
-    double extremeX() const { nAssert(0); return 0; }
-    bool operator==(const BorderFunctionBase& o);
-    void debug() const;
+    LineFunction(double x1, double y1, double x2, double y2) throw () : px1(x1), py1(y1), px2(x2), py2(y2), ratio((x2 - x1)/(y2 - y1)) { }
+    double operator()(double y) const throw ();
+    ChangePoints getChangePoints(double x) const throw ();
+    double spanLeftSideIntegral(double x0, double y0, double y1) const throw ();
+    bool centerExtremes() const throw () { return false; }
+    double extremeY() const throw () { nAssert(0); return 0; }
+    double extremeX() const throw () { nAssert(0); return 0; }
+    bool operator==(const BorderFunctionBase& o) throw ();
+    void debug() const throw ();
 };
 
 class DrawElement {
@@ -123,15 +123,15 @@ class DrawElement {
     std::vector<int> texid;
 
 public:
-    DrawElement(BorderFunctionBase* flp, BorderFunctionBase* frp, double y0_, double y1_, std::vector<int> tex);
-    void extendDown(double y1_) { nAssert(y1_ > y1); y1 = y1_; }
-    const BorderFunctionBase& getLeft() const { return *fLeft; }
-    const BorderFunctionBase& getRight() const { return *fRight; }
-    double getY0() const { return y0; }
-    double getY1() const { return y1; }
-    int getBaseTex() const { return texid.front(); }
-    const std::vector<int>& getAllTextures() const { return texid; }
-    bool isJoinable(const DrawElement& o) const;
+    DrawElement(BorderFunctionBase* flp, BorderFunctionBase* frp, double y0_, double y1_, std::vector<int> tex) throw ();
+    void extendDown(double y1_) throw () { nAssert(y1_ > y1); y1 = y1_; }
+    const BorderFunctionBase& getLeft() const throw () { return *fLeft; }
+    const BorderFunctionBase& getRight() const throw () { return *fRight; }
+    double getY0() const throw () { return y0; }
+    double getY1() const throw () { return y1; }
+    int getBaseTex() const throw () { return texid.front(); }
+    const std::vector<int>& getAllTextures() const throw () { return texid; }
+    bool isJoinable(const DrawElement& o) const throw ();
 };
 
 class YSegment {
@@ -140,13 +140,13 @@ class YSegment {
         std::vector<int> texid;
 
     public:
-        TexBorder(BorderFunctionBase* bf, int tex) : bfp(bf), texid(1, tex) { }
-        TexBorder(BorderFunctionBase* bf, std::vector<int> tex) : bfp(bf), texid(tex) { }
-        BorderFunctionBase* getFn() const { return bfp; }
-        int getBaseTex() const { return texid.front(); }
-        const std::vector<int>& getAllTextures() const { return texid; }
-        void setTex(int tex) { texid.clear(); texid.push_back(tex); }
-        void addTex(int tex) { texid.push_back(tex); }
+        TexBorder(BorderFunctionBase* bf, int tex) throw () : bfp(bf), texid(1, tex) { }
+        TexBorder(BorderFunctionBase* bf, std::vector<int> tex) throw () : bfp(bf), texid(tex) { }
+        BorderFunctionBase* getFn() const throw () { return bfp; }
+        int getBaseTex() const throw () { return texid.front(); }
+        const std::vector<int>& getAllTextures() const throw () { return texid; }
+        void setTex(int tex) throw () { texid.clear(); texid.push_back(tex); }
+        void addTex(int tex) throw () { texid.push_back(tex); }
     };
 
     typedef std::vector<BorderFunctionBase*> BorderListT;
@@ -160,87 +160,85 @@ class YSegment {
         double my1, my2, my3;
 
     public:
-        BorderCompare(double y0, double y1) : my1(y0*.8 + y1*.2), my2(y0*.5 + y1*.5), my3(y0*.2 + y1*.8) { nAssert(fabs(my3-my1)>SPLIT_TRESHOLD*.1); }
-        bool operator()(const BorderFunctionBase* o1, const BorderFunctionBase* o2);
+        BorderCompare(double y0, double y1) throw () : my1(y0*.8 + y1*.2), my2(y0*.5 + y1*.5), my3(y0*.2 + y1*.8) { nAssert(fabs(my3-my1)>SPLIT_TRESHOLD*.1); }
+        bool operator()(const BorderFunctionBase* o1, const BorderFunctionBase* o2) throw ();
     };
 
 public:
-    YSegment(double y0_, double y1_) : y0(y0_), y1(y1_) { nAssert(y1 >= y0); }
-    double getY0() const { return y0; }
-    double getY1() const { return y1; }
-    double width() const { nAssert(y1 >= y0); return y1 - y0; }
-    void setY0(double y) { nAssert(y >= y0); nAssert(y1 >= y); y0 = y; }    // only allow shrinking the segment
-    void setY1(double y) { nAssert(y <= y1); nAssert(y >= y0); y1 = y; }
-    void add(BorderFunctionBase* border) { build.push_back(border); }   // ownership of the pointed object is not transferred!
-    bool getFirstIntersection(BorderFunctionBase* bfn, double* splity);
-    YSegment split(double midy);    // the segment starting with midy is the returned one
-    void sort();    // sorts the build list borders in increasing x-order
-    void simplify();    // removes double borders from build list (assuming it's sorted)
-    void moveElements(int texid);   // moves all borders from build list to final list (use only when the final list is empty)
-    void moveElementsWithOverlap(int texid, bool overlay);  // moves all borders from build list to final list overlapping the old walls
-    void extractDrawElements(std::list<DrawElement>& dst) const;
-    void debug(bool verbose = false) const;
+    YSegment(double y0_, double y1_) throw () : y0(y0_), y1(y1_) { nAssert(y1 >= y0); }
+    double getY0() const throw () { return y0; }
+    double getY1() const throw () { return y1; }
+    double width() const throw () { nAssert(y1 >= y0); return y1 - y0; }
+    void setY0(double y) throw () { nAssert(y >= y0); nAssert(y1 >= y); y0 = y; }    // only allow shrinking the segment
+    void setY1(double y) throw () { nAssert(y <= y1); nAssert(y >= y0); y1 = y; }
+    void add(BorderFunctionBase* border) throw () { build.push_back(border); }   // ownership of the pointed object is not transferred!
+    bool getFirstIntersection(BorderFunctionBase* bfn, double* splity) throw ();
+    YSegment split(double midy) throw ();    // the segment starting with midy is the returned one
+    void sort() throw ();    // sorts the build list borders in increasing x-order
+    void simplify() throw ();    // removes double borders from build list (assuming it's sorted)
+    void moveElements(int texid) throw ();   // moves all borders from build list to final list (use only when the final list is empty)
+    void moveElementsWithOverlap(int texid, bool overlay) throw ();  // moves all borders from build list to final list overlapping the old walls
+    void extractDrawElements(std::list<DrawElement>& dst) const throw ();
+    void debug(bool verbose = false) const throw ();
 
-    YSegment(const YSegment& o) { *this = o; }
-    YSegment& operator=(const YSegment& o) { y0 = o.y0; y1 = o.y1; build = o.build; final = o.final; return *this; }
+    YSegment(const YSegment& o) throw () { *this = o; }
+    YSegment& operator=(const YSegment& o) throw () { y0 = o.y0; y1 = o.y1; build = o.build; final = o.final; return *this; }
 };
 
 typedef std::list<YSegment> SegListT;
 
-class PixelSource { // base class
-    PixelSource(const PixelSource&);    // prohibited (and not implemented anywhere)
-    PixelSource& operator=(const PixelSource&);
-
+class PixelSource : private NoCopying { // base class
 protected:
-    PixelSource() { }
+    PixelSource() throw () { }
 
 public:
-    virtual ~PixelSource() { }
-    virtual void setLine(int y) = 0;
-    virtual void nextLine() = 0;
-    virtual void startPixSpan(int x) = 0;
-    virtual std::pair<int, int> getPixel() = 0;  // returns (color, alpha) of the current x coord and increases it
+    virtual ~PixelSource() throw () { }
+    virtual void setLine(int y) throw () = 0;
+    virtual void nextLine() throw () = 0;
+    virtual void startPixSpan(int x) throw () = 0;
+    virtual std::pair<int, int> getPixel() throw () = 0;  // returns (color, alpha) of the current x coord and increases it
 };
 
 class SolidPixelSource : public PixelSource {
-    int color;
+    int color, alpha;
 
 public:
-    SolidPixelSource(const SolidTexdata& td) : color(td) { }
-    void setLine(int) { }
-    void nextLine() { }
-    void startPixSpan(int) { }
-    std::pair<int, int> getPixel();
+    SolidPixelSource(const SolidTexdata& td) throw () : color(td.color), alpha(td.alpha) { }
+    void setLine(int) throw () { }
+    void nextLine() throw () { }
+    void startPixSpan(int) throw () { }
+    std::pair<int, int> getPixel() throw ();
 };
 
 class SolidTexturizer { // includes inlined the same operations as SolidPixelSource
     Texturizer& host;
     int color;
 
-    void putPixI(int alpha) { host.putPix(color, alpha); }
+    void putPixI(int alpha) throw () { host.putPix(color, alpha); }
 
 public:
-    SolidTexturizer(Texturizer& host_, const SolidTexdata& td) : host(host_), color(td) { }
+    SolidTexturizer(Texturizer& host_, const SolidTexdata& td) throw () : host(host_), color(td.color) { nAssert(td.alpha == 256); }
 
-    void setLine(int y) { host.setLine(y); }
-    void nextLine() { host.nextLine(); }
-    void putSpan(int x0, int x1, double alpha);   // fills the range [x0,x1[
-    void startPixSpan(int x) { host.startPixSpan(x); }
-    void putPix(double alpha);  // draws at current x coord and increases it
+    void setLine(int y) throw () { host.setLine(y); }
+    void nextLine() throw () { host.nextLine(); }
+    void putSpan(int x0, int x1, double alpha) throw ();   // fills the range [x0,x1[
+    void startPixSpan(int x) throw () { host.startPixSpan(x); }
+    void putPix(double alpha) throw ();  // draws at current x coord and increases it
 };
 
 class TexturePixelSource : public PixelSource {
     BITMAP* tex;    // can't set const because it can be fed to Allegro
+    int alpha;
     int tx0, ty0;
     int tx, ty; // active pixel in tex
 
 public:
-    TexturePixelSource(const TextureTexdata& td) : tex(td.image), tx0(td.x0), ty0(td.y0) { }
+    TexturePixelSource(const TextureTexdata& td) throw () : tex(td.image), alpha(td.alpha), tx0(td.x0), ty0(td.y0) { }
 
-    void setLine(int y);
-    void nextLine();
-    void startPixSpan(int x);
-    std::pair<int, int> getPixel();
+    void setLine(int y) throw ();
+    void nextLine() throw ();
+    void startPixSpan(int x) throw ();
+    std::pair<int, int> getPixel() throw ();
 };
 
 class TextureTexturizer { // includes inlined the same operations as TexturePixelSource
@@ -249,16 +247,16 @@ class TextureTexturizer { // includes inlined the same operations as TexturePixe
     int tx0, ty0;
     int tx, ty; // active pixel in tex
 
-    void putPixI(int alpha);
+    void putPixI(int alpha) throw ();
 
 public:
-    TextureTexturizer(Texturizer& host_, const TextureTexdata& td) : host(host_), tex(td.image), tx0(td.x0), ty0(td.y0) { }
+    TextureTexturizer(Texturizer& host_, const TextureTexdata& td) throw () : host(host_), tex(td.image), tx0(td.x0), ty0(td.y0) { nAssert(td.alpha == 256); }
 
-    void setLine(int y);
-    void nextLine();
-    void putSpan(int x0, int x1, double alpha);   // fills the range [x0,x1[
-    void startPixSpan(int x);
-    void putPix(double alpha);  // draws at current x coord and increases it
+    void setLine(int y) throw ();
+    void nextLine() throw ();
+    void putSpan(int x0, int x1, double alpha) throw ();   // fills the range [x0,x1[
+    void startPixSpan(int x) throw ();
+    void putPix(double alpha) throw ();  // draws at current x coord and increases it
 };
 
 class FlagmarkerPixelSource : public PixelSource {
@@ -270,12 +268,12 @@ class FlagmarkerPixelSource : public PixelSource {
     double dx;
 
 public:
-    FlagmarkerPixelSource(const FlagmarkerTexdata& td);
+    FlagmarkerPixelSource(const FlagmarkerTexdata& td) throw ();
 
-    void setLine(int y);
-    void nextLine();
-    void startPixSpan(int x);
-    std::pair<int, int> getPixel();
+    void setLine(int y) throw ();
+    void nextLine() throw ();
+    void startPixSpan(int x) throw ();
+    std::pair<int, int> getPixel() throw ();
 };
 
 class MultiLayerTexturizer {
@@ -283,16 +281,16 @@ class MultiLayerTexturizer {
     std::vector<PixelSource*> layers;
 
 public:
-    MultiLayerTexturizer(Texturizer& host_, int layersReserve = 2) : host(host_) { layers.reserve(layersReserve); }
-    ~MultiLayerTexturizer();
-    void addLayer(PixelSource* layerSource) { layers.push_back(layerSource); }  // ownership is transferred
+    MultiLayerTexturizer(Texturizer& host_, int layersReserve = 2) throw () : host(host_) { layers.reserve(layersReserve); }
+    ~MultiLayerTexturizer() throw ();
+    void addLayer(PixelSource* layerSource) throw () { layers.push_back(layerSource); }  // ownership is transferred
     // at least one layer is assumed, don't try to draw without calling addLayer first
 
-    void setLine(int y);
-    void nextLine();
-    void putSpan(int x0, int x1, double alpha);   // fills the range [x0,x1[
-    void startPixSpan(int x);
-    void putPix(double alpha);  // draws at current x coord and increases it
+    void setLine(int y) throw ();
+    void nextLine() throw ();
+    void putSpan(int x0, int x1, double alpha) throw ();   // fills the range [x0,x1[
+    void startPixSpan(int x) throw ();
+    void putPix(double alpha) throw ();  // draws at current x coord and increases it
 };
 
 #endif

@@ -2,8 +2,8 @@
  *  main.cpp
  *
  *  Copyright (C) 2002 - Fabio Reis Cecin
- *  Copyright (C) 2003, 2004, 2005, 2006 - Niko Ritari
- *  Copyright (C) 2003, 2004, 2006 - Jani Rivinoja
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2008 - Niko Ritari
+ *  Copyright (C) 2003, 2004, 2006, 2008 - Jani Rivinoja
  *
  *  This file is part of Outgun.
  *
@@ -36,29 +36,37 @@
 #include "language.h"
 #include "network.h"
 #include "platform.h"
+#include "protocol.h"
+#include "thread.h"
 #include "timer.h"
 #include "utility.h"
+#include "version.h"
 
 #ifndef DEDICATED_SERVER_ONLY
-#include "client.h"
-#include "mappic.h"
+# ifdef WITH_PNG
+#  include "loadpng/loadpng.h"
+# else
+   static inline void register_png_file_type() throw () { }
+# endif
+# include "client_interface.h"
+# include "colour.h"
+# include "mappic.h"
 #endif
 
 using std::ifstream;
 using std::ostringstream;
 using std::string;
+using std::vector;
 
 #ifndef DEDICATED_SERVER_ONLY
 
-bool set_shitty_mode(LogSet log) {
+static bool set_shitty_mode(LogSet log) throw () {
     int DTC = desktop_color_depth();
 
     if (DTC == 0)   // no windowing supported
         DTC = 8;    // try something anyway (with 0, set_color_depth chokes)
 
-    set_color_depth(DTC);
-
-    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
+    if (set_gfx_mode_if_new(DTC, GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
         log("Could not set gfx mode 320×240 windowed. Try 1 with %i.", DTC);
     else
         return true;
@@ -69,9 +77,7 @@ bool set_shitty_mode(LogSet log) {
         else
             DTC = 15;
 
-        set_color_depth(DTC);
-
-        if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
+        if (set_gfx_mode_if_new(DTC, GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
             log("Could not set gfx mode 320×240 windowed. Try 2 with %i.", DTC);
         else
             return true;
@@ -80,15 +86,13 @@ bool set_shitty_mode(LogSet log) {
     // WARNING: this can be buggy for multiple dedicated servers.
     DTC = 8;
 
-    set_color_depth(DTC);
-
-    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
+    if (set_gfx_mode_if_new(DTC, GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0))
         log("Could not set gfx mode 320×240 windowed. Tried with %i.", DTC);
     else
         return true;
 
     // try safe mode
-    if (set_gfx_mode(GFX_SAFE, 320, 240, 0, 0)) {
+    if (set_gfx_mode_if_new(DTC, GFX_SAFE, 320, 240, 0, 0)) {
         log("Could not set a safe gfx mode.");
         return false;
     }
@@ -99,7 +103,7 @@ bool set_shitty_mode(LogSet log) {
 #endif
 
 // Make directory if it does not already exist.
-bool check_dir(const string& dir, LogSet& log) {
+static bool check_dir(const string& dir, LogSet& log) throw () {
     const string directory = wheregamedir + dir;
 
     if (platIsDirectory(directory) || !platMkdir(directory.c_str()))
@@ -110,59 +114,76 @@ bool check_dir(const string& dir, LogSet& log) {
 
 #ifndef DEDICATED_SERVER_ONLY
 
+static void GlobalCloseButtonHook__closeCallback() throw ();
+
 class GlobalCloseButtonHook {
-    static volatile bool flag;
-    friend void GlobalCloseButtonHook__closeCallback();
+    friend void GlobalCloseButtonHook__closeCallback() throw ();
 
 public:
-    static void install() {
-        LOCK_VARIABLE(flag);
+    static void install() throw () {
+        LOCK_VARIABLE(g_exitFlag);
         LOCK_FUNCTION(GlobalCloseButtonHook__closeCallback);
         set_close_button_callback(GlobalCloseButtonHook__closeCallback);
     }
-    static volatile bool* flagPtr() { return &flag; }
 };
 
-volatile bool GlobalCloseButtonHook::flag = false;
-
-void GlobalCloseButtonHook__closeCallback() {
-    GlobalCloseButtonHook::flag = true;
+static void GlobalCloseButtonHook__closeCallback() throw () {
+    g_exitFlag = true;
 } END_OF_FUNCTION(GlobalCloseButtonHook__closeCallback)
 
-#endif
-
-#ifdef DEDICATED_SERVER_ONLY
-
-void statusOutputText(const string& str) {
-    std::cout << str << '\n';
-}
-
-#else
-
-void statusOutputWindow(const string& str) {
+static void statusOutputWindow(const string& str) throw () {
     set_window_title(str.c_str());
 }
 
-void statusOutputText(const string& str) {
+#endif // !DEDICATED_SERVER_ONLY
+
+static void statusOutputText(const string& str) throw () {
     #ifndef ALLEGRO_WINDOWS
-    std::cout << str << '\n';
+    std::cout << (utf8_mode ? latin1_to_utf8(str) : str) << '\n';
     #else
     statusOutputWindow(str);
     #endif
 }
 
-#endif
+static void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryErrorLog) throw ();
 
-void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryErrorLog);
+static int wrappedMain(int argc, const char* argv[]) throw ();
 
-int wrappedMain(int argc, const char* argv[]);
+static void terminateHandler() throw () {
+    nAssert(0);
+}
+
+static void outOfMemory() throw () {
+    criticalError(_("Out of memory."));
+}
+
+bool load_language(LogSet& log) {
+    const string lang_file = wheregamedir + "config" + directory_separator + "language.txt";
+    ifstream in(lang_file.c_str());
+    string lang_str;
+    if (getline_skip_comments(in, lang_str)) {
+        if (!lang_str.empty() && lang_str.find_first_of(".:/\\") == string::npos) {
+            language.load(lang_str, log);   // load() will log.error() if something goes wrong; we're not aborting if that happens, and usefully the client will pick up and show the error message
+            return true;
+        }
+        else
+            log.error("Invalid language '" + lang_str + "' in " + lang_file + '.');
+    }
+    return false;
+}
 
 int main(int argc, const char* argv[]) {
-    unsigned long stackGuard = STACK_GUARD; stackGuardHackPtr = &stackGuard;
+    uint32_t stackGuard = STACK_GUARD; stackGuardHackPtr = &stackGuard;
+
+    std::set_terminate(terminateHandler);
+    std::set_unexpected(terminateHandler);
+    std::set_new_handler(outOfMemory);
+
+    Thread::logCallerIdentity("main");
     srand((unsigned)time(0));
 
     platInit();
-    int result = wrappedMain(argc, argv);
+    const int result = wrappedMain(argc, argv);
     platUninit();
 
     return result;
@@ -171,8 +192,10 @@ int main(int argc, const char* argv[]) {
 END_OF_MAIN()
 #endif
 
-int wrappedMain(int argc, const char* argv[]) {
+static int wrappedMain(int argc, const char* argv[]) throw () {
     g_timeCounter.setZero();
+
+    check_utf8_mode();
 
     #ifndef DEDICATED_SERVER_ONLY
 
@@ -190,18 +213,9 @@ int wrappedMain(int argc, const char* argv[]) {
     }
     install_keyboard();
 
-    // find out where we are
-    char* path = new char[2048];
-    get_executable_name(path, 2048);
-    replace_filename(path, path, "", 256);
-    wheregamedir = path;
-    delete[] path;
-
-    #else // !DEDICATED_SERVER_ONLY
-
-    wheregamedir = "./";
-
     #endif // !DEDICATED_SERVER_ONLY
+
+    platInitAfterAllegro();
 
     NoLog noLog;
     LogSet noLogSet(&noLog, &noLog, &noLog);
@@ -217,14 +231,13 @@ int wrappedMain(int argc, const char* argv[]) {
 
     innerMain(argc, argv, log, memoryErrorLog);
 
-    bool err = memoryErrorLog.size() != 0;
+    const bool err = memoryErrorLog.size() != 0;
     errorMessage(_("Errors"), memoryErrorLog, '\n' + _("See the 'log' directory for more information."));
     return err;
 }
 
-void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryErrorLog) {
-    log("Outgun log file. %s. Game string: %s, protocol: %s, version: %s", date_and_time().c_str(), GAME_STRING, GAME_PROTOCOL, GAME_VERSION);
-    logThreadStart("main", log);
+static void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryErrorLog) throw () {
+    log("Outgun log file. %s. Game string: %s, protocol: %s, version: %s", date_and_time().c_str(), GAME_STRING.c_str(), GAME_PROTOCOL.c_str(), getVersionString().c_str());
 
     bool showFirstTimeSplash = true;
     {
@@ -251,18 +264,8 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
 
     int acceptedErrorCount = memoryErrorLog.size(); // this is just a flag here; final value of acceptedErrorCount is set after loading the language
 
-    {
-        const string lang_file = wheregamedir + "config" + directory_separator + "language.txt";
-        ifstream in(lang_file.c_str());
-        string lang_str;
-        if (getline_skip_comments(in, lang_str)) {
-            if (!lang_str.empty() && lang_str.find_first_of(".:/\\") == string::npos)
-                language.load(lang_str, log);   // load() will log.error() if something goes wrong; we're not aborting if that happens, and usefully the client will pick up and show the error message
-            else
-                log.error("Invalid language '" + lang_str + "' in " + lang_file + '.');
-        }
-        in.close();
-    }
+    const bool language_loaded = load_language(log);
+    (void)language_loaded; // avoid compilation warning of unused variable for dedicated server
 
     if (acceptedErrorCount == 0)    // no errors before loading the language
         acceptedErrorCount = memoryErrorLog.size(); // accept errors in loading the language
@@ -406,9 +409,11 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
         }
         #ifndef DEDICATED_SERVER_ONLY
         else if (!strcmp(argv[i], "-mappic")) {
-            check_dir("mappic", log);
+            register_png_file_type();
             if (argc != 2)
-                log.error(_("-mappic can't be combined with other command line options."));
+                log.error(_("$1 can't be combined with other command line options.", argv[i]));
+            if (!check_dir("mappic", log))
+                return;
 
             if (memoryErrorLog.size() != acceptedErrorCount)    // no point in continuing if there were errors
                 return;
@@ -418,11 +423,40 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
             Mappic mappic(log);
             try {
                 mappic.run();
-                messageBox("Outgun", _("Saved map pictures to the directory 'mappic'."));
+                messageBox("Outgun", _("Map pictures saved to the directory 'mappic'."));
             } catch (const Mappic::Save_error& s) {
                 log.error(_("Could not save map pictures to the directory 'mappic'."));
             }
             return;
+        }
+        else if (!strcmp(argv[i], "-colour-file")) {
+            if (argc != 2)
+                log.error(_("$1 can't be combined with other command line options.", argv[i]));
+            if (!check_dir("graphics", log))
+                return;
+            Colour_manager col(log);
+            const string filename = wheregamedir + "graphics" + directory_separator + "colours.txt";
+            col.create_default_file(filename);
+            messageBox("Outgun", _("Default colours generated to $1.", filename));
+            return;
+        }
+        else if (!strcmp(argv[i], "-play")) {
+            if (++i < argc)
+                clientCfg.autoPlay = argv[i];
+            else
+                log.error(_("-play must be followed by a hostname and optionally port."));
+        }
+        else if (!strcmp(argv[i], "-replay")) {
+            if (++i < argc)
+                clientCfg.autoReplay = argv[i];
+            else
+                log.error(_("-replay must be followed by a filename."));
+        }
+        else if (!strcmp(argv[i], "-spectate")) {
+            if (++i < argc)
+                clientCfg.autoSpectate = argv[i];
+            else
+                log.error(_("-spectate must be followed by a hostname and port."));
         }
         #endif
         else if (!strcmp(argv[i], "-suppressmessages"))
@@ -443,12 +477,13 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
         else
             log.error(_("Unknown command-line argument '$1'.", argv[i]));
     }
-    if (nlInit() == NL_FALSE)
-        log.error(_("Can't init HawkNL. $1", getNlErrorString()));
-    if (nlSelectNetwork(NL_IP) == NL_FALSE)
-        log.error(_("No IP network."));
-    // enable statistics
-    nlEnable(NL_SOCKET_STATS);
+    try {
+        Network::init();
+    } catch (const Network::InitError& e) {
+        log.error(e.str());
+        return;
+    }
+    AtScopeExit autoShutdownNetwork(newRedirectToFun0(Network::shutdown));
 
     if (serverCfg.ipAddress.empty())
         serverCfg.ipAddress = getPublicIP(log, false);
@@ -460,12 +495,12 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
     g_masterSettings.load(log);
 
     // get system thread priorities
-    int         pmin = sched_get_priority_min(SCHED_OTHER);
-    int         pmax = sched_get_priority_max(SCHED_OTHER);
+    const int   pmin = sched_get_priority_min(SCHED_OTHER);
+    const int   pmax = sched_get_priority_max(SCHED_OTHER);
     int         policy;
     sched_param param;
-    int         rc = pthread_getschedparam(pthread_self(), &policy, &param); // get priority of current thread (which is the default value)
-    int         pdef = param.sched_priority;
+    const int   rc = pthread_getschedparam(pthread_self(), &policy, &param); // get priority of current thread (which is the default value)
+    const int   pdef = param.sched_priority;
     log("Thread priorities:");
     log("   rc = %i policy = %i (%i)", rc, policy, SCHED_OTHER);
     log("   pmin %i pmax %i pdef = %i", pmin, pmax, pdef);
@@ -475,10 +510,6 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
         if (memoryErrorLog.size() != acceptedErrorCount)  // not continuing if there were errors
             return;
 
-        //get all local addresses
-        NLint locsize;
-        const NLaddress *locals = nlGetAllLocalAddr(&locsize);
-
         string infobuf =
             _("Possible thread priorities (-prio <val>):") + '\n' +
             _("* Minimum: $1", itoa(pmin)) + '\n' +
@@ -487,8 +518,9 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
             _("* Outgun default: $1", itoa((pmax - 1 < pmin) ? pdef : pmax - 1)) + "\n\n" +
             _("IP addresses:") + '\n';
 
-        for (int i = 0; i < locsize; i++) {
-            infobuf += addressToString(locals[i]);
+        const vector<Network::Address> locals = Network::getAllLocalAddresses();
+        for (vector<Network::Address>::const_iterator li = locals.begin(); li != locals.end(); ++li) {
+            infobuf += li->toString();
             infobuf += '\n';
         }
 
@@ -532,7 +564,9 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
     #endif
 
     check_dir(SERVER_MAPS_DIR, log);    // the client might run a server, so check these in any case
+    check_dir(string() + SERVER_MAPS_DIR + directory_separator + "generated", log);
     check_dir("server_stats" , log);
+    check_dir("replay"       , log);
 
     #ifdef DEDICATED_SERVER_ONLY
     serverCfg.dedserver = textserver = true;
@@ -540,14 +574,16 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
 
     // run dedicated server
     if (serverCfg.dedserver) {
-        if (textserver)
-            serverCfg.statusOutput = statusOutputText;
-        #ifndef DEDICATED_SERVER_ONLY
+        #ifdef DEDICATED_SERVER_ONLY
+        serverCfg.statusOutput = newRedirectToFun1(statusOutputText);
+        #else
+        bool withGraphics = false;
+        if (textserver || !set_shitty_mode(log)) // if 320×240 mode can't be set, use textserver
+            serverCfg.statusOutput = newRedirectToFun1(statusOutputText);
         else {
-            if (!set_shitty_mode(log))  // if 320×240 mode can't be set, use textserver
-                serverCfg.statusOutput = statusOutputText;
-            else
-                serverCfg.statusOutput = statusOutputWindow;
+            serverCfg.statusOutput = newRedirectToFun1(statusOutputWindow);
+            serverCfg.ownScreen = true;
+            withGraphics = true;
         }
 
         if (set_display_switch_mode(SWITCH_BACKAMNESIA) == -1) {
@@ -559,10 +595,8 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
         else
             log("Switch_backamnesia set ok.");
 
-        if (serverCfg.statusOutput == statusOutputWindow) {
+        if (withGraphics)
             GlobalDisplaySwitchHook::install();
-            serverCfg.ownScreen = true;
-        }
         #endif
 
         if (memoryErrorLog.size() != acceptedErrorCount)  // no point in continuing if there were errors
@@ -572,10 +606,9 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
         GameserverInterface* gameserver = new GameserverInterface(log, serverCfg, memoryErrorLog, "");
         if (gameserver->start(serverCfg.server_maxplayers)) {
             #ifndef DEDICATED_SERVER_ONLY
-            gameserver->loop(GlobalCloseButtonHook::flagPtr(), true);
+            gameserver->loop(&g_exitFlag, true);
             #else
-            bool quit = false;
-            gameserver->loop(&quit, false);
+            gameserver->loop(&g_exitFlag, false);
             #endif
             gameserver->stop();
         }
@@ -583,9 +616,13 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
             log.error(_("Can't start the server."));
         delete gameserver;
     }
-    // run client
     #ifndef DEDICATED_SERVER_ONLY
+    // run client
     else {
+        register_png_file_type();
+        install_mouse();
+        GlobalMouseHook::install();
+
         check_dir(CLIENT_MAPS_DIR, log);
         check_dir("screens"      , log);
         check_dir("graphics"     , log);
@@ -596,11 +633,21 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
             return;
 
         // run client
-        clientCfg.statusOutput = statusOutputWindow;
-        serverCfg.statusOutput = statusOutputWindow;
-        Client* gameclient = new Client(log, clientCfg, serverCfg, memoryErrorLog);
+        clientCfg.statusOutput = newRedirectToFun1(statusOutputWindow);
+        serverCfg.statusOutput = newRedirectToFun1(statusOutputWindow);
+        log("See clientlog.txt for client's log messages");
+        FileLog clientLog(wheregamedir + "log" + directory_separator + "clientlog.txt", true);
+        if (!language_loaded) {
+            ClientInterface* gameclient = ClientInterface::newClient(clientCfg, serverCfg, clientLog, memoryErrorLog);
+            gameclient->language_selection_start(&g_exitFlag);
+            delete gameclient;
+            if (g_exitFlag)
+                return;
+            load_language(log);
+        }
+        ClientInterface* gameclient = ClientInterface::newClient(clientCfg, serverCfg, clientLog, memoryErrorLog);
         if (gameclient->start()) {
-            gameclient->loop(GlobalCloseButtonHook::flagPtr(), showFirstTimeSplash);
+            gameclient->loop(&g_exitFlag, showFirstTimeSplash);
             gameclient->stop();
         }
         else
@@ -610,8 +657,4 @@ void innerMain(int argc, const char* argv[], LogSet& log, MemoryLog& memoryError
     #endif
 
     log("Exiting");
-    // exit HawkNL
-    nlShutdown();
-
-    return;
 }

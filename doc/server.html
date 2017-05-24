@@ -36,11 +36,13 @@ For a temporary use, you can start a server in the Outgun client, in the <A HREF
 <H2 ID="dedicated">Dedicated server</H2>
 
 <P>
-If you are planning to keep the server on many hours a day or even all the time, you should make it a dedicated server. The simplest way to start the server in command line is in Linux<BR>
-<KBD>./outgun -ded</KBD><BR>
-or in Windows<BR>
-<KBD>outgun -ded</KBD>
+If you are planning to keep the server on many hours a day or even all the time, you should make it a dedicated server. The simplest ways to start the server in command line are, depending the operating system:
 </P>
+<TABLE BORDER>
+ <TR><TD>in Linux with X<TD><KBD>./outgun -ded</KBD>
+ <TR><TD>in Linux without X<TD><KBD>./outgun-ded</KBD>
+ <TR><TD>in Windows<TD><KBD>outgun -ded</KBD>
+</TABLE>
 <P>
 Find more about the <A HREF="commandline.html#server">command line server options</A> in a separate document.
 </P>
@@ -56,9 +58,6 @@ The server port is 25000 by default. Change that if you can&rsquo;t use it, by t
 <P>
 Maximum number of players depends partly on your connection. If you have 512 kbits/s for upload, you can probably have a server of 16 players, and with 2 Mbits/s, 32 players.
 </P>
-<P>
-For Linux there is a possibility to use a <A HREF="../1.0/download.html#linuxserver">text-only dedicated server</A> that has no graphics.
-</P>
 
 <H2 ID="firewall">Firewall settings</H2>
 
@@ -69,7 +68,7 @@ You will need to open the chosen server port for all incoming UDP traffic in you
 <H2 ID="srvmonit">Server monitor program</H2>
 
 <P>
-There is a simple program to monitor the server. You can find it in the <A HREF="../tools/">tools</A> section with short instructions. With it you can see what is happening on your server also when you are not there.
+There is a simple program to monitor the server, called <A HREF="srvmonit.html">srvmonit</A>. It helps you to see what is happening on your server when you are not there.
 </P>
 
 <HR>

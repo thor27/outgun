@@ -1,16 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <HTML LANG="en">
-<TITLE>Outgun &ndash; Adding screen modes</TITLE>
+<TITLE>Outgun &ndash; Adding graphics modes</TITLE>
 <LINK REL="stylesheet" HREF="outgun.css" TYPE="text/css" TITLE="Outgun styles">
 
 <DIV>
-<A HREF="index.html">Outgun documentation</A> / Adding screen modes
+<A HREF="index.html">Outgun documentation</A> / Adding graphics modes
 </DIV>
 
-<H1>Adding screen modes</H1>
+<H1>Adding graphics modes</H1>
 
 <P>
-This document describes <CODE>config/gfxmodes.txt</CODE>, an advanced configuration file with which you can add otherwise unavailable screen modes to Outgun.
+This document describes <CODE>config/gfxmodes.txt</CODE>, an advanced configuration file with which you can add otherwise unavailable graphics modes to Outgun.
 </P>
 
 <P>
@@ -18,7 +18,7 @@ You don&rsquo;t need <CODE>gfxmodes.txt</CODE> in normal operation; it&rsquo;s u
 </P>
 
 <P>
-The format Outgun 1.0 understands is very simple. Every non-empty line that is not a comment (those start with a semicolon, &lsquo;;&rsquo;), should describe a screen mode. The lines should include a <STRONG>width</STRONG>, a <STRONG>height</STRONG>, and a <STRONG>colordepth</STRONG>, separated by spaces. For example the line<BR>
+The format Outgun 1.0 understands is very simple. Every non-empty line that is not a comment (those start with a semicolon, &lsquo;;&rsquo;), should describe a graphics mode. The lines should include a <STRONG>width</STRONG>, a <STRONG>height</STRONG>, and a <STRONG>colordepth</STRONG>, separated by spaces. For example the line<BR>
 <CODE>640 480 32</CODE><BR>
 adds the resolution of 640×480 with 32 bits per pixel. There are limitations: the width must be at least 320 pixels (640 before Outgun 1.0.3), the height at least 200 (400 before 1.0.3), and accepted values for color depth are 16, 24, and 32.
 </P>
@@ -28,7 +28,7 @@ When the basic limits are met, Outgun accepts the mode and makes it available in
 </P>
 
 <P>
-For easy testing of which modes work, or fine tuning a window size, you can edit the file while Outgun is running. <CODE>gfxmodes.txt</CODE> is reloaded each time you open the <A HREF="menus.html#screenmode">screen mode</A> menu.
+For easy testing of which modes work, or fine tuning a window size, you can edit the file while Outgun is running. <CODE>gfxmodes.txt</CODE> is reloaded each time you open the <A HREF="menus.html#graphics">graphic options</A> menu.
 </P>
 
 <HR>

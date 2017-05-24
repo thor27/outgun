@@ -1,0 +1,67 @@
+;
+; RedxBlue : An epic battle with 2 castles
+; by Thomaz dos Reis
+;
+; looks better with the skin metal
+
+V 1
+P width  4
+P height 3
+P title  RedxBlue
+P author ThOR27
+S 16 12
+
+flag  0 0 1  8  6
+spawn 0 0 1  4  6
+flag  1 3 1  8  6
+spawn 1 3 1  12  6
+
+X def 0 0 3 2
+X left 0 0 0 2
+X left 3 1
+X left 1 1
+X top 0 0
+X top 3 0
+X right 3 0 3 2
+X right 0 1
+X right 2 1
+X down 0 2
+X down 3 2
+X red 0 0 0 2
+X blue 3 0 3 2
+X black 1 1 2 1
+X lines_down 1 0 2 0
+X lines_top 1 2 2 2
+
+:def
+C W 0 0 2 0 0 0
+C W 16 12 2 0 0 0
+C W 0 12 2 0 0 0
+C W 16 0 2 0 0 0
+
+:left
+W 0 0 1 12
+
+:top
+W 0 0 16 1
+
+:right
+W 15 0 16 12
+
+:down
+W 0 11 16 12
+
+:blue
+G 0 0 16 12  4
+
+:red
+G 0 0 16 12  3
+
+:black
+G 0 0 16 12 2
+
+:lines_down
+G 0 0 16 10 1
+
+:lines_top
+G 0 2 16 12 1

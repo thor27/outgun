@@ -1,0 +1,49 @@
+;
+; reunaton.txt
+;
+; By Huntta (aka JR Oja) & Juggis 2003
+;
+
+V 1
+P width 5
+P height 5
+P title Reunaton
+P author Huntta and Juggis
+
+; punainen lippu ja syntymäpaikat
+flag  0 2 2 0.25 0.25
+spawn 0 2 2 0.125 0.125
+spawn 0 2 2 0.25 0.875
+spawn 0 2 2 0.25 0.125
+spawn 0 2 2 0.125 0.75
+spawn 0 2 2 0.125 0.25
+spawn 0 2 2 0.125 0.875
+spawn 0 2 2 0.25 0.75
+spawn 0 2 2 0.25 0.25
+
+; sininen lippu ja syntymäpaikat
+flag  1 2 2 0.75 0.75
+spawn 1 2 2 0.875 0.875
+spawn 1 2 2 0.875 0.25
+spawn 1 2 2 0.75 0.875
+spawn 1 2 2 0.75 0.125
+spawn 1 2 2 0.875 0.75
+spawn 1 2 2 0.875 0.125
+spawn 1 2 2 0.75 0.25
+spawn 1 2 2 0.75 0.75
+
+X vaaka 0 2 4 2
+X pysty 2 0 2 4
+X taysi 1 1
+X taysi 3 3
+X taysi 1 3
+X taysi 3 1
+
+:vaaka
+W 0      0.45   1      0.55
+
+:pysty
+W 0.45   0      0.55   1
+
+:taysi
+W 0.2    0.2    0.8    0.8

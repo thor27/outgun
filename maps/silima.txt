@@ -1,0 +1,215 @@
+; By Joonas 2004 - 2006
+
+P width 5
+P height 5
+P title Silimä
+P author Joonas
+S 16 12
+
+; punainen lippu ja syntymäpaikat
+flag  0 0 0 3 3
+spawn 0 0 0 5 5
+
+; sininen lippu ja syntymäpaikat
+flag 1 4 4 13 9
+spawn 1 4 4 11 7
+
+; villi lippu
+flag  2 2 2  8 6
+
+X ylä_vaakaseinä 0 0 4 0
+X ylä_vaakaseinä 1 4
+X ylä_vaakaseinä 3 4
+
+X ala_vaakaseinä 1 0
+X ala_vaakaseinä 3 0
+X ala_vaakaseinä 0 4 4 4
+
+X vas_pystyseinä 0 0
+X vas_pystyseinä 0 4
+
+X oik_pystyseinä 4 0
+X oik_pystyseinä 4 4
+
+X pystyseinät 0 1 0 3
+X pystyseinät 4 1 4 3
+
+X pysty_keski 0 1
+X pysty_keski 0 3
+X pysty_keski 4 1
+X pysty_keski 4 3
+
+X pysty_keski_väli 0 2
+X pysty_keski_väli 4 2
+
+X kulmapalat 0 0
+X kulmapalat 0 4
+X kulmapalat 4 0
+X kulmapalat 4 4
+
+X ala_ympyrä 0 0
+X ala_ympyrä 4 0
+X ylä_ympyrä 4 4
+X ylä_ympyrä 0 4
+
+X vaaka_keski 1 0 3 0
+X vaaka_keski 1 4 3 4
+
+;punanen base
+R 0 0
+C W 3 3 5 4 90 180 3
+
+G 0 0 16 12 3
+
+R 2 0
+W 0 0 16 1
+W 0 11 6 12
+
+R 1 1
+C W 24 17 13 0 270 90
+C W 24 17 30 22
+W 0 0 16 1
+
+C G 24 17 22 20 0 0 2
+C G 24 17 15 13 0 0 2
+
+R 2 1
+C W 8 17 13 0 270 90
+W 0 0 6 1
+W 10 0 16 1
+
+C G 8 17 15 0 270 90 2
+G 0 2 16 4
+
+R 3 1
+C W -8 17 13 0 270 90
+C W -8 17 30 22
+W 0 0 16 1
+
+C G -8 17 22 20 0 0 2
+C G -8 17 15 13 0 0 2
+
+
+R 1 2
+C W 24 5 13 0 270 90
+C W 24 7 13 0 90 270
+
+C W 24 5 30 22 270 0
+W 0 5 2 7
+C W 24 7 30 22 180 270
+
+C G 24 5 15 0 270 90 2
+C G 24 7 15 0 90 270 2
+C G 24 5 30 20 270 0 2
+G   4 5 2 7 2
+C G 24 7 30 20 180 270 2
+
+R 2 2
+C W 6 5 12 4 270 0
+C W 6 7 12 4 180 270
+C W 10 5 12 4 0 90
+C W 10 7 12 4 90 180
+W 6 0 10 1
+W 6 11 10 12
+
+C G 6 5 3 0 270 0 2
+C G 6 7 3 0 180 270 2
+C G 10 5 3 0 0 90 2
+C G 10 7 3 0 90 180 2
+G 6 2 11 5 2
+G 6 7 11 10 2
+
+R 3 2
+C W -8 5 13 0 270 90
+C W -8 7 13 0 90 270
+
+C W -8 5 30 22 0 90
+W 14 5 16 7
+C W -8 7 30 22 90 180
+
+C G -8 5 15 0 270 90 2
+C G -8 7 15 0 90 270 2
+C G -8 5 30 20 0 90 2
+G 12 5 14 7 2
+C G -8 7 30 20 90 180 2
+
+R 1 3
+C W 24 -5 13 0 90 270
+C W 24 -5 30 22
+W 0 11 16 12
+
+C G 24 -5 22 20 0 0 2
+C G 24 -5 15 13 0 0 2
+
+R 2 3
+C W 8 -5 13 0 90 270
+
+W 0 11 6 12
+W 10 11 16 12
+
+C G 8 -5 15 0 90 270 2
+G 0 8 16 10
+
+R 3 3
+C W -8 -5 13 0 90 270
+C W -8 -5 30 22
+W 0 11 16 12
+
+C G -8 -5 22 20 0 0 2
+C G -8 -5 15 13 0 0 2
+
+R 2 4
+W 0 12 16 11
+W 0 1 6 0
+W 10 1 16 0
+
+
+;sininen base
+R 4 4
+C W 13 9 5 4 270 0 4
+
+G 0 0 16 12 4
+
+:pystyseinät
+W 0 0 1 12
+W 15 0 16 12
+
+:ala_vaakaseinä
+W 0 11 16 12
+
+:ylä_vaakaseinä
+W 0 0 16 1
+
+:pysty_keski
+W 7 0 9 12
+
+:pysty_keski_väli
+W 7 0 9 4
+C W 8 4 1
+
+W 7 8 9 12
+C W 8 8 1
+
+:vas_pystyseinä
+W 0 0 1 12
+
+:oik_pystyseinä
+W 15 0 16 12
+
+:kulmapalat
+W  0  0  1  1
+W 15 11 16 12
+W 15  0 16  1
+W  0 11  1 12
+
+:ala_ympyrä
+C W 8 12 1 0 0 0
+
+:ylä_ympyrä
+C W 8 0 1 0 0 0
+
+:vaaka_keski
+W 10 11 16 12
+W 6 5 10 7
+C W 6 6 1
+C W 10 6 1

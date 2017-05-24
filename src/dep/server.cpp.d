@@ -1,0 +1,1 @@
+obj/gui/server.o obj/text/server.o :	server.cpp	$(client_interface_h_inc)	$(function_utility_h_inc)	$(incalleg_h_inc)	$(language_h_inc)	$(names_h_inc)	$(nassert_h_inc)	$(platform_h_inc)	$(thread_h_inc)	$(timer_h_inc)	$(version_h_inc)	$(server_h_inc)

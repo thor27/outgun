@@ -36,7 +36,7 @@ HR { border: thin solid #AFA; }
 
 LI { margin-top: 0.25em }
 
-PRE {
+PRE, .codeblock {
   padding: 0.2em;
   border: thin solid green;
 }
@@ -50,6 +50,8 @@ TD, TH { color: black; background: #F9FFF9 none; }
 }
 
 H1 CODE, H2 CODE, H3 CODE, H4 CODE, H5 CODE, H6 CODE { font-weight: bold }
+
+.contents-list H3 { font-size: 1em }
 
 /* Stats specific styles */
 
@@ -65,4 +67,12 @@ TABLE.teams, TABLE.players, TABLE.captures { border-collapse: collapse }
   padding: 0.2em;
 }
 
-.contents-list H3 { font-size: 1em }
+.team1 TD {
+  color: black;
+  background: #FEE none;
+}
+
+.team2 TD {
+  color: black;
+  background: #EEF none;
+}

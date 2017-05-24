@@ -14,7 +14,7 @@ Other keys
  
  Talk               Just type your message and hit Enter.
  Team talk          Begin your message with a dot ('.').
- Change team        End (only if your team has more players)
+ Change team        End
  Suicide            Delete
  Drop flag          Page Down
  Map list           F2

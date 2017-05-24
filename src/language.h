@@ -31,28 +31,31 @@ class LogSet;
 
 class Language {
 public:
-    Language() : lang_code("en") { }
-    ~Language() { }
+    Language() throw () : lang_code("en"), loc("C") { }
+    ~Language() throw () { }
 
-    bool load(const std::string& lang, LogSet& log);
+    bool load(const std::string& lang, LogSet& log) throw ();
 
-    std::string get_text(const std::string& text) const;
-    std::string code() const { return lang_code; }
+    std::string get_text(const std::string& text) const throw ();
+    std::string code() const throw () { return lang_code; }
+
+    std::string locale() const throw () { return loc; }
 
 private:
     std::map<std::string, std::string> texts;
     std::string lang_code;
+    std::string loc;
 };
 
 extern Language language;
 
-std::string _(const std::string& text);
+std::string _(const std::string& text) throw ();
 
 // Get translation and replace $1...$5 with t1...t5.
 std::string _(std::string text, const std::string& t1,
                                 const std::string& t2 = "$2",
                                 const std::string& t3 = "$3",
                                 const std::string& t4 = "$4",
-                                const std::string& t5 = "$5");
+                                const std::string& t5 = "$5") throw ();
 
 #endif

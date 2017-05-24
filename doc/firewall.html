@@ -43,6 +43,28 @@ Running a server is more complicated. You will need to open the primary server p
 If the server is behind a NAT, and you don&rsquo;t want to shut out all clients who also have a NAT or a firewall, you should set up a range of secondary ports for use with the <A HREF="commandline.html#sport"><CODE>-sport</CODE></A> argument, and make your NAT forward each of those ports to the corresponding port on your Outgun server machine.
 </P>
 
+<H4>Preparing for problematic client firewalls</H4>
+
+<P>
+An additional problem affects clients with certain types of NAT or firewall, regardless of whether the server is behind a NAT. When the client sends a probe to the server secondary port to open its own firewall, a server firewall may send a reply about the port not being in use, which results in the client firewall dropping packets sent by the server from the same port shortly afterwards. This is especially likely if the server is running Linux, where openly rejecting connection attempts instead of just dropping them is more common than with Windows firewalls. You can combat this case by adding a firewall rule to drop new connections to the server&rsquo;s <CODE>sport</CODE> range (or indeed all ports with no open services running on them, but some software may suffer slightly).
+</P>
+
+<P>
+With Linux and iptables with a typical configuration, you can silently drop the necessary packets by running as root (in one line):
+</P>
+
+<DIV CLASS="codeblock"><CODE>iptables -I &lt;input-handling-chain&gt; &lt;rulenumber-of-REJECT&gt; -p udp -m udp --dport &lt;first-sport&gt;:&lt;last-sport&gt; -j DROP</CODE></DIV>
+
+<P>
+with the angle-bracketed parts replaced with relevant values. For example in many (if not all) versions of Fedora Core, you can look at the output of &ldquo;<CODE>iptables -L</CODE>&rdquo; and the chain <SAMP>RH-1-Firewall-INPUT</SAMP> to which all input is redirected. Say there are 12 rules in it, and the last one is &ldquo;<SAMP>REJECT all -- anywhere anywhere</SAMP>&rdquo;. Using the <CODE>sport</CODE> range 40000:40100, the relevant command would be:
+</P>
+
+<DIV CLASS="codeblock"><CODE>iptables -I RH-1-Firewall-INPUT 12 -p udp -m udp --dport 40000:40100 -j DROP</CODE></DIV>
+
+<P>
+If this works, the settings can then be saved with the command &ldquo;<CODE>service iptables save</CODE>&rdquo;. Of course if you are serious about security, you must understand all that&rsquo;s said and all of your iptables configuration before you attempt the change, although if you end up dropping packets that you shouldn&rsquo;t, it should only result in denial of service.
+</P>
+
 <H2 ID="game">Game traffic <SMALL>(UDP between client and server)</SMALL></H2>
 
 <P>
@@ -54,7 +76,7 @@ When the server gets the connection attempt, it chooses a port from its <A HREF=
 </P>
 
 <P>
-Once the connection is established, the client continues to send data to the server&rsquo;s primary port from its chosen cport, and the server sends data from its chosen sport to the same client cport.
+Once the connection is established, the client continues to send data to the server&rsquo;s primary port from its chosen <CODE>cport</CODE>, and the server sends data from its chosen <CODE>sport</CODE> to the same client <CODE>cport</CODE>.
 </P>
 
 <P>
@@ -100,7 +122,7 @@ The bug reporting master server is currently Nix&rsquo;s home computer, <STRONG>
 <HR>
 
 <DIV>
-Updated 2005-02-07 &ndash; Niko Ritari
+Updated 2007-02-27 &ndash; Niko Ritari
 </DIV>
 
 </HTML>

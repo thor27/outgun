@@ -1,0 +1,87 @@
+;
+; putkilo.txt
+;
+; By Huntta 2003
+;
+
+V 1
+P width 9
+P height 3
+P title Putkilo
+P author Huntta
+S 16 12
+
+; punainen lippu ja syntymäpaikat
+flag  0 8 1  8  6
+spawn 0 8 1  6  4
+spawn 0 8 1  8  4
+spawn 0 8 1 10  4
+spawn 0 8 1  6  8
+spawn 0 8 1  8  8
+spawn 0 8 1 10  8
+spawn 0 8 1  6  6
+spawn 0 8 1 10  6
+
+; sininen lippu ja syntymäpaikat
+flag  1 0 1  8  6
+spawn 1 0 1 10  8
+spawn 1 0 1  8  8
+spawn 1 0 1  6  8
+spawn 1 0 1 10  4
+spawn 1 0 1  8  4
+spawn 1 0 1  6  4
+spawn 1 0 1 10  6
+spawn 1 0 1  6  6
+
+X perus 0 0 8 2
+
+X vasen 0 0 0 2
+X vasen 3 0
+X vasen 5 0
+X vasen 4 2
+X vasen 6 2
+
+X oikea 2 0
+X oikea 3 2
+X oikea 4 0
+X oikea 8 0 8 2
+X oikea 5 2
+
+X yla   0 0 3 0
+X yla   5 0 8 0
+X yla   1 1 1 2
+X yla   4 1 4 2
+X yla   7 1 7 2
+
+X ala   0 2 3 2
+X ala   5 2 8 2
+X ala   1 0 1 1
+X ala   4 0 4 1
+X ala   7 0 7 1
+
+; perushuone, jossa on neljä kulkuaukkoa
+:perus
+W  0  0  5  1
+W  0  0  1  3
+W 11  0 16  1
+W 16  0 15  3
+W  0 12  1  9
+W  0 12  5 11
+W 16 12 11 11
+W 16 12 15  9
+
+; huoneen vasen seinä
+:vasen
+W  0  3  1  9
+
+; huoneen oikea seinä
+:oikea
+W 16  3 15  9
+
+; huoneen yläseinä
+:yla
+W  5  0 11  1
+
+; huoneen alaseinä
+:ala
+W  5 12 11 11
